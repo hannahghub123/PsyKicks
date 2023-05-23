@@ -1,0 +1,53 @@
+{% extends 'psyadmin/admin-index.html' %}
+{% load static %}
+
+{% block content %}
+<div class="mt-5"></div>
+<div class="container" style="width:fit-content">
+  <div class="row justify-content-end">
+    <a href="{% url 'addcategories' %}">
+      <button class="btn add-category-btn btn-primary mt-2">Add Category</button>
+    </a>
+  </div>
+  <div class="row">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Stock</th>
+          <th>Edit</th>
+          <th>Block</th>
+          <th>Delete</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in datas %}
+        <tr>
+          <td class="py-1">{{ item.name }}</td>
+          <td class="py-1">{{ item.stock }}</td>
+          <td class="py-1">
+            <a href="{% url 'editcategories' item.id %}">
+              <button class="btn edit-btn btn-warning">Edit</button>
+            </a>
+          </td>
+          <td class="py-1">
+            {% if item.isblocked %}
+              <button type="button" class="btn delete-btn btn-success" data-category-id="{{ item.id }}">Unblock</button>
+            {% endif %}
+            {% if not item.isblocked %}
+              <button type="button" class="btn delete-btn btn-danger" data-category-id="{{ item.id }}">Block</button>
+            {% endif %}
+          </td>
+          <td class="py-1">
+            <form method="POST" action="{% url 'deletecategories' item.id %}">
+              {% csrf_token %}
+              <button class="btn delete-btn btn-danger" type="submit">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,51 @@
+{% extends 'psyadmin/admin-index.html' %}
+{% load static %}
+
+
+{% block content %}
+<div class="mt-5"></div>
+
+<div class="container" style="width:fit-content">
+<form class="p-5" method="POST" action="" enctype="multipart/form-data">
+    
+    {% csrf_token %}
+          
+    <div class="form-group mt-2" >
+      {% comment %} {% for item in content  %} {% endcomment %}
+      <label for="username">Category Name</label>
+      <input value="{{obj.name}}" name="name" type="text" class="form-control" id="username" placeholder="Enter category">
+
+ 
+      <div>
+
+        <label for="username">Quantity</label>
+      <input value="{{obj.stock}}" name="noofitems" type="number" class="form-control" id="username" placeholder="Enter stock">
+
+      </div>
+      
+
+      {% comment %} <div class="form-group mt-2">
+
+        <label for="image">Image</label>
+        <input name="image" type="file" class="form-control-file" id="image">
+        
+        <img  src="{{ obj.image.url }}" alt="{{ obj.title }}">
+        
+      </div> {% endcomment %}
+
+
+    </div>
+    <button type="submit" class="btn btn-primary mt-4">Update</button>
+    <h5> {{error}}</h5>
+    {% comment %} {% endfor %} {% endcomment %}
+  
+  </form> 
+</div>
+
+
+
+  <script defer src="https://cdn.crop.guide/loader/l.js?c=ZXDVHR"></script>
+
+
+{% endblock content %}
+

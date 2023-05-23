@@ -1,0 +1,72 @@
+{% extends 'psyadmin/admin-index.html' %}
+{% block content %}
+<div class="container mt-3" style="width:fit-content; margin-right:70px">
+  <div class="container">
+    <form action="" method="POST">
+      {% csrf_token %}
+      <div class="input-group">
+        <div class="input-group-prepend hover-cursor" id="navbar-search-icon">
+         
+        </div>
+         {% comment %} <input type="text" name="searchitem" class="form-control" id="navbar-search-input" placeholder="Search user" aria-label="search" aria-describedby="search">
+        <div>
+          <button type="submit" class="btn btn-primary btn-block mt-4 ml-3">Search</button>
+          
+        </div>  {% endcomment %}
+      </div>
+    
+    </form>
+  
+  </div>
+  
+  
+  <div class="container">
+    <div class="col-lg-12 grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body">
+         
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Username</th>
+                  <th>Customer Name</th>
+                  <th>Email</th>
+                  <th>Phone Number</th>
+                  <th>Password</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in datas  %}
+                <tr>
+                  <td>{{item.username}}</td>
+                  <td>{{item.name}}</td>
+                  <td>{{item.email}}</td>
+                  <td>{{item.phonenumber}}</td>
+                  <td>{{item.password}}</td>
+                  <td>
+                    {% if item.isblocked %}
+                    <a href="{% url 'unblockuser' item.id %}" class="btn btn-success btn-sm">Unblock</a>
+                    {% else %}
+                    <a href="{% url 'blockuser' item.id %}" class="btn btn-warning btn-sm">Block</a>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+  </div>
+  
+
+</div>
+
+
+   
+      
+{% endblock content %}

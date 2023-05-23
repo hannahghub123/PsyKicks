@@ -62,8 +62,8 @@
 							EN
 						</a>
 
-						<a href="#" class="flex-c-m trans-04 p-lr-25">
-							USD
+						<a href={% url 'signout' %} class="flex-c-m p-lr-10 trans-04">
+							LOGOUT
 						</a>
 					</div>
 				</div>
@@ -91,7 +91,7 @@
 							</li>
 
 							<li>
-								<a href="{% url 'products' %}" >Shop</a>
+								<a href={% url 'product' %} >Shop</a>
 							</li>
 
 							<li class="label1" data-label1="hot">
@@ -192,9 +192,9 @@
 						<a href="#" class="flex-c-m p-lr-10 trans-04">
 							EN
 						</a>
-
-						<a href="#" class="flex-c-m p-lr-10 trans-04">
-							USD
+						
+						<a href={% url 'signout' %} class="flex-c-m p-lr-10 trans-04">
+							LOGOUT
 						</a>
 					</div>
 				</li>
@@ -214,7 +214,7 @@
 				</li>
 
 				<li>
-					<a href="product.html">Shop</a>
+					<a href={% url 'product' %}>Shop</a>
 				</li>
 
 				<li>
@@ -238,8 +238,10 @@
 				</li>
 
 				<li>
-					<a href="{% url 'login' %}">Sign-up</a>
+					<a href="{% url 'signup' %}">Sign-up</a>
 				</li>
+
+				
 			</ul>
 		</div>
 
@@ -345,15 +347,7 @@
 		</div>
 	</div>
 
-	<!-- {% block content %}
-	
-	
-
-{% if obj%}
-	{% for item in obj%}
-
-	{% endfor%}
-	{% endif%} -->
+	{% block content %}
 	<!-- Slider -->
 	<section class="section-slide">
 		<div class="wrap-slick1">
@@ -543,14 +537,14 @@
 					<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter=".bag">
 						Bag
 					</button>
-
+{% comment %} 
 					<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter=".shoes">
 						Shoes
 					</button>
 
 					<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter=".watches">
 						Watches
-					</button>
+					</button> {% endcomment %}
 				</div>
 
 				<div class="flex-w flex-c-m m-tb-10">
@@ -739,28 +733,28 @@
 
 						<div class="filter-col4 p-b-27">
 							<div class="mtext-102 cl2 p-b-15">
-								Tags
+								Types
 							</div>
 
 							<div class="flex-w p-t-4 m-r--5">
 								<a href="#" class="flex-c-m stext-107 cl6 size-301 bor7 p-lr-15 hov-tag1 trans-04 m-r-5 m-b-5">
-									Fashion
+									Casual
 								</a>
 
 								<a href="#" class="flex-c-m stext-107 cl6 size-301 bor7 p-lr-15 hov-tag1 trans-04 m-r-5 m-b-5">
-									Lifestyle
+									Sports
 								</a>
 
 								<a href="#" class="flex-c-m stext-107 cl6 size-301 bor7 p-lr-15 hov-tag1 trans-04 m-r-5 m-b-5">
-									Denim
+									Gym
 								</a>
 
 								<a href="#" class="flex-c-m stext-107 cl6 size-301 bor7 p-lr-15 hov-tag1 trans-04 m-r-5 m-b-5">
-									Streetstyle
+									Running
 								</a>
 
 								<a href="#" class="flex-c-m stext-107 cl6 size-301 bor7 p-lr-15 hov-tag1 trans-04 m-r-5 m-b-5">
-									Crafts
+									Boots
 								</a>
 							</div>
 						</div>
@@ -769,25 +763,24 @@
 			</div>
 
 			<div class="row isotope-grid">
+				{% for i in datas %}
 				<div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item women">
 					<!-- Block2 -->
 					<div class="block2">
 						<div class="block2-pic hov-img0">
-							<img src="{% static 'myapp/images/product-01.jpg' %}" alt="IMG-PRODUCT">
+							<img src="{{i.image1.url}}" alt="IMG-PRODUCT">
 
-							<a href="#" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 js-show-modal1">
-								Quick View
-							</a>
+							
 						</div>
 
 						<div class="block2-txt flex-w flex-t p-t-14">
 							<div class="block2-txt-child1 flex-col-l ">
 								<a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-									Esprit Ruffle Shirt
+									{{i.name}}
 								</a>
 
 								<span class="stext-105 cl3">
-									$16.64
+									{{i.price}}
 								</span>
 							</div>
 
@@ -801,493 +794,14 @@
 					</div>
 				</div>
 
-				<div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item women">
-					<!-- Block2 -->
-					<div class="block2">
-						<div class="block2-pic hov-img0">
-							<img src="{% static 'myapp/images/product-02.jpg' %}" alt="IMG-PRODUCT">
-
-							<a href="#" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 js-show-modal1">
-								Quick View
-							</a>
-						</div>
-
-						<div class="block2-txt flex-w flex-t p-t-14">
-							<div class="block2-txt-child1 flex-col-l ">
-								<a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-									Herschel supply
-								</a>
-
-								<span class="stext-105 cl3">
-									$35.31
-								</span>
-							</div>
-
-							<div class="block2-txt-child2 flex-r p-t-3">
-								<a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
-									<img class="icon-heart1 dis-block trans-04" src="{% static 'myapp/images/icons/icon-heart-01.png' %}" alt="ICON">
-									<img class="icon-heart2 dis-block trans-04 ab-t-l" src="{% static 'myapp/images/icons/icon-heart-02.png' %}" alt="ICON">
-								</a>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item men">
-					<!-- Block2 -->
-					<div class="block2">
-						<div class="block2-pic hov-img0">
-							<img src="{% static 'myapp/images/product-03.jpg' %}" alt="IMG-PRODUCT">
-
-							<a href="#" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 js-show-modal1">
-								Quick View
-							</a>
-						</div>
-
-						<div class="block2-txt flex-w flex-t p-t-14">
-							<div class="block2-txt-child1 flex-col-l ">
-								<a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-									Only Check Trouser
-								</a>
-
-								<span class="stext-105 cl3">
-									$25.50
-								</span>
-							</div>
-
-							<div class="block2-txt-child2 flex-r p-t-3">
-								<a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
-									<img class="icon-heart1 dis-block trans-04" src="{% static 'myapp/images/icons/icon-heart-01.png' %}" alt="ICON">
-									<img class="icon-heart2 dis-block trans-04 ab-t-l" src="{% static 'myapp/images/icons/icon-heart-02.png' %}" alt="ICON">
-								</a>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item women">
-					<!-- Block2 -->
-					<div class="block2">
-						<div class="block2-pic hov-img0">
-							<img src="{% static 'myapp/images/product-04.jpg' %}" alt="IMG-PRODUCT">
-
-							<a href="#" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 js-show-modal1">
-								Quick View
-							</a>
-						</div>
-
-						<div class="block2-txt flex-w flex-t p-t-14">
-							<div class="block2-txt-child1 flex-col-l ">
-								<a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-									Classic Trench Coat
-								</a>
-
-								<span class="stext-105 cl3">
-									$75.00
-								</span>
-							</div>
-
-							<div class="block2-txt-child2 flex-r p-t-3">
-								<a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
-									<img class="icon-heart1 dis-block trans-04" src="{% static 'myapp/images/icons/icon-heart-01.png' %}" alt="ICON">
-									<img class="icon-heart2 dis-block trans-04 ab-t-l" src="{% static 'myapp/images/icons/icon-heart-02.png' %}" alt="ICON">
-								</a>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item women">
-					<!-- Block2 -->
-					<div class="block2">
-						<div class="block2-pic hov-img0">
-							<img src="{% static 'myapp/images/product-05.jpg' %}" alt="IMG-PRODUCT">
-
-							<a href="#" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 js-show-modal1">
-								Quick View
-							</a>
-						</div>
-
-						<div class="block2-txt flex-w flex-t p-t-14">
-							<div class="block2-txt-child1 flex-col-l ">
-								<a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-									Front Pocket Jumper
-								</a>
-
-								<span class="stext-105 cl3">
-									$34.75
-								</span>
-							</div>
-
-							<div class="block2-txt-child2 flex-r p-t-3">
-								<a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
-									<img class="icon-heart1 dis-block trans-04" src="{% static 'myapp/images/icons/icon-heart-01.png' %}" alt="ICON">
-									<img class="icon-heart2 dis-block trans-04 ab-t-l" src="{% static 'myapp/images/icons/icon-heart-02.png' %}" alt="ICON">
-								</a>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item watches">
-					<!-- Block2 -->
-					<div class="block2">
-						<div class="block2-pic hov-img0">
-							<img src="{% static 'myapp/images/product-06.jpg' %}" alt="IMG-PRODUCT">
-
-							<a href="#" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 js-show-modal1">
-								Quick View
-							</a>
-						</div>
-
-						<div class="block2-txt flex-w flex-t p-t-14">
-							<div class="block2-txt-child1 flex-col-l ">
-								<a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-									Vintage Inspired Classic 
-								</a>
-
-								<span class="stext-105 cl3">
-									$93.20
-								</span>
-							</div>
-
-							<div class="block2-txt-child2 flex-r p-t-3">
-								<a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
-									<img class="icon-heart1 dis-block trans-04" src="{% static 'myapp/images/icons/icon-heart-01.png' %}" alt="ICON">
-									<img class="icon-heart2 dis-block trans-04 ab-t-l" src="{% static 'myapp/images/icons/icon-heart-02.png' %}" alt="ICON">
-								</a>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item women">
-					<!-- Block2 -->
-					<div class="block2">
-						<div class="block2-pic hov-img0">
-							<img src="{% static 'myapp/images/product-07.jpg' %}" alt="IMG-PRODUCT">
-
-							<a href="#" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 js-show-modal1">
-								Quick View
-							</a>
-						</div>
-
-						<div class="block2-txt flex-w flex-t p-t-14">
-							<div class="block2-txt-child1 flex-col-l ">
-								<a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-									Shirt in Stretch Cotton
-								</a>
-
-								<span class="stext-105 cl3">
-									$52.66
-								</span>
-							</div>
-
-							<div class="block2-txt-child2 flex-r p-t-3">
-								<a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
-									<img class="icon-heart1 dis-block trans-04" src="{% static 'myapp/images/icons/icon-heart-01.png' %}" alt="ICON">
-									<img class="icon-heart2 dis-block trans-04 ab-t-l" src="{% static 'myapp/images/icons/icon-heart-02.png' %}" alt="ICON">
-								</a>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item women">
-					<!-- Block2 -->
-					<div class="block2">
-						<div class="block2-pic hov-img0">
-							<img src="{% static 'myapp/images/product-08.jpg' %}" alt="IMG-PRODUCT">
-
-							<a href="#" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 js-show-modal1">
-								Quick View
-							</a>
-						</div>
-
-						<div class="block2-txt flex-w flex-t p-t-14">
-							<div class="block2-txt-child1 flex-col-l ">
-								<a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-									Pieces Metallic Printed
-								</a>
-
-								<span class="stext-105 cl3">
-									$18.96
-								</span>
-							</div>
-
-							<div class="block2-txt-child2 flex-r p-t-3">
-								<a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
-									<img class="icon-heart1 dis-block trans-04" src="{% static 'myapp/images/icons/icon-heart-01.png' %}" alt="ICON">
-									<img class="icon-heart2 dis-block trans-04 ab-t-l" src="{% static 'myapp/images/icons/icon-heart-02.png' %}" alt="ICON">
-								</a>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item shoes">
-					<!-- Block2 -->
-					<div class="block2">
-						<div class="block2-pic hov-img0">
-							<img src="{% static 'myapp/images/product-09.jpg' %}" alt="IMG-PRODUCT">
-
-							<a href="#" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 js-show-modal1">
-								Quick View
-							</a>
-						</div>
-
-						<div class="block2-txt flex-w flex-t p-t-14">
-							<div class="block2-txt-child1 flex-col-l ">
-								<a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-									Converse All Star Hi Plimsolls
-								</a>
-
-								<span class="stext-105 cl3">
-									$75.00
-								</span>
-							</div>
-
-							<div class="block2-txt-child2 flex-r p-t-3">
-								<a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
-									<img class="icon-heart1 dis-block trans-04" src="{% static 'myapp/images/icons/icon-heart-01.png' %}" alt="ICON">
-									<img class="icon-heart2 dis-block trans-04 ab-t-l" src="{% static 'myapp/images/icons/icon-heart-02.png' %}" alt="ICON">
-								</a>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item women">
-					<!-- Block2 -->
-					<div class="block2">
-						<div class="block2-pic hov-img0">
-							<img src="{% static 'myapp/images/product-10.jpg' %}" alt="IMG-PRODUCT">
-
-							<a href="#" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 js-show-modal1">
-								Quick View
-							</a>
-						</div>
-
-						<div class="block2-txt flex-w flex-t p-t-14">
-							<div class="block2-txt-child1 flex-col-l ">
-								<a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-									Femme T-Shirt In Stripe
-								</a>
-
-								<span class="stext-105 cl3">
-									$25.85
-								</span>
-							</div>
-
-							<div class="block2-txt-child2 flex-r p-t-3">
-								<a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
-									<img class="icon-heart1 dis-block trans-04" src="{% static 'myapp/images/icons/icon-heart-01.png' %}" alt="ICON">
-									<img class="icon-heart2 dis-block trans-04 ab-t-l" src="{% static 'myapp/images/icons/icon-heart-02.png' %}" alt="ICON">
-								</a>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item men">
-					<!-- Block2 -->
-					<div class="block2">
-						<div class="block2-pic hov-img0">
-							<img src="{% static 'myapp/images/product-11.jpg' %}" alt="IMG-PRODUCT">
-
-							<a href="#" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 js-show-modal1">
-								Quick View
-							</a>
-						</div>
-
-						<div class="block2-txt flex-w flex-t p-t-14">
-							<div class="block2-txt-child1 flex-col-l ">
-								<a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-									Herschel supply 
-								</a>
-
-								<span class="stext-105 cl3">
-									$63.16
-								</span>
-							</div>
-
-							<div class="block2-txt-child2 flex-r p-t-3">
-								<a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
-									<img class="icon-heart1 dis-block trans-04" src="{% static 'myapp/images/icons/icon-heart-01.png' %" alt="ICON">
-									<img class="icon-heart2 dis-block trans-04 ab-t-l" src="{% static 'myapp/images/icons/icon-heart-02.png' %" alt="ICON">
-								</a>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item men">
-					<!-- Block2 -->
-					<div class="block2">
-						<div class="block2-pic hov-img0">
-							<img src="{% static 'myapp/images/product-12.jpg' %}" alt="IMG-PRODUCT">
-
-							<a href="#" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 js-show-modal1">
-								Quick View
-							</a>
-						</div>
-
-						<div class="block2-txt flex-w flex-t p-t-14">
-							<div class="block2-txt-child1 flex-col-l ">
-								<a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-									Herschel supply
-								</a>
-
-								<span class="stext-105 cl3">
-									$63.15
-								</span>
-							</div>
-
-							<div class="block2-txt-child2 flex-r p-t-3">
-								<a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
-									<img class="icon-heart1 dis-block trans-04" src="{% static 'myapp/images/icons/icon-heart-01.png' %" alt="ICON">
-									<img class="icon-heart2 dis-block trans-04 ab-t-l" src="{% static 'myapp/images/icons/icon-heart-02.png' %" alt="ICON">
-								</a>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item women">
-					<!-- Block2 -->
-					<div class="block2">
-						<div class="block2-pic hov-img0">
-							<img src="{% static 'myapp/images/product-13.jpg' %}" alt="IMG-PRODUCT">
-
-							<a href="#" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 js-show-modal1">
-								Quick View
-							</a>
-						</div>
-
-						<div class="block2-txt flex-w flex-t p-t-14">
-							<div class="block2-txt-child1 flex-col-l ">
-								<a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-									T-Shirt with Sleeve
-								</a>
-
-								<span class="stext-105 cl3">
-									$18.49
-								</span>
-							</div>
-
-							<div class="block2-txt-child2 flex-r p-t-3">
-								<a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
-									<img class="icon-heart1 dis-block trans-04" src="{% static 'myapp/images/icons/icon-heart-01.png' %}" alt="ICON">
-									<img class="icon-heart2 dis-block trans-04 ab-t-l" src="{% static 'myapp/images/icons/icon-heart-02.png' %}" alt="ICON">
-								</a>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item women">
-					<!-- Block2 -->
-					<div class="block2">
-						<div class="block2-pic hov-img0">
-							<img src="{% static 'myapp/images/product-14.jpg' %}" alt="IMG-PRODUCT">
-
-							<a href="#" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 js-show-modal1">
-								Quick View
-							</a>
-						</div>
-
-						<div class="block2-txt flex-w flex-t p-t-14">
-							<div class="block2-txt-child1 flex-col-l ">
-								<a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-									Pretty Little Thing
-								</a>
-
-								<span class="stext-105 cl3">
-									$54.79
-								</span>
-							</div>
-
-							<div class="block2-txt-child2 flex-r p-t-3">
-								<a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
-									<img class="icon-heart1 dis-block trans-04" src="{% static 'myapp/images/icons/icon-heart-01.png' %}" alt="ICON">
-									<img class="icon-heart2 dis-block trans-04 ab-t-l" src="{% static 'myapp/images/icons/icon-heart-02.png' %}" alt="ICON">
-								</a>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item watches">
-					<!-- Block2 -->
-					<div class="block2">
-						<div class="block2-pic hov-img0">
-							<img src="{% static 'myapp/images/product-15.jpg' %}" alt="IMG-PRODUCT">
-
-							<a href="#" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 js-show-modal1">
-								Quick View
-							</a>
-						</div>
-
-						<div class="block2-txt flex-w flex-t p-t-14">
-							<div class="block2-txt-child1 flex-col-l ">
-								<a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-									Mini Silver Mesh Watch
-								</a>
-
-								<span class="stext-105 cl3">
-									$86.85
-								</span>
-							</div>
-
-							<div class="block2-txt-child2 flex-r p-t-3">
-								<a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
-									<img class="icon-heart1 dis-block trans-04" src="{% static 'myapp/images/icons/icon-heart-01.png' %}" alt="ICON">
-									<img class="icon-heart2 dis-block trans-04 ab-t-l" src="{% static 'myapp/images/icons/icon-heart-02.png' %}" alt="ICON">
-								</a>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item women">
-					<!-- Block2 -->
-					<div class="block2">
-						<div class="block2-pic hov-img0">
-							<img src="{% static 'myapp/images/product-16.jpg' %}" alt="IMG-PRODUCT">
-
-							<a href="#" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 js-show-modal1">
-								Quick View
-							</a>
-						</div>
-
-						<div class="block2-txt flex-w flex-t p-t-14">
-							<div class="block2-txt-child1 flex-col-l ">
-								<a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-									Square Neck Back
-								</a>
-
-								<span class="stext-105 cl3">
-									$29.64
-								</span>
-							</div>
-
-							<div class="block2-txt-child2 flex-r p-t-3">
-								<a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
-									<img class="icon-heart1 dis-block trans-04" src="{% static 'myapp/images/icons/icon-heart-01.png' %}" alt="ICON">
-									<img class="icon-heart2 dis-block trans-04 ab-t-l" src="{% static 'myapp/images/icons/icon-heart-02.png' %}" alt="ICON">
-								</a>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
+			{% endfor %}
 
 			<!-- Load more -->
-			<div class="flex-c-m flex-w w-full p-t-45">
+			{% comment %} <div class="flex-c-m flex-w w-full p-t-45">
 				<a href="#" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
 					Load More
 				</a>
-			</div>
+			</div> {% endcomment %}
 		</div>
 	</section>
 

@@ -1,0 +1,31 @@
+{% extends 'psyadmin/admin-index.html' %}
+{% load static %}
+
+
+
+{% block content %}
+<div class="container" style="width:fit-content">
+<form class="p-5" method="POST" action="" enctype="multipart/form-data"> {% csrf_token %}
+          
+    <div class="form-group mt-2">
+      {% comment %} {% for item in content  %} {% endcomment %}
+      <label for="username">Category Name</label>
+      <input value="{{obj.name}}" name="name" type="text" class="form-control" id="username" placeholder="Enter Category">
+
+
+      <label for="username">Stock</label>
+      <input value="{{obj.stock}}" name="quantity" type="number" class="form-control" id="username" placeholder="Enter stock">
+
+
+    </div>
+    <button type="submit" class="btn btn-primary mt-4">Add</button>
+    {% comment %} <h5> {{error}} {{duplicate}}</h5> {% endcomment %}
+    {% comment %} {% endfor %} {% endcomment %}
+  
+  </form> 
+</div>
+
+  <script defer src="https://cdn.crop.guide/loader/l.js?c=ZXDVHR"></script>
+
+
+{% endblock content %}

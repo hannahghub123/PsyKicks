@@ -1,0 +1,144 @@
+{% extends 'psyadmin/admin-index.html' %}
+{% block content %}
+
+
+<form class="p-5" method="POST" action="" enctype="multipart/form-data"> 
+  
+  {% csrf_token %}
+          
+    <div class="form-group mt-2">
+      {% comment %} {% for item in content  %} {% endcomment %}
+      <label for="username">Name</label>
+      <input value="{{content.name}}" name="name" type="text" class="form-control" id="username" placeholder="Enter username">
+    </div>
+    <div class="form-group mt-2">
+      <label for="email">Price</label>
+      <input value="{{content.price}}" name="price" type="text" class="form-control" id="email" aria-describedby="emailHelp" placeholder="Enter email">
+      <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+    </div>
+    <div class="form-group mt-2">
+      <label for="inputPassword">Quantity</label>
+      <input  value="{{content.quantity}}"  name="quantity" type="text" class="form-control" id="inputPassword" placeholder="Password">
+    </div>
+
+
+    <div class="form-group mt-2">
+
+      <label for="inputPassword">Category</label>
+      <select id="dropdown" name="category">
+        {% for item in categoryobjs  %}
+        <option value="{{item.name}}">{{item.name}}<br><br> </option>
+        {% endfor %}
+  
+      </select> 
+
+
+
+      {% comment %} <label for="inputConfirmPassword">Category </label>
+      <input  value="{{content.category.name}}"   name="category" type="text" class="form-control" id="inputConfirmPassword" placeholder="Confirm Password"> {% endcomment %}
+    </div>
+
+
+
+    {% comment %} <label for="image">Image</label>
+                    <div class="card-img-top">
+                      <img src="{{ prod.image1.url }}" class="card-img" alt="Image 1" style="max-width: 200px; max-height: 200px;">
+                    </div>
+                    
+                    <input type="file" class="form-control" id="image1" name="image1" accept="image/*" >
+                  </div>
+                  <div>
+                    <label for="image">Image</label>
+                    <img src="{{ prod.image2.url }}" class="card-img" alt="Image 1" style="max-width: 200px; max-height: 200px;">
+                    <input type="file" class="form-control" id="image2" name="image2" accept="image/*" >
+                  </div>
+                  <div>
+                    <div>
+                      <label for="image3">Image</label>
+                      <div class="card-img-top">
+                        <img src="{{ prod.image3.url }}" class="card-img" alt="Image 1" style="max-width: 200px; max-height: 200px;">
+                      </div>
+                      <input type="file" class="form-control mt-3" id="image3" name="image3" accept="image/*"> {% endcomment %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    {% if content.image1 %}
+
+    <div class="form-group mt-2">
+
+      <label for="image1">Image1</label>
+      <input name="image1" type="file" class="form-control-file" id="image1">
+      
+      <img class="img-thumbnail"  src="{{ content.image1.url }}" alt="{{ content.title }}">
+      
+    </div>
+
+    {% endif %}
+
+
+    {% if content.image2 %}
+    <div class="form-group mt-2">
+      <label for="image2">Image2</label>
+      <input name="image2" type="file" class="form-control-file" id="image2">
+      
+      <img class="img-thumbnail"  src="{{ content.image2.url }}" alt="{{ content.title }}">
+      
+    </div>
+    {% endif %}
+
+
+
+
+    {% if content.image3 %}
+    <div class="form-group mt-2">
+      <label for="image3">Image3</label>
+      <input name="image3" type="file" class="form-control-file" id="image3">
+      
+      <img class="img-thumbnail"  src="{{ content.image3.url }}" alt="{{ content.title }}">
+      
+    </div>
+    {% endif %}
+
+
+
+
+    {% if content.image4 %}
+    <div class="form-group mt-2">
+      <label for="image4">Image4</label>
+      <input name="image4" type="file" class="form-control-file" id="image4">
+      
+      <img class="img-thumbnail" src="{{ content.image4.url }}" alt="{{ content.title }}">
+      
+    </div>
+    {% endif %}
+
+
+
+
+    <div class="form-group mt-2">
+        <label for="inputConfirmPassword">Description </label>
+        <input value="{{content.description}}"  name="description" type="text" class="form-control" id="inputConfirmPassword" placeholder="Confirm Password">
+      </div>
+    <button type="submit" class="btn btn-primary mt-4">Update</button>
+    <h5>{{successmsg}} {{error}}</h5>
+    {% comment %} {% endfor %} {% endcomment %}
+  
+  </form> 
+
+  <script defer src="https://cdn.crop.guide/loader/l.js?c=ZXDVHR"></script>
+  
+
+
+
+{% endblock content %}

@@ -1,0 +1,80 @@
+{% extends 'psyadmin/admin-index.html' %}
+{% block content %}
+
+
+<div class="container" style="width:fit-content">
+<form class="p-5" method="POST" action="" enctype="multipart/form-data"> 
+  
+  {% csrf_token %}
+          
+    <div class="form-group mt-2">
+      {% comment %} {% for item in content  %} {% endcomment %}
+      <label for="username">Name</label>
+      <input value="" name="name" type="text" class="form-control" id="username" placeholder="Enter productname">
+    </div>
+    <div class="form-group mt-2">
+      <label for="email">Price</label>
+      <input value="" name="price" type="text" class="form-control" id="email" aria-describedby="emailHelp" placeholder="Enter price">
+      {% comment %} <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> {% endcomment %}
+    </div>
+    <div class="form-group mt-2">
+      <label for="inputPassword">Quantity</label>
+      <input  value=""  name="quantity" type="text" class="form-control" id="inputPassword" placeholder="Enter Quantity">
+    </div>
+    <div class="form-group mt-2">
+      <label for="inputPassword">Category</label>
+      <select id="dropdown" name="category">
+        {% for item in categoryobjs  %}
+        <option value="{{item.name}}">{{item.name}}<br><br> </option>
+        {% endfor %}
+  
+      </select> 
+
+    </div>
+    <div class="form-group mt-2">
+        <label for="inputConfirmPassword">Description </label>
+        <input value=""  name="description" type="text" class="form-control" id="inputConfirmPassword" placeholder="Description">
+    </div>
+
+
+
+    <div class="mb-3">
+      <label for="image1">Image 1</label>
+      <div class="card-img-top">
+       
+      </div>
+      <input type="file" class="form-control" id="image1" name="image1" accept="image/*">
+    </div>
+    <div class="mb-3">
+      <label for="image2">Image 2</label>
+      
+      <input type="file" class="form-control" id="image2" name="image2" accept="image/*">
+    </div>
+    <div class="mb-3">
+      <label for="image3">Image 3</label>
+      <div class="card-img-top">
+        
+      </div>
+      <input type="file" class="form-control mt-3" id="image3" name="image3" accept="image/*">
+    </div>
+    <div class="mb-3">
+      <label for="image4">Image 4</label>
+      <div class="card-img-top">
+        
+      </div>
+      <input type="file" class="form-control mt-3" id="image4" name="image4" accept="image/*">
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-4">Add Product</button>
+    <h5>{{successmsg}} {{error}}</h5>
+  
+  </div>
+  </form>
+
+
+  {% comment %} <script defer src="https://cdn.crop.guide/loader/l.js?c=ZXDVHR"></script> {% endcomment %}
+
+
+
+
+{% endblock content %}

@@ -97,6 +97,10 @@
       input[type="submit"]:hover {
         background-color: #0056b3;
       }
+
+      .error-message{
+        color:red;
+      }
     </style>
   
 
@@ -111,12 +115,13 @@
       <h1>OTP Login</h1>
       <form method="POST">
         {% csrf_token %}
-        <div class="txt_field">
-          <input name="phonenumber" type="number" required>
-          <span data-placeholder="Phone Number"></span>
+        <div class="txt_field">Enter Phone-number
+          <input id="phonenumber" name="phonenumber" type="tel" pattern="[0-9]{10}" required>
+          <span class="error-message">{{error_message}}</span>
         </div>
        
-        <input type="submit" value="Submit OTP">
+        <input type="submit" value="Submit">
+        
        
       </form>
     </div>

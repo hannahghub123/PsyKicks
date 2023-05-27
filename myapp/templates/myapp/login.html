@@ -1,145 +1,121 @@
 {% extends 'myapp/index.html' %}
 {% load static %}
+
 {% block content %}
 
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #fff;
+  }
+
+  .center {
+    margin: auto;
+    width: 325px;
+    padding: 40px;
+    background-color: #ffffff;
+    box-shadow: 0px 0px 10px rgba(14, 3, 3, 0.1);
+  }
+
+  .center h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .txt_field {
+    margin-bottom: 15px;
+  }
+
+  .txt_field label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+
+  .txt_field input {
+    width: 100%;
+    padding: 8px;
+    font-size: 16px;
+    color: #333333;
+    border: none;
+    border-bottom: 1px solid #757171;
+    outline: none;
+    background-color: transparent;
+    transition: border-color 0.3s ease;
+  }
+
+  .txt_field input:focus {
+    border-color: #007bff;
+  }
+
+  .signup_link {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 14px;
+    color: #333333;
+  }
+
+  .signup_link a {
+    color: #007bff;
+    text-decoration: none;
+  }
+
+  input[type="submit"] {
+    border: none;
+    outline: none;
+    padding: 10px 20px;
+    color: #ffffff;
+    font-size: 16px;
+    background-color: #007bff;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    display: block;
+    margin: 0 auto;
+  }
+
+  input[type="submit"]:hover {
+    background-color: #0056b3;
+  }
+
+  .error-message {
+    color: red;
+  }
+</style>
 
 
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        background-color: #f2f2f2;
-      }
-
-      .center {
-        position: absolute;
-        top: 55%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 300px;
-        padding: 40px;
-        background-color: #ffffff;
-        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-        text-align: center;
-      }
-
-      .center h1 {
-        margin-bottom: 30px;
-      }
-
-      .txt_field {
-        position: relative;
-        margin-bottom: 25px;
-      }
-
-      .txt_field input {
-        width: 100%;
-        padding: 10px 0;
-        font-size: 16px;
-        color: #333333;
-        border: none;
-        border-bottom: 1px solid #999999;
-        outline: none;
-        background: transparent;
-      }
-
-      .txt_field input::placeholder {
-        color: transparent;
-      }
-
-      .txt_field span::before {
-        content: attr(data-placeholder);
-        position: absolute;
-        top: 50%;
-        left: 0;
-        color: #999999;
-        transform: translateY(-50%);
-        z-index: -1;
-        transition: all 0.5s ease;
-      }
-
-      .txt_field input:focus + span::before {
-        top: -10px;
-        color: #007bff;
-      }
-
-      .pass {
-        margin-top: -10px;
-        margin-bottom: 20px;
-        font-size: 14px;
-        color: #007bff;
-        cursor: pointer;
-        text-decoration: none;
-      }
-
-      .signup_link {
-        margin-top: 20px;
-        font-size: 14px;
-        color: #333333;
-      }
-
-      .signup_link a {
-        color: #007bff;
-        text-decoration: none;
-      }
-
-      input[type="submit"] {
-        border: none;
-        outline: none;
-        padding: 10px 20px;
-        color: #ffffff;
-        font-size: 16px;
-        background-color: #007bff;
-        cursor: pointer;
-        border-radius: 5px;
-        transition: background-color 0.3s ease;
-      }
-
-      input[type="submit"]:hover {
-        background-color: #0056b3;
-      }
-    </style>
-  
-  {% comment %} <body> {% endcomment %}
-    <div class="row mt-5"></div>
 <div class="row mt-5"></div>
-<div class="row mt-5"></div>
-<div class="row mt-5"></div>
-<div class="row mt-5"></div>
-<div class="row mt-5"></div>
-<div class="row mt-5"></div>
-    <div class="center">
-      <h1>Login</h1>
-      <form method="POST">
-        {% csrf_token %}
-        <div class="signup_link">
-          <a href="{% url 'otp_login' %}"> OTP Login?</a>
-        </div>
-        <div class="txt_field">
-          <input name="username" type="text" required>
-          <span data-placeholder="Username"></span>
-        </div>
-        <div class="txt_field">
-          <input name="password" type="password" required>
-          <span data-placeholder="Password"></span>
-        </div>
-        {% comment %} <div class="pass">
-          <a href="#">Forgot Password?</a>
-        </div> {% endcomment %}
 
-        <input type="submit" value="Login">
 
-        <div class="signup_link">
-          Not a member? <a href="{% url 'signup' %}">Signup</a>
-        </div>
-      </form>
+<div class="center mt-5">
+  <h1>Signup</h1>
+  <form method="POST">
+    {% csrf_token %} 
+    <div class="signup_link">
+      <a href="{% url 'otp_login' %}">OTP Login?</a>
+    </div>
+    <br>
+    <div class="txt_field">
+      <label for="username">Username</label>
+      <input value="{{username}}" id="username" name="username" type="text" required>
+      <span class="error-message">{{error_message.username}}</span>
+    </div>
+
+    <div class="txt_field">
+      <label for="password">Password</label>
+      <input value="{{password}}" id="password" name="password" type="password" required>
+      <span class="error-message">{{error_message.password}}</span>
+     
     </div>
   
+    <input type="submit" value="Login">
+  </form>
+  <div class="signup_link">
+   Not a member? <a href="{% url 'signup' %}">Signup</a>
+  </div>
+ 
+</div>
 
 <div class="row mt-5"></div>
-<div class="row mt-5"></div>
-<div class="row mt-5"></div>
-<div class="row mt-5"></div>
-
-
 
 {% endblock content %}

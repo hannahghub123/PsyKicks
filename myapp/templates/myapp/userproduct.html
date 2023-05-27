@@ -257,26 +257,21 @@
 				<div class="block2">
 					<div class="block2-pic hov-img0">
 						<img src="{{i.image1.url}}" alt="IMG-PRODUCT">
+
+						
 					</div>
 
 					<div class="block2-txt flex-w flex-t p-t-14">
-						<div class="block2-txt-child1 flex-row-l">
+						<div class="block2-txt-child1 flex-col-l ">
 							<a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
 								{{i.name}}
 							</a>
-							<br>
-							<span class="stext-105 cl3" style="display:inline-block">
-								${{i.price}}
+
+							<span class="stext-105 cl3">
+								{{i.price}}
 							</span>
-							<br><br>
-							<button class="btn btn-outline-primary add-btn" href="#">Add to cart</button>
-							<a class="btn btn-outline-primary" href="#" style="display:inline-block; ">View</a>
 
-							
-
-							
-
-							{% comment %} <a href={% url 'pdetails' i.id %}>Quick view</a> {% endcomment %}
+							<a href={% url 'pdetails' i.id %}>Quick view</a>
 							
 							
 
@@ -305,8 +300,10 @@
 	</div>
 </div>
 
-
-
+<div class="row mt-5"></div>
+<div class="row mt-5"></div>
+<div class="row mt-5"></div>
+<div class="row mt-5"></div>
 {% endblock content %}
 
 

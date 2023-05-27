@@ -50,12 +50,12 @@
             <td>{{ item.description }}</td>
             <td><img src="{{ item.image1.url }}" alt=""></td>
             <td>
-              <a href="{% url 'editproducts'  %}">
+              <a href={% url 'editproducts' item.id  %}>
                 <button class="btn edit-btn btn-warning">Edit</button>
               </a>
             </td>
             <td>
-              <a href="{% url 'deleteproducts' item.id  %}">
+              <a href={% url 'deleteproducts' item.id  %}>
                 <button class="btn edit-btn btn-danger">Delete</button>
               </a>
             </td>

@@ -1,3 +1,4 @@
+import re
 from django.shortcuts import render,redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate 
@@ -9,54 +10,58 @@ from . models import *
 
 # Create your views here.
 def index(request):
-     if 'adminuser' in request.session:
+     
+    datas = Products.objects.all()
+
+    context={
+        'datas':datas,
+    }
+    return render(request,"myapp/index.html",context)
+     
+def userindex(request):
+    
         datas = Products.objects.all()
 
         context={
             'datas':datas,
         }
-        return render(request,"myapp/index.html",context)
+        return render(request,"myapp/userindex.html",context)
 
-def product(request):
-    if "adminuser" in request.session:
-        datas=Products.objects.all()
-
-        if request.method=="POST":
-            enteredproduct=request.POST.get("searchitem")
-            datas=Products.objects.filter(name=enteredproduct)
-            return render(request,"myapp/product.html",{"datas":datas})
-        
-        return render(request,"myapp/product.html",{"datas":datas})
-    else:
-        return redirect(index)
 
 def signout(request):
     if 'username' in request.session:
-        del request.session['username']
+        # del request.session['username']
+        request.session.flush()
     return redirect('index')
-    
-    
+
+
 
 def login(request):
+
+    error_message = {}
     
-    if 'username' in request.session:
-        return redirect('index')
     
     if request.method =='POST':
         username = request.POST['username']
         password = request.POST['password']
     
-        my_user = authenticate(request,username=username , password=password)
+        my_user = customer.objects.filter(username=username , password=password).count()
+        print(my_user,"^^^^^^^^^^^^^^^^^^^^^^")
 
-        if my_user is not None: 
-            messages.info(request, 'Successfully logged in')
+        if my_user ==1: 
             request.session['username'] = username
-            return redirect('index')
+            return redirect('userindex')
            
         else:
-             messages.info(request, 'Enter valid username and password!!')
-             return redirect('product')
-        
+            if not customer.objects.filter(username=username).exists():
+                error_message["username"] = "Enter valid username!!"
+            else:
+                error_message["password"] = "Incorrect password!!"
+            
+
+            return render(request,"myapp/login.html",{'error_message': error_message,"username":username,"password":password})
+
+            
     return render(request,"myapp/login.html")
 
 def signup(request):
@@ -69,29 +74,44 @@ def signup(request):
         password = request.POST['password']
         confirm_password = request.POST['confirm_password']
 
-        if customer.objects.filter(username=username):
-            error_message = "Username already exists. Please try a different username."
-            return render(request, "myapp/signup.html", {'error_message': error_message})
+        error_message = {}
 
-        if customer.objects.filter(email=email):
-            error_message = "Email already registered. Please try a different email."
-            return render(request, "myapp/signup.html", {'error_message': error_message})
+        if customer.objects.filter(username=username):
+            error_message["username"] = "Username already exists. Please try a different username."
 
         if len(username) > 10:
-            error_message = "Username must be under 10 characters."
-            return render(request, "myapp/signup.html", {'error_message': error_message})
+            error_message["username"] = "Username must be under 10 characters." 
 
         if not username.isalnum():
-            error_message = "Username must be alphanumeric."
-            return render(request, "myapp/signup.html", {'error_message': error_message})
-        
-        if not name.isalpha():
-            error_message = "Name must be alphabetic."
-            return render(request, "myapp/signup.html", {'error_message': error_message})
+            error_message["username"] = "Username should be alphanumeric"
 
+        if not name.isalpha():
+            error_message["name"] = "Name must be alphabetic."  
+
+        if customer.objects.filter(email=email):
+            error_message["email"] = "Email already registered. Please try a different email."
+
+        if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
+            error_message["email"]="Invalid Email"
+
+        if int(phonenumber)<0:
+            error_message["phonenumber"] = "phone number should be positive numbers"
+        
+        if phonenumber==0:
+            error_message["phonenumber"] = "invalid phone number"
+
+        if phonenumber.isalpha()==True:
+            error_message["phonenumber"] = "Phone number cannot be alphabetic"
+        
         if password != confirm_password:
-            error_message = "Passwords don't match."
-            return render(request, "myapp/signup.html", {'error_message': error_message})
+            error_message["password"] = "Passwords doesnot match."
+            phonenumber = request.POST['phonenumber']
+
+        if len(password) <3:
+            error_message["password"] = "Your password is too weak"
+
+        if error_message:
+            return render(request, "myapp/signup.html", {'error_message': error_message,"username":username,"name":name,"email":email,"phonenumber":phonenumber,"password":password,"confirm_password":confirm_password})
 
         myuser = customer(username =username,name=name,email= email, phonenumber=phonenumber, password=password,isblocked=False)
     
@@ -119,9 +139,11 @@ def otp_login(request):
     
     if request.method == 'POST':
         phonenumber = request.POST.get('phonenumber')
+        
         user = customer.objects.get(phonenumber=phonenumber)
+        
         if user.isblocked:
-            messages.info(request, 'Your account has been blocked')
+            error_message = "Your account has been blocked"
             return redirect('login')
         phonenumber = request.POST.get('phonenumber')
         otp = generate_otp()
@@ -154,7 +176,7 @@ def otp_verify(request):
                         request.session['username'] = user.username 
                         request.session['phonenumber'] = phonenumber
                         messages.success(request, "Login completed successfully")
-                        return redirect('product')
+                        return redirect('userproduct')
                 except customer.DoesNotExist:
                     messages.error(request, "This User doesn't Exist")
             else:
@@ -163,8 +185,35 @@ def otp_verify(request):
     else:
         return redirect('otp_login')
     
+def userproduct(request):
+    # if "username" in request.session:
+        datas=Products.objects.all()
+
+        # if request.method=="POST":
+        #     enteredproduct=request.POST.get("searchitem")
+        #     datas=Products.objects.filter(name=enteredproduct)
+        #     return render(request,"myapp/userproduct.html",{"datas":datas})
+        
+        return render(request,"myapp/userproduct.html",{"datas":datas})
+    # else:
+        # return redirect(userindex)
+    
+def product(request):
+  
+        datas=Products.objects.all()
+
+        # if request.method=="POST":
+            # enteredproduct=request.POST.get("searchitem")
+            # datas=Products.objects.filter(name=enteredproduct)
+            # return render(request,"myapp/userproduct.html",{"datas":datas})
+        
+        return render(request,"myapp/product.html",{"datas":datas})
+        # else:
+        #     return redirect(userindex)
+    
 def pdetails(request,someid):
-    if "username" in request.session and customer.objects.get(username=request.session["username"]).isblocked:
+    if "username" in request.session:
+        #  and customer.objects.get(username=request.session["username"]).isblocked
         pobj=Products.objects.get(id=someid)
         print("error there")
 
@@ -174,7 +223,6 @@ def pdetails(request,someid):
         print("error here")
         return redirect(product)
 
-def signout(request):
-    if 'username' in request.session:
-        del request.session['username']
-    return redirect('index')
+
+def cart(request):
+    return render(request,"myapp/cart.html")

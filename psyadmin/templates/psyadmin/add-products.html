@@ -25,7 +25,9 @@
       <label for="inputPassword">Category</label>
       <select id="dropdown" name="category">
         {% for item in categoryobjs  %}
+        {% if not item.isblocked %}
         <option value="{{item.name}}">{{item.name}}<br><br> </option>
+        {% endif %}
         {% endfor %}
   
       </select> 
@@ -39,31 +41,29 @@
 
 
     <div class="mb-3">
-      <label for="image1">Image 1</label>
-      <div class="card-img-top">
-       
-      </div>
+      <label for="image1">Image </label>
+      
       <input type="file" class="form-control" id="image1" name="image1" accept="image/*">
     </div>
-    <div class="mb-3">
+    {% comment %} <div class="mb-3">
       <label for="image2">Image 2</label>
       
       <input type="file" class="form-control" id="image2" name="image2" accept="image/*">
-    </div>
-    <div class="mb-3">
+    </div> {% endcomment %}
+    {% comment %} <div class="mb-3">
       <label for="image3">Image 3</label>
       <div class="card-img-top">
         
       </div>
       <input type="file" class="form-control mt-3" id="image3" name="image3" accept="image/*">
-    </div>
-    <div class="mb-3">
+    </div> {% endcomment %}
+    {% comment %} <div class="mb-3">
       <label for="image4">Image 4</label>
       <div class="card-img-top">
         
       </div>
       <input type="file" class="form-control mt-3" id="image4" name="image4" accept="image/*">
-    </div>
+    </div> {% endcomment %}
 
     <button type="submit" class="btn btn-primary mt-4">Add Product</button>
     <h5>{{successmsg}} {{error}}</h5>

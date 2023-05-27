@@ -30,12 +30,11 @@
               <button class="btn edit-btn btn-warning">Edit</button>
             </a>
           </td>
-          <td class="py-1">
+          <td>
             {% if item.isblocked %}
-              <button type="button" class="btn delete-btn btn-success" data-category-id="{{ item.id }}">Unblock</button>
-            {% endif %}
-            {% if not item.isblocked %}
-              <button type="button" class="btn delete-btn btn-danger" data-category-id="{{ item.id }}">Block</button>
+            <a href="{% url 'unblockcategory' item.id %}" class="btn btn-success btn-sm">Unblock</a>
+            {% else %}
+            <a href="{% url 'blockcategory' item.id %}" class="btn btn-warning btn-sm">Block</a>
             {% endif %}
           </td>
           <td class="py-1">

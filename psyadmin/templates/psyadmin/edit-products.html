@@ -3,22 +3,22 @@
 
 
 <form class="p-5" method="POST" action="" enctype="multipart/form-data"> 
-  
+  {% for i in %}
   {% csrf_token %}
           
     <div class="form-group mt-2">
       {% comment %} {% for item in content  %} {% endcomment %}
-      <label for="username">Name</label>
+      <label for="productname">Name</label>
       <input value="{{content.name}}" name="name" type="text" class="form-control" id="username" placeholder="Enter username">
     </div>
     <div class="form-group mt-2">
       <label for="email">Price</label>
-      <input value="{{content.price}}" name="price" type="text" class="form-control" id="email" aria-describedby="emailHelp" placeholder="Enter email">
+      <input value="{{content.price}}" name="price" type="text" class="form-control" id="email" aria-describedby="emailHelp" placeholder=" Price">
       <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
     </div>
     <div class="form-group mt-2">
       <label for="inputPassword">Quantity</label>
-      <input  value="{{content.quantity}}"  name="quantity" type="text" class="form-control" id="inputPassword" placeholder="Password">
+      <input  value="{{content.quantity}}"  name="quantity" type="text" class="form-control" id="inputPassword" placeholder="Quantity">
     </div>
 
 

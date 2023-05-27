@@ -172,6 +172,7 @@ def editproducts(request, someid):
 
             content.save()
             return redirect(products)
+        
         if error:
             return render(request,"psyadmin/edit-products.html",{"content":content,"error":error,"categoryobjs":categoryobjs})
 
@@ -283,6 +284,18 @@ def unblockuser(request,someid):
     obj.isblocked=False
     obj.save()
     return redirect(users)
+
+def blockcategory(request,someid):
+    obj=Category.objects.get(id=someid)
+    obj.isblocked=True
+    obj.save()
+    return redirect(categories)
+
+def unblockcategory(request,someid):
+    obj=Category.objects.get(id=someid)
+    obj.isblocked=False
+    obj.save()
+    return redirect(categories)
 
 
 

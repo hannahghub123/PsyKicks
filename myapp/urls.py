@@ -13,6 +13,12 @@ urlpatterns = [
     path("signout/",views.signout,name="signout"),
     path("product/",views.product,name="product"),
     path("userproduct/",views.userproduct,name="userproduct"),
-    path("pdetails/<int:someid>",views.pdetails,name="pdetails"),
+    
     path("cart/",views.cart,name="cart"),
+    path("usercart/",views.usercart,name="usercart"),
+    path("usercheckout/",views.usercheckout, name="usercheckout"),
+   
 ]
+
+
+# path("pdetails/<int:someid>",views.pdetails,name="pdetails"),

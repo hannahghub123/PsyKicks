@@ -224,5 +224,69 @@ def pdetails(request,someid):
         return redirect(product)
 
 
+from django.core.exceptions import ObjectDoesNotExist
+
 def cart(request):
-    return render(request,"myapp/cart.html")
+    
+    if request.user.is_authenticated:
+        try:
+            customer_instance = customer.objects.get(username=request.session['username'])
+            order = Order.objects.filter(customer=customer_instance, complete=False).first()
+            if order is not None:
+                items = order.orderitem_set.all()
+            else:
+                items = []
+        except ObjectDoesNotExist:
+            items = []
+    else:
+        items = []
+        order = {'get_cart_total':0, 'get_cart_items':0}
+       
+
+    context = {'items': items, 'order': order}
+    return render(request, "myapp/cart.html", context)
+
+def usercart(request):
+    items = []
+    order = None
+    if 'username' in request.session:
+        try:
+            customer_instance = customer.objects.get(username=request.session['username'])
+            order = Order.objects.filter(customer=customer_instance, complete=False).first()
+            if order is not None:
+                items = order.orderitem_set.all()
+            else:
+                items = []
+                print("yesss1")
+        except ObjectDoesNotExist:
+            items = []
+            print("yesss2")
+    else:
+        items = []
+        order = {'get_cart_total':0, 'get_cart_items':0}
+
+    context = {'items': items, 'order': order}
+    return render(request, "myapp/usercart.html", context)
+
+
+def usercheckout(request):
+    items = []
+    order = None
+    if 'username' in request.session:
+        try:
+            customer_instance = customer.objects.get(username=request.session['username'])
+            order = Order.objects.filter(customer=customer_instance, complete=False).first()
+            if order is not None:
+                items = order.orderitem_set.all()
+            else:
+                items = []
+                print("yesss1")
+        except ObjectDoesNotExist:
+            items = []
+            print("yesss2")
+    else:
+        items = []
+        order = {'get_cart_total':0, 'get_cart_items':0}
+
+    context = {'items': items, 'order': order}
+    return render(request,"myapp/checkout.html", context)

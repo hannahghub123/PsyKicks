@@ -3338,6 +3338,12 @@ input.num-product::-webkit-inner-spin-button {
   padding: 10px;
 }
 
+.form-field{
+  width:250px;
+  display: inline-block;
+  padding: 5px;
+}
+
 .cart-row{
   display:flex;
   align-items: stretch;
@@ -3360,4 +3366,13 @@ input.num-product::-webkit-inner-spin-button {
   width:12px;
   cursor:pointer;
   display: block;
+  margin-top: 5px;
+  transition: .1s;
+}
+.chg-quantity::hover{
+  opacity: .6;
+}
+
+.hidden{
+  display: none!important;
 }

@@ -145,24 +145,6 @@ def editproducts(request, someid):
                     os.remove(content.image1.path)
                 content.image1 = request.FILES.get('image1')
 
-            if 'image2' in request.FILES:
-                # Delete the existing image2 file
-                if content.image2:
-                    os.remove(content.image2.path)
-                content.image2 = request.FILES.get('image2')
-
-            if 'image3' in request.FILES:
-                # Delete the existing image3 file
-                if content.image3:
-                    os.remove(content.image3.path)
-                content.image3 = request.FILES.get('image3')
-
-            if 'image4' in request.FILES:
-                # Delete the existing image3 file
-                if content.image4:
-                    os.remove(content.image4.path)
-                content.image4 = request.FILES.get('image4')
-
             # category_name = request.POST.get('category')
 
             # Retrieve the category if it exists, otherwise assign a default category

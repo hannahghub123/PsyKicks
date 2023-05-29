@@ -1,5 +1,5 @@
 import re
-from django.shortcuts import render,redirect
+from django.shortcuts import get_object_or_404, render,redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate 
 from django.core.exceptions import ValidationError
@@ -12,7 +12,7 @@ from . models import *
 def index(request):
      
     datas = Products.objects.all()
-
+    
     context={
         'datas':datas,
     }
@@ -211,17 +211,13 @@ def product(request):
         # else:
         #     return redirect(userindex)
     
-def pdetails(request,someid):
-    if "username" in request.session:
-        #  and customer.objects.get(username=request.session["username"]).isblocked
-        pobj=Products.objects.get(id=someid)
-        print("error there")
 
-        return render(request, "myapp/pdetails.html", {"pobj":pobj})
-    
-    else:
-        print("error here")
-        return redirect(product)
+def pdetails(request, product_id):
+    product = Products.objects.prefetch_related('images').filter(id=product_id).first()
+    images = product.images.all() if product else []
+    products_in_same_category = Products.objects.filter(category=product.category)
+
+    return render(request, 'myapp/product-detail.html', {'product': product, 'images': images, 'products_in_same_category': products_in_same_category})
 
 
 from django.core.exceptions import ObjectDoesNotExist

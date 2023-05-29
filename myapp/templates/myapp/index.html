@@ -774,7 +774,12 @@
 					<!-- Block2 -->
 					<div class="block2">
 						<div class="block2-pic hov-img0">
-							<img src="{{i.imageURL}}" alt="IMG-PRODUCT">
+							
+							{% if i.images.all %}
+								{% with i.images.all|first as img %}
+							<img src="{{ img.image.url }}" alt="IMG-PRODUCT">
+								{% endwith %}
+							{% endif %}
 
 							
 						</div>
@@ -797,7 +802,7 @@
 								</a>
 							</div>
 
-							<a href="pdetails">Quick View</a>
+							<a href="{% url 'pdetails' i.id %}">Quick View</a>
 
 						</div>
 					</div>
@@ -1223,6 +1228,7 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 	</script>
 <!--===============================================================================================-->
 	<script src="{% static 'myapp/js/main.js' %}"></script>
+	<script type="text/javascript" src="{% static 'myapp/js/cart.js' %}"></script>
 
 </body>
 </html>

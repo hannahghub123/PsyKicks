@@ -256,7 +256,11 @@
 				<!-- Block2 -->
 				<div class="block2">
 					<div class="block2-pic hov-img0">
-						<img src="{{i.imageURL}}" alt="IMG-PRODUCT">
+						{% if i.images.all %}
+								{% with i.images.all|first as img %}
+							<img src="{{ img.image.url }}" alt="IMG-PRODUCT">
+								{% endwith %}
+							{% endif %}
 
 						
 					</div>

@@ -63,10 +63,8 @@ def addproducts(request):
         quantity=request.POST.get("quantity")
         category_name=request.POST.get("category")
         description=request.POST.get("description")
-        image1=request.FILES.get("image1")
-        image2=request.FILES.get("image2")
-        image3=request.FILES.get("image3")
-        image4=request.FILES.get("image4")
+        images=request.FILES.getlist("image")
+       
 
         if len(name)<4:
             error="Productname should contain minimum four characters"
@@ -85,17 +83,20 @@ def addproducts(request):
         elif len(description)<4:
             error="Description should contain minimum four characters"
         else:
-            categoryobject=Category.objects.get(name=category_name)
-            productitems = Products.objects.create(
-            name=name,
-            category=categoryobject,
-            description=description,
-            quantity=quantity,
-            price=price,
-            image1=image1,
-            image2=image2,
-            image3=image3,
-            image4=image4)            
+            category_object=Category.objects.get(name=category_name)
+            product_items, created = Products.objects.get_or_create(
+                name=name,
+                category=category_object,
+                defaults={
+                    'description': description,
+                    'quantity': quantity,
+                    'price': price,
+                }
+            )
+
+            for image in images:
+                ProductImage.objects.create(product=product_items, image=image)
+           
             # newproduct=Products(name=name,price=price,quantity=quantity,category=categoryobject,description=description,image1=image1,image2=image2,image3=image3,image4=image4)
             # newproduct.save()
             return redirect(products)

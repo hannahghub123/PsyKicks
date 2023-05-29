@@ -17,8 +17,8 @@ urlpatterns = [
     path("cart/",views.cart,name="cart"),
     path("usercart/",views.usercart,name="usercart"),
     path("usercheckout/",views.usercheckout, name="usercheckout"),
+    path("pdetails/<int:product_id>/",views.pdetails,name="pdetails"),
    
 ]
 
 
-# path("pdetails/<int:someid>",views.pdetails,name="pdetails"),

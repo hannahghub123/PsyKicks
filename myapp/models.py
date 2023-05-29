@@ -18,25 +18,46 @@ class Category(models.Model):
     stock = models.IntegerField(null=True)
     isblocked = models.BooleanField(default=False)
 
+
+
+# class Products(models.Model):
+#     name=models.CharField(max_length=200,unique=True)
+#     price = models.DecimalField(max_digits=10, decimal_places=2)
+#     quantity=models.PositiveIntegerField()
+#     category=models.ForeignKey(Category,on_delete=models.CASCADE)
+#     description=models.TextField(blank=True)
+#     image = models.ImageField(null=True, blank=True)
+
+#     def __str__(self):
+#         return self.name
+    
+#     @property
+#     def imageURL(self):
+#         try:
+#             url = self.image.url
+#         except:
+#             url = ''
+        
+#         return url
+
+
 class Products(models.Model):
-    name=models.CharField(max_length=200,unique=True)
+    name = models.CharField(max_length=200, unique=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    quantity=models.PositiveIntegerField()
-    category=models.ForeignKey(Category,on_delete=models.CASCADE)
-    description=models.TextField(blank=True)
-    image = models.ImageField(null=True, blank=True)
+    quantity = models.PositiveIntegerField()
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    description = models.TextField(blank=True)
 
     def __str__(self):
         return self.name
-    
-    @property
-    def imageURL(self):
-        try:
-            url = self.image.url
-        except:
-            url = ''
-        
-        return url
+
+class ProductImage(models.Model):
+    product = models.ForeignKey(Products, on_delete=models.CASCADE,null=True, blank=True, related_name='images', default=None)
+    image = models.ImageField(upload_to='products/', null=True, blank=True)
+
+    def __str__(self):
+        return self.image.name
+
     
 class Order(models.Model):
     customer = models.ForeignKey(customer, on_delete=models.SET_NULL, null=True, blank=True)

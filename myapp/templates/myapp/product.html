@@ -256,7 +256,11 @@
 				<!-- Block2 -->
 				<div class="block2">
 					<div class="block2-pic hov-img0">
-						<img src="{{i.imageURL}}" alt="IMG-PRODUCT">
+						{% if i.images.all %}
+								{% with i.images.all|first as img %}
+							<img src="{{ img.image.url }}" alt="IMG-PRODUCT">
+								{% endwith %}
+							{% endif %}
 					</div>
 
 					<div class="block2-txt flex-w flex-t p-t-14">
@@ -270,7 +274,7 @@
 							</span>
 							<br><br>
 							<button class="btn btn-outline-primary add-btn" href="#">Add to cart</button>
-							<a class="btn btn-outline-primary" href="#" style="display:inline-block; ">View</a>
+							<a class="btn btn-outline-primary" href={% url 'pdetails' i.id %} style="display:inline-block; ">View</a>
 
 							
 

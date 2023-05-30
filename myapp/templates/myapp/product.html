@@ -273,7 +273,7 @@
 								${{i.price}}
 							</span>
 							<br><br>
-							<button class="btn btn-outline-primary add-btn" href="#">Add to cart</button>
+							<button data-product={{i.id}} data-action="add" class="btn btn-outline-primary add-btn update-cart" href="#">Add to cart</button>
 							<a class="btn btn-outline-primary" href={% url 'pdetails' i.id %} style="display:inline-block; ">View</a>
 
 							

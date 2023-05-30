@@ -35,6 +35,34 @@
 	<link rel="stylesheet" type="text/css" href="{% static 'myapp/css/util.css' %}">
 	<link rel="stylesheet" type="text/css" href="{% static 'myapp/css/main.css' %}">
 <!--===============================================================================================-->
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script src="{% static 'myapp/js/cart.js'%}"></script>
+
+<script type="text/javascript">
+	var user = '{{request.user}}'
+
+	// using jQuery
+function getToken(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie != '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+var csrftoken = getToken('csrftoken');
+
+</script>
+
 </head>
 <body class="animsition">
 	
@@ -393,7 +421,7 @@
 								
 							<div class="layer-slick1 animated visible-false" data-appear="lightSpeedIn" data-delay="800">
 								<h2 class="ltext-201 cl2 p-t-19 p-b-43 respon1">
-									Jackets & Coats
+									Shoes For Different Scenerios
 								</h2>
 							</div>
 								
@@ -543,14 +571,7 @@
 					<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter=".bag">
 						Bag
 					</button>
-{% comment %} 
-					<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter=".shoes">
-						Shoes
-					</button>
 
-					<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter=".watches">
-						Watches
-					</button> {% endcomment %}
 				</div>
 
 				<div class="flex-w flex-c-m m-tb-10">

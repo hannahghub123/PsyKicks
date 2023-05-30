@@ -18,7 +18,10 @@ urlpatterns = [
     path("usercart/",views.usercart,name="usercart"),
     path("usercheckout/",views.usercheckout, name="usercheckout"),
     path("pdetails/<int:product_id>/",views.pdetails,name="pdetails"),
+    path("addtocart/<int:product_id>/",views.addtocart,name="addtocart"),
    
+
 ]
 
+#    path('update_item/', views.updateItem, name="update_item")
 

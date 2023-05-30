@@ -1,8 +1,8 @@
+import json
 import re
-from django.shortcuts import get_object_or_404, render,redirect
+from django.shortcuts import render,redirect
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate 
-from django.core.exceptions import ValidationError
+from django.http import JsonResponse
 from django.contrib import messages
 import requests
 import random
@@ -186,7 +186,7 @@ def otp_verify(request):
         return redirect('otp_login')
     
 def userproduct(request):
-    # if "username" in request.session:
+    if "username" in request.session:
         datas=Products.objects.all()
 
         # if request.method=="POST":
@@ -212,57 +212,91 @@ def product(request):
         #     return redirect(userindex)
     
 
+from decimal import Decimal
+
 def pdetails(request, product_id):
     product = Products.objects.prefetch_related('images').filter(id=product_id).first()
     images = product.images.all() if product else []
     products_in_same_category = Products.objects.filter(category=product.category)
+    
+    return render(request, 'myapp/product-detail.html', {
+        'product': product,
+        'images': images,
+        'products_in_same_category': products_in_same_category
+    })
 
-    return render(request, 'myapp/product-detail.html', {'product': product, 'images': images, 'products_in_same_category': products_in_same_category})
+
+def addtocart(request, product_id):
+    if request.method == "POST":
+        if "username" in request.session:
+            username = request.session["username"]
+            user = customer.objects.get(username=username)
+            product = Products.objects.get(id=product_id)
+            quantity = request.POST.get("quantity")
+            if quantity:
+                quantity = int(quantity)
+                total = Decimal(quantity) * product.price
+                cartobj = Cart(user=user, product=product, total=total, quantity=quantity)
+                cartobj.save()
+                return redirect('usercart')  # Replace 'cart' with the appropriate URL name for your cart view
+        else:
+            return redirect('login')  # Replace 'login' with the appropriate URL name for your login view
+
+    # Handle the case where the request method is not POST or if the username is not in the session
+    return redirect('userproduct')  # Replace 'product_details' with the appropriate URL name for your product details view
+
+
 
 
 from django.core.exceptions import ObjectDoesNotExist
 
-def cart(request):
+# def cart(request):
     
-    if request.user.is_authenticated:
-        try:
-            customer_instance = customer.objects.get(username=request.session['username'])
-            order = Order.objects.filter(customer=customer_instance, complete=False).first()
-            if order is not None:
-                items = order.orderitem_set.all()
-            else:
-                items = []
-        except ObjectDoesNotExist:
-            items = []
-    else:
-        items = []
-        order = {'get_cart_total':0, 'get_cart_items':0}
+#     if request.user.is_authenticated:
+#         try:
+#             customer_instance = customer.objects.get(username=request.session['username'])
+#             order = Order.objects.filter(customer=customer_instance, complete=False).first()
+#             if order is not None:
+#                 items = order.orderitem_set.all()
+#             else:
+#                 items = []
+#         except ObjectDoesNotExist:
+#             items = []
+#     else:
+#         items = []
+#         order = {'get_cart_total':0, 'get_cart_items':0}
        
 
-    context = {'items': items, 'order': order}
-    return render(request, "myapp/cart.html", context)
+#     context = {'items': items, 'order': order}
+#     return render(request, "myapp/cart.html", context)
+
+def cart(request):
+    if "username" in request.session:
+        cartobj = Cart.objects.all()
+
+        datas = {
+            'cartobj' : cartobj
+        }
+
+        return render(request, "myapp/cart.html", datas)
+    
+from django.db.models import Sum
 
 def usercart(request):
-    items = []
-    order = None
-    if 'username' in request.session:
-        try:
-            customer_instance = customer.objects.get(username=request.session['username'])
-            order = Order.objects.filter(customer=customer_instance, complete=False).first()
-            if order is not None:
-                items = order.orderitem_set.all()
-            else:
-                items = []
-                print("yesss1")
-        except ObjectDoesNotExist:
-            items = []
-            print("yesss2")
+    if "username" in request.session:
+        username = request.session["username"]
+        user = customer.objects.get(username=username)
+        cartobj = Cart.objects.filter(user=user)
+        total = cartobj.aggregate(total=Sum('total'))['total']
+        datas = {
+            'cartobj': cartobj,
+            'total': total
+        }
+        return render(request, "myapp/usercart.html", datas)
     else:
-        items = []
-        order = {'get_cart_total':0, 'get_cart_items':0}
+        return render(request, "myapp/userindex.html")
 
-    context = {'items': items, 'order': order}
-    return render(request, "myapp/usercart.html", context)
+
 
 
 def usercheckout(request):
@@ -286,3 +320,28 @@ def usercheckout(request):
 
     context = {'items': items, 'order': order}
     return render(request,"myapp/checkout.html", context)
+
+# def updateItem(request):
+#     data = json.loads(request.body)
+#     productId = data['productId']
+#     action = data['action']
+#     print('Action:', action)
+#     print('Product:', productId)
+
+#     customer = request.user.customer
+#     product = Products.objects.get(id=productId)
+#     order, created = Order.objects.get_or_create(customer=customer)
+
+#     orderItem, created = OrderItem.objects.get_or_create(order=order, product=product)
+
+#     if action =='add':
+#         orderItem.quantity = (orderItem.quantity + 1)
+#     elif action == 'remove':
+#         orderItem.quantity = (orderItem.quantity - 1)
+
+#     orderItem.save()
+
+#     if orderItem.quantity <= 0:
+#         orderItem.delete()
+
+#     return JsonResponse('item added', safe=False)

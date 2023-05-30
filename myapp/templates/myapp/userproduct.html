@@ -1,4 +1,4 @@
-{% extends 'myapp/index.html' %}
+{% extends 'myapp/userindex.html' %}
 {% load static %}
 {% block content %}
 <div class="row mt-5"></div>
@@ -275,8 +275,20 @@
 								{{i.price}}
 							</span>
 
-							<a href={% url 'pdetails' i.id %}>Quick view</a>
+							{% comment %} <a href={% url 'pdetails' i.id %}>Quick view</a> {% endcomment %}
 							
+							<br><br>
+
+
+							<form method="POST" action="{% url 'addtocart' i.id %}">
+								{% csrf_token %}
+								<input type="hidden" name="quantity" value="1"> <!-- Set a default quantity of 1 -->
+								<button data-product="{{ i.id }}" data-action="add" class="btn btn-outline-primary add-btn update-cart" href="#">Add to cart</button>
+							</form>
+							
+
+							
+							<a class="btn btn-outline-primary" href={% url 'pdetails' i.id %} style="display:inline-block; ">View</a>
 							
 
 						</div>
@@ -310,6 +322,13 @@
 <div class="row mt-5"></div>
 {% endblock content %}
 
+
+{% block scripts %}
+    <!-- Include jQuery library -->
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <!-- Add your custom script -->
+    <script src="{% static 'js/cart.js' %}"></script>
+{% endblock %}
 
 
 

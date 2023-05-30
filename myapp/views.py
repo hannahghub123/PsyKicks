@@ -287,10 +287,14 @@ def usercart(request):
         username = request.session["username"]
         user = customer.objects.get(username=username)
         cartobj = Cart.objects.filter(user=user)
+        quantsum=0
+        for item in cartobj:
+            quantsum+=item.quantity
         total = cartobj.aggregate(total=Sum('total'))['total']
         datas = {
             'cartobj': cartobj,
-            'total': total
+            'total': total,
+            "quantsum":quantsum
         }
         return render(request, "myapp/usercart.html", datas)
     else:

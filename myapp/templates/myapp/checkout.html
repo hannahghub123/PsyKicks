@@ -55,17 +55,17 @@
             <hr>
             <h3>Order Summary</h3>
             <hr>
-            {% for item in items %}
+            {% for item in cartobj %}
             <div class="cart-row">
-                <div style="flex:2"><img class="row-image" src="{{item.product.imageURL}}"></div>
+                <div style="flex:2"><img class="row-image" src="{{ item.product.images.first.image.url }}"></div>
                 <div style="flex:2"><p>{{item.product.name}}</p></div>
                 <div style="flex:2"><p>${{item.product.price}}</p></div>
                 <div style="flex:1"><p>x{{item.quantity}}</p></div>
             </div>
             {% endfor %}
 
-            <h5>Items: {{order.get_cart_items}}</h5>
-            <h5>Total: ${{order.get_cart_total|floatformat:2}}</h5>
+            <h5>Items: {{count}}</h5>
+            <h5>Total: ${{totalsum|floatformat:2}}</h5>
         </div>
     </div>
 </div>
@@ -73,5 +73,12 @@
 <div class="row mt-5"></div>
 <div class="row mt-5"></div>
 
+<script type="text/javascript">
+    var shipping = '{{order.shipping}}'
+
+    if (shipping == 'False'){
+        document.getElementById('shipping-info').innerHTML = ''
+    }
+</script>
 
 {% endblock content %}

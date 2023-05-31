@@ -19,12 +19,24 @@ def index(request):
     return render(request,"myapp/index.html",context)
      
 def userindex(request):
-    
-        datas = Products.objects.all()
+        
+        if request.user.is_authenticated:
+            username = request.session["username"]
+            user = customer.objects.get(username=username)
+            order, created = Order.objects.get_or_create(user=user, complete=False)
+            items= order.orderitem_set.all()
+            cartItems = order.get_cart_items
+           
+        else:
+            items=[]
+            order={'get_cart_total':0, 'get_cart_items':0, 'shipping':False}
+            cartItems=order['get_cart_items']
 
+        datas = Products.objects.all()
         context={
-            'datas':datas,
-        }
+                'datas':datas,
+                'cartItems':cartItems,
+            }
         return render(request,"myapp/userindex.html",context)
 
 
@@ -303,49 +315,45 @@ def usercart(request):
 
 
 
+# def usercheckout(request):
+#     items = []
+#     order = None
+#     if 'username' in request.session:
+#         try:
+#             customer_instance = customer.objects.get(username=request.session['username'])
+#             order = Order.objects.filter(customer=customer_instance, complete=False).first()
+#             if order is not None:
+#                 items = order.orderitem_set.all()
+#             else:
+#                 items = []
+#                 print("yesss1")
+#         except ObjectDoesNotExist:
+#             items = []
+#             print("yesss2")
+#     else:
+#         items = []
+#         order = {'get_cart_total':0, 'get_cart_items':0}
+
+#     context = {'items': items, 'order': order}
+#     return render(request,"myapp/checkout.html", context)
+
 def usercheckout(request):
-    items = []
-    order = None
-    if 'username' in request.session:
-        try:
-            customer_instance = customer.objects.get(username=request.session['username'])
-            order = Order.objects.filter(customer=customer_instance, complete=False).first()
-            if order is not None:
-                items = order.orderitem_set.all()
-            else:
-                items = []
-                print("yesss1")
-        except ObjectDoesNotExist:
-            items = []
-            print("yesss2")
-    else:
-        items = []
-        order = {'get_cart_total':0, 'get_cart_items':0}
+    if "username" in request.session:
+        username=request.session["username"]
+        user=customer.objects.get(username=username)
+        cartobj = Cart.objects.filter(user=user)
+        pdtimages=ProductImage.objects.all()
+        
 
-    context = {'items': items, 'order': order}
-    return render(request,"myapp/checkout.html", context)
+        
+        totalsum=0
+        count=0
+        for item in cartobj:
+            totalsum+=item.total
+            count+=1
+        context={"totalsum":totalsum,"count":count,'cartobj':cartobj}
+        return render(request,"myapp/checkout.html", context)
 
-# def updateItem(request):
-#     data = json.loads(request.body)
-#     productId = data['productId']
-#     action = data['action']
-#     print('Action:', action)
-#     print('Product:', productId)
+        
+            
 
-#     customer = request.user.customer
-#     product = Products.objects.get(id=productId)
-#     order, created = Order.objects.get_or_create(customer=customer)
-
-#     orderItem, created = OrderItem.objects.get_or_create(order=order, product=product)
-
-#     if action =='add':
-#         orderItem.quantity = (orderItem.quantity + 1)
-#     elif action == 'remove':
-#         orderItem.quantity = (orderItem.quantity - 1)
-
-#     orderItem.save()
-
-#     if orderItem.quantity <= 0:
-#         orderItem.delete()
-
-#     return JsonResponse('item added', safe=False)

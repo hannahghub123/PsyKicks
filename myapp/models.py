@@ -47,6 +47,7 @@ class Products(models.Model):
     quantity = models.PositiveIntegerField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     description = models.TextField(blank=True)
+    digital = models.BooleanField(default=False, null=True, blank=False)
 
     def __str__(self):
         return self.name
@@ -69,15 +70,24 @@ class Order(models.Model):
         return str(self.id)
     
     @property
+    def shipping(self):
+        shipping = False
+        orderItems = self.orderitem_set.all()
+        for i in orderItems:
+            if i.product.digital == False:
+                shipping = True
+        return shipping
+    
+    @property
     def get_cart_total(self):
-        orderitems = self.orderitem_set.all()
-        total = sum([item.get_total for item in orderitems])
+        orderItems = self.orderitem_set.all()
+        total = sum([item.get_total for item in orderItems])
         return total
     
     @property
     def get_cart_items(self):
-        orderitems = self.orderitem_set.all()
-        total = sum([item.quantity for item in orderitems])
+        orderItems = self.orderitem_set.all()
+        total = sum([item.quantity for item in orderItems])
         return total
     
 

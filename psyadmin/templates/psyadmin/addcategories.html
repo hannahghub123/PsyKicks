@@ -4,6 +4,13 @@
 
 
 {% block content %}
+<style>
+  .error-message {
+      color: red;
+      font-size:12px;
+    }
+</style>
+
 <div class="container" style="width:fit-content">
 <form class="p-5" method="POST" action="" enctype="multipart/form-data"> {% csrf_token %}
           
@@ -11,10 +18,10 @@
       {% comment %} {% for item in content  %} {% endcomment %}
       <label for="username">Category Name</label>
       <input value="{{obj.name}}" name="name" type="text" class="form-control" id="username" placeholder="Enter Category">
+      <span class="error-message">{{error_message.name}}</span>
 
-
-      <label for="username">Stock</label>
-      <input value="{{obj.stock}}" name="quantity" type="number" class="form-control" id="username" placeholder="Enter stock">
+      {% comment %} <label for="username">Stock</label>
+      <input value="{{obj.stock}}" name="quantity" type="number" class="form-control" id="username" placeholder="Enter stock"> {% endcomment %}
 
 
     </div>

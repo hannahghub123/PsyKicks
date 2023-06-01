@@ -181,26 +181,30 @@ def categories(request):
 
 def addcategories(request):
     datas = Category.objects.all()
-    error = None
+    error_message = {}
 
     if request.method == "POST":
         name = request.POST.get("name")
         stock = request.POST.get("stock")
 
         if len(name) == 0:
-            error = "Category name field can't be empty"
+            error_message["name"] = "Category name field can't be empty"
         elif not name.isalpha():
-            error = "Category name can't contain numbers"
+            error_message["name"] = "Category name can't contain numbers"
         elif len(name) < 4:
-            error = "Category name should have at least 4 letters"
+            error_message["name"] = "Category name should have at least 4 letters"
         elif len(name) > 20:
-            error = "Category name can have at most 20 letters"
+            error_message["name"] = "Category name can have at most 20 letters"
+        elif Category.objects.filter(name=name).exists():
+            error_message["name"] = "Category already exists!!"
+        if error_message:
+            return render(request, "psyadmin/addcategories.html", {"datas": datas, "error_message": error_message})
         else:
             category = Category(name=name, stock=stock)
             category.save()
             return redirect('categories')
 
-    return render(request, "psyadmin/addcategories.html", {"datas": datas, "error": error})
+    return render(request, "psyadmin/addcategories.html", {"datas": datas, "error_message": error_message})
 
 
 

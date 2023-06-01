@@ -2,6 +2,13 @@
 {% load static %}
 {% block content %}
 
+<style>
+    .error-message {
+        color: red;
+        font-size:12px;
+      }
+</style>
+
 <div class="row mt-5"></div>
 <div class="row mt-5"></div>
 <div class="row mt-3"></div>
@@ -9,44 +16,64 @@
 
 <div class="row">
     <div class="col-lg-6">
+       
         <div class="box-element" id="form-wrapper" style="margin-left:10px">
-            <form id="form">
+          
+            <form id="form" method="POST">
+                {% csrf_token %}
                 <div id="user-info">
                     <div class="form-field">
-                        <input required class="form-control" type="text" name="name" placeholder="Name">
+                        <input required class="form-control" type="text" name="username" placeholder="Name" value={{username}}>
+                        <span class="error-message">{{error_message.username}}</span>
                     </div>
                     <div class="form-field">
-                        <input required class="form-control" type="email" name="email" placeholder="Email">
+                        <input required class="form-control" type="email" name="email" placeholder="Email" value={{email}}>
+                        <span class="error-message">{{error_message.email}}</span>
                     </div>
                 </div>
                 <div id="shipping-info">
                     <hr>
                     <p>Shipping Information:</p>
                     <div class="form-field">
-                        <input class="form-control" type="text" name="address" placeholder="Address">
+                        <input class="form-control" type="text" name="address" placeholder="Address" required value={{address}}>
+                        <span class="error-message">{{error_message.address}}</span>
                     </div>
                     <div class="form-field">
-                        <input class="form-control" type="text" name="city" placeholder="City">
+                        <input class="form-control" type="text" name="city" placeholder="City" required value={{city}}>
+                        <span class="error-message">{{error_message.city}}</span>
                     </div>
                     <div class="form-field">
-                        <input class="form-control" type="text" name="state" placeholder="State">
+                        <input class="form-control" type="text" name="state" placeholder="State" required value={{state}}>
+                        <span class="error-message">{{error_message.state}}</span>
                     </div>
                     <div class="form-field">
-                        <input class="form-control" type="text" name="zipcode" placeholder="Zipcode">
+                        <input class="form-control" type="text" name="zipcode" placeholder="Zipcode" required value={{zipcode}}>
+                        <span class="error-message">{{error_message.zipcode}}</span>
                     </div>
                     <div class="form-field">
-                        <input class="form-control" type="text" name="country" placeholder="Country">
+                        <input class="form-control" type="text" name="country" placeholder="Country" required value={{country}}>
+                        <span class="error-message">{{error_message.country}}</span>
                     </div>
                 </div>
                 
-                <hr>
-                <input id="form-button" class="btn btn-success btn-block" type="submit" value="Continue">
-            </form>
+              
+                {% comment %} <input id="form-button" class="btn btn-success btn-block" type="submit" value="Continue"> {% endcomment %}
+           
         </div>
         <br>
-        <div class="box-element hidden" id="form-wrapper">
-            <small>Paypal Options</small>
-        </div>
+        
+            <div class="box-element" id="payment-info" style="text-align:center">
+                <small>Payment Methods</small>
+                <select class="custom-select" required>
+                    <option selected>Cash on Delivery </option>
+                    {% comment %} <option value="1">Cash on Delivery</option>
+                    <option value="2">Pay Online</option> {% endcomment %}
+                
+                </select>
+                
+                <input id="form-button" class="btn btn-success " type="submit" value="Confirm" action="{% url 'ordercomplete'%}">
+            </div>
+        </form>
     </div>
 
     <div class="col-lg-6">
@@ -73,12 +100,5 @@
 <div class="row mt-5"></div>
 <div class="row mt-5"></div>
 
-<script type="text/javascript">
-    var shipping = '{{order.shipping}}'
-
-    if (shipping == 'False'){
-        document.getElementById('shipping-info').innerHTML = ''
-    }
-</script>
 
 {% endblock content %}

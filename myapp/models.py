@@ -9,6 +9,8 @@ class customer(models.Model):
     phonenumber = models.IntegerField()
     password = models.CharField(max_length=200)
     isblocked = models.BooleanField(default=False)
+    is_verified = models.BooleanField(default=False)
+    verification_code = models.CharField(max_length=6,  default='') 
 
     def __str__(self):
         return self.name
@@ -59,9 +61,16 @@ class ProductImage(models.Model):
     def __str__(self):
         return self.image.name
 
+class Cart(models.Model):
+    user = models.ForeignKey(customer, on_delete=models.CASCADE)
+    product = models.ForeignKey(Products, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+    total = models.DecimalField(max_digits=10, decimal_places=2)
+
     
 class Order(models.Model):
     customer = models.ForeignKey(customer, on_delete=models.SET_NULL, null=True, blank=True)
+    cart=models.ForeignKey(Cart, on_delete=models.SET_NULL, null=True, blank=True)
     date_ordered = models.DateTimeField(auto_now_add=True)
     complete = models.BooleanField(default=False)
     transaction_id = models.CharField(max_length=100, null=True)
@@ -69,14 +78,7 @@ class Order(models.Model):
     def __str__(self):
         return str(self.id)
     
-    @property
-    def shipping(self):
-        shipping = False
-        orderItems = self.orderitem_set.all()
-        for i in orderItems:
-            if i.product.digital == False:
-                shipping = True
-        return shipping
+    
     
     @property
     def get_cart_total(self):
@@ -108,6 +110,7 @@ class ShippingAddress(models.Model):
     order = models.ForeignKey(Order, on_delete=models.SET_NULL, blank=True, null=True)
     address = models.CharField(max_length=100, null=True)
     city = models.CharField(max_length=100, null=True)
+    country = models.CharField(max_length=100, null=True)
     state = models.CharField(max_length=100, null=True)
     zipcode = models.CharField(max_length=100, null=True)
     date_added = models.DateTimeField(auto_now_add=True)
@@ -116,11 +119,6 @@ class ShippingAddress(models.Model):
         return self.address
     
 
-class Cart(models.Model):
-    user = models.ForeignKey(customer, on_delete=models.CASCADE)
-    product = models.ForeignKey(Products, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField()
-    total = models.DecimalField(max_digits=10, decimal_places=2)
 
 
 

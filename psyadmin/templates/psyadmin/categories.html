@@ -9,6 +9,7 @@
       <button class="btn add-category-btn btn-primary mt-2">Add Category</button>
     </a>
   </div>
+  <hr>
   <div class="row">
     <table class="table table-striped">
       <thead>
@@ -17,7 +18,7 @@
           <th>Stock</th>
           <th>Edit</th>
           <th>Block</th>
-          <th>Delete</th>
+          {% comment %} <th>Delete</th> {% endcomment %}
         </tr>
       </thead>
       <tbody>
@@ -37,12 +38,12 @@
             <a href="{% url 'blockcategory' item.id %}" class="btn btn-warning btn-sm">Block</a>
             {% endif %}
           </td>
-          <td class="py-1">
+          {% comment %} <td class="py-1">
             <form method="POST" action="{% url 'deletecategories' item.id %}">
               {% csrf_token %}
               <button class="btn delete-btn btn-danger" type="submit">Delete</button>
             </form>
-          </td>
+          </td> {% endcomment %}
         </tr>
         {% endfor %}
       </tbody>

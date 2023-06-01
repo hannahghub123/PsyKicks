@@ -1,8 +1,5 @@
-import json
 import re
 from django.shortcuts import render,redirect
-from django.contrib.auth.models import User
-from django.http import JsonResponse
 from django.contrib import messages
 import requests
 import random
@@ -19,25 +16,31 @@ def index(request):
     return render(request,"myapp/index.html",context)
      
 def userindex(request):
-        
-        if request.user.is_authenticated:
-            username = request.session["username"]
-            user = customer.objects.get(username=username)
-            order, created = Order.objects.get_or_create(user=user, complete=False)
-            items= order.orderitem_set.all()
-            cartItems = order.get_cart_items
-           
-        else:
-            items=[]
-            order={'get_cart_total':0, 'get_cart_items':0, 'shipping':False}
-            cartItems=order['get_cart_items']
+    if request.user.is_authenticated:
+        username = request.session["username"]
+        user = customer.objects.get(username=username)
 
-        datas = Products.objects.all()
-        context={
-                'datas':datas,
-                'cartItems':cartItems,
-            }
-        return render(request,"myapp/userindex.html",context)
+        orders = Order.objects.filter(customer=user, complete=False)
+        if orders.exists():
+            order = orders.first()
+        else:
+            order = Order.objects.create(customer=user, complete=False)
+
+        items = order.orderitem_set.all()
+        cartItems = order.get_cart_items
+    else:
+        items = []
+        order = {'get_cart_total': 0, 'get_cart_items': 0, 'shipping': False}
+        cartItems = order['get_cart_items']
+
+    datas = Products.objects.all()
+    context = {
+        'datas': datas,
+        'cartItems': cartItems,
+    }
+
+    return render(request, "myapp/userindex.html", context)
+
 
 
 def signout(request):
@@ -56,11 +59,18 @@ def login(request):
     if request.method =='POST':
         username = request.POST['username']
         password = request.POST['password']
+
+        user = customer.objects.filter(username=username).first()
+        if user is not None and user.isblocked:
+            error_message["alert"] = "Your account is blocked. Please contact the administrator."
+            return render(request, "myapp/login.html", {'error_message': error_message})
+
+
     
         my_user = customer.objects.filter(username=username , password=password).count()
         print(my_user,"^^^^^^^^^^^^^^^^^^^^^^")
 
-        if my_user ==1: 
+        if my_user ==1 :
             request.session['username'] = username
             return redirect('userindex')
            
@@ -76,9 +86,9 @@ def login(request):
             
     return render(request,"myapp/login.html")
 
+
 def signup(request):
     if request.method == "POST":
-
         username = request.POST['username']
         name = request.POST['name']
         email = request.POST['email']
@@ -94,11 +104,8 @@ def signup(request):
         if len(username) > 10:
             error_message["username"] = "Username must be under 10 characters." 
 
-        if not username.isalnum():
-            error_message["username"] = "Username should be alphanumeric"
-
-        if not name.isalpha():
-            error_message["name"] = "Name must be alphabetic."  
+        if not all(c.isalnum() or c.isspace() for c in name):
+            error_message["name"] = "Invalid string entry" 
 
         if customer.objects.filter(email=email):
             error_message["email"] = "Email already registered. Please try a different email."
@@ -109,29 +116,32 @@ def signup(request):
         if int(phonenumber)<0:
             error_message["phonenumber"] = "phone number should be positive numbers"
         
-        if phonenumber==0:
+        if phonenumber=="0":
             error_message["phonenumber"] = "invalid phone number"
 
-        if phonenumber.isalpha()==True:
+        if phonenumber[0]=="0":
+            error_message["phonenumber"] = "Invalid format for phone number"
+
+        if phonenumber.isalpha():
             error_message["phonenumber"] = "Phone number cannot be alphabetic"
         
         if password != confirm_password:
-            error_message["password"] = "Passwords doesnot match."
-            phonenumber = request.POST['phonenumber']
+            error_message["password"] = "Passwords do not match."
 
-        if len(password) <3:
+        if len(password) < 3:
             error_message["password"] = "Your password is too weak"
 
         if error_message:
-            return render(request, "myapp/signup.html", {'error_message': error_message,"username":username,"name":name,"email":email,"phonenumber":phonenumber,"password":password,"confirm_password":confirm_password})
+            return render(request, "myapp/signup.html", {'error_message': error_message, "username": username, "name": name, "email": email, "phonenumber": phonenumber, "password": password, "confirm_password": confirm_password})
 
-        myuser = customer(username =username,name=name,email= email, phonenumber=phonenumber, password=password,isblocked=False)
-    
+       
+        myuser = customer(username=username, name=name, email=email, phonenumber=phonenumber, password=password, isblocked=False)
         myuser.save()
 
         return redirect('login')
 
     return render(request, "myapp/signup.html")
+
 
 def generate_otp():
     return str(random.randint(1000, 9999))
@@ -258,30 +268,6 @@ def addtocart(request, product_id):
     return redirect('userproduct')  # Replace 'product_details' with the appropriate URL name for your product details view
 
 
-
-
-from django.core.exceptions import ObjectDoesNotExist
-
-# def cart(request):
-    
-#     if request.user.is_authenticated:
-#         try:
-#             customer_instance = customer.objects.get(username=request.session['username'])
-#             order = Order.objects.filter(customer=customer_instance, complete=False).first()
-#             if order is not None:
-#                 items = order.orderitem_set.all()
-#             else:
-#                 items = []
-#         except ObjectDoesNotExist:
-#             items = []
-#     else:
-#         items = []
-#         order = {'get_cart_total':0, 'get_cart_items':0}
-       
-
-#     context = {'items': items, 'order': order}
-#     return render(request, "myapp/cart.html", context)
-
 def cart(request):
     if "username" in request.session:
         cartobj = Cart.objects.all()
@@ -312,48 +298,101 @@ def usercart(request):
     else:
         return render(request, "myapp/userindex.html")
 
-
-
-
-# def usercheckout(request):
-#     items = []
-#     order = None
-#     if 'username' in request.session:
-#         try:
-#             customer_instance = customer.objects.get(username=request.session['username'])
-#             order = Order.objects.filter(customer=customer_instance, complete=False).first()
-#             if order is not None:
-#                 items = order.orderitem_set.all()
-#             else:
-#                 items = []
-#                 print("yesss1")
-#         except ObjectDoesNotExist:
-#             items = []
-#             print("yesss2")
-#     else:
-#         items = []
-#         order = {'get_cart_total':0, 'get_cart_items':0}
-
-#     context = {'items': items, 'order': order}
-#     return render(request,"myapp/checkout.html", context)
-
 def usercheckout(request):
-    if "username" in request.session:
-        username=request.session["username"]
-        user=customer.objects.get(username=username)
+    if customer.objects.get(username=request.session["username"]).isblocked:
+        return redirect(login)
+
+    if "username" in request.session :
+        username = request.session["username"]
+        user = customer.objects.get(username=username)
         cartobj = Cart.objects.filter(user=user)
-        pdtimages=ProductImage.objects.all()
-        
-
-        
-        totalsum=0
-        count=0
+        totalsum = 0
+        count = 0
         for item in cartobj:
-            totalsum+=item.total
-            count+=1
-        context={"totalsum":totalsum,"count":count,'cartobj':cartobj}
-        return render(request,"myapp/checkout.html", context)
-
+            totalsum += item.total
+            count += 1
+        context = {"totalsum": totalsum, "count": count, 'cartobj': cartobj}
         
+
+    if request.method == "POST":
+              
             
+                error_message = {}
+                username = request.POST.get("username")
+                email = request.POST.get("email")
+                address = request.POST.get("address")
+                city = request.POST.get("city")
+                state = request.POST.get("state")
+                zipcode = request.POST.get("zipcode")
+                country = request.POST.get("country")
+
+                if len(username) > 10:
+                    error_message["username"] = "Username must be under 10 characters."
+                if not username.isalpha():
+                    error_message["username"] = "Name must be alphabetic."
+                if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
+                    error_message["email"] = "Invalid Email"
+
+                if not country.isalpha():
+                    error_message["country"] = "Country name should be alphabetic"
+                if len(country) < 5:
+                    error_message["country"] = "Country name should contain a minimum of five characters"
+                if not state.isalpha():
+                    error_message["state"] = "State name can't have numbers"
+                if len(state) < 3:
+                    error_message["state"] = "State name should contain a minimum of three characters"
+                if not city.isalpha():
+                    error_message["city"] = "City name should be alphabetic"
+                if len(city) < 5:
+                    error_message["city"] = "District name should contain a minimum of five characters"
+                if len(address) < 5:
+                    error_message["address"] = "House name should contain a minimum of three characters"
+                if not address.isalpha():
+                    error_message["address"] = "Address should be alphabetic"
+                if zipcode.isalpha():
+                    error_message["zipcode"] = "Zipcode can't have alphabets"
+                if len(zipcode) != 6:
+                    error_message["zipcode"] = "Invalid Zipcode"
+                
+                if error_message:
+                    datas = {
+                        "error_message": error_message,
+                        "username": username,
+                        "email": email,
+                        "country": country,
+                        "address": address,
+                        "city": city,
+                        "state": state,
+                        "zipcode": zipcode,
+                        "totalsum": totalsum, "count": count, 'cartobj': cartobj
+                    }
+                    
+                    return render(request, "myapp/checkout.html", datas)
+
+                address_details = ShippingAddress(customer=user, address=address, city=city, state=state,
+                                                zipcode=zipcode, country=country)
+                address_details.save()
+                # requser=Cart.objects.get(user=user)
+                # orderobj=Order(cart=cartobj,customer=requser,complete=True,transaction_id="ddd")
+                # orderobj.save()
+                    
+                    
+
+
+                
+
+
+
+                
+                
+                return redirect('ordercomplete')  # Redirect to the appropriate view or provide correct arguments
+
+                
+    return render(request, "myapp/checkout.html", context)
+
+
+  
+def ordercomplete(request):
+    return render(request,"myapp/ordercomplete.html") 
+
 

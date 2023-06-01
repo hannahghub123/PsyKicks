@@ -284,11 +284,12 @@
 								{% csrf_token %}
 								<input type="hidden" name="quantity" value="1"> <!-- Set a default quantity of 1 -->
 								<button data-product="{{ i.id }}" data-action="add" class="btn btn-outline-primary add-btn update-cart" href="#">Add to cart</button>
+								<a class="btn btn-outline-primary" href={% url 'pdetails' i.id %} style="display:inline-block; ">View</a>
 							</form>
 							
 
 							
-							<a class="btn btn-outline-primary" href={% url 'pdetails' i.id %} style="display:inline-block; ">View</a>
+							
 							
 
 						</div>

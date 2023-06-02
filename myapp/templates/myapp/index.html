@@ -34,6 +34,10 @@
 <!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="{% static 'myapp/css/util.css' %}">
 	<link rel="stylesheet" type="text/css" href="{% static 'myapp/css/main.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'myapp/magiczoom/magiczoom.css' %}">
+
+	
+	
 <!--===============================================================================================-->
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -113,11 +117,7 @@ var csrftoken = getToken('csrftoken');
 							<li class="active-menu">
 								<a href="{% url 'index' %}">Home</a>
 
-								<ul class="sub-menu">
-									<li><a href="index.html">Homepage 1</a></li>
-									<li><a href="home-02.html">Homepage 2</a></li>
-									<li><a href="home-03.html">Homepage 3</a></li>
-								</ul>
+					
 							</li>
 
 							<li>
@@ -129,7 +129,7 @@ var csrftoken = getToken('csrftoken');
 							</li>
 
 							<li>
-								<a href="blog.html">Blog</a>
+								<a href={% url 'blog' %}>Blog</a>
 							</li>
 
 							<li>
@@ -256,7 +256,7 @@ var csrftoken = getToken('csrftoken');
 				</li>
 
 				<li>
-					<a href="blog.html">Blog</a>
+					<a href={% url 'blog' %}>Blog</a>
 				</li>
 
 				<li>
@@ -1149,6 +1149,8 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 	</div>
 
 <!--===============================================================================================-->	
+	<script src="{% static 'myapp/magiczoom/magiczoom.js' %}"></script>
+
 	<script src="{% static 'myapp/vendor/jquery/jquery-3.2.1.min.js' %}"></script>
 <!--===============================================================================================-->
 	<script src="{% static 'myapp/vendor/animsition/js/animsition.min.js' %}"></script>

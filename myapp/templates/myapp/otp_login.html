@@ -115,6 +115,10 @@
       <h1>OTP Login</h1>
       <form method="POST">
         {% csrf_token %}
+        <div class="signup_link">
+          <a href="{% url 'login' %}">Back to Login Page?</a>
+        </div>
+        <br>
         <div class="txt_field">Enter Phone-number
           <input id="phonenumber" name="phonenumber" type="tel" pattern="[0-9]{10}" required>
           <span class="error-message">{{error_message}}</span>

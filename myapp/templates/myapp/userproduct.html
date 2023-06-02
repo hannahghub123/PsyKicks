@@ -258,7 +258,9 @@
 					<div class="block2-pic hov-img0">
 						{% if i.images.all %}
 								{% with i.images.all|first as img %}
+								<a href={% url 'pdetails' i.id %}>
 							<img src="{{ img.image.url }}" alt="IMG-PRODUCT">
+								</a>
 								{% endwith %}
 							{% endif %}
 
@@ -280,9 +282,9 @@
 							<br><br>
 
 
-							<form method="POST" action="{% url 'addtocart' i.id %}">
+							 <form method="POST" action="{% url 'addtocart' i.id %}"> 
 								{% csrf_token %}
-								<input type="hidden" name="quantity" value="1"> <!-- Set a default quantity of 1 -->
+								 <input type="number" name="quantity" value=""> <!-- Set a default quantity of 1 -->
 								<button data-product="{{ i.id }}" data-action="add" class="btn btn-outline-primary add-btn update-cart" href="#">Add to cart</button>
 								<a class="btn btn-outline-primary" href={% url 'pdetails' i.id %} style="display:inline-block; ">View</a>
 							</form>

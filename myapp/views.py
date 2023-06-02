@@ -1,6 +1,8 @@
+from django.core.exceptions import ObjectDoesNotExist
 import re
 from django.shortcuts import render,redirect
 from django.contrib import messages
+from decimal import Decimal
 import requests
 import random
 from . models import *
@@ -135,8 +137,9 @@ def signup(request):
             return render(request, "myapp/signup.html", {'error_message': error_message, "username": username, "name": name, "email": email, "phonenumber": phonenumber, "password": password, "confirm_password": confirm_password})
 
        
-        myuser = customer(username=username, name=name, email=email, phonenumber=phonenumber, password=password, isblocked=False)
+        myuser = customer(username=username, name=name, email=email, phonenumber=phonenumber, password=password, isblocked=False, is_verified=False)
         myuser.save()
+
 
         return redirect('login')
 
@@ -161,12 +164,17 @@ def otp_login(request):
     
     if request.method == 'POST':
         phonenumber = request.POST.get('phonenumber')
-        
-        user = customer.objects.get(phonenumber=phonenumber)
-        
+
+        try:
+            user = customer.objects.get(phonenumber=phonenumber)
+        except ObjectDoesNotExist:
+            error_message = "User not found. Please register or enter a valid phone number."
+            return render(request, 'myapp/otp_login.html', {"error_message": error_message})
+
         if user.isblocked:
             error_message = "Your account has been blocked"
-            return redirect('login')
+            return render(request, 'myapp/otp_login.html', {"error_message": error_message})
+        
         phonenumber = request.POST.get('phonenumber')
         otp = generate_otp()
         
@@ -233,8 +241,9 @@ def product(request):
         # else:
         #     return redirect(userindex)
     
+def blog(request):
+    return render(request,"myapp/blog.html")
 
-from decimal import Decimal
 
 def pdetails(request, product_id):
     product = Products.objects.prefetch_related('images').filter(id=product_id).first()
@@ -251,10 +260,21 @@ def pdetails(request, product_id):
 def addtocart(request, product_id):
     if request.method == "POST":
         if "username" in request.session:
+            
             username = request.session["username"]
             user = customer.objects.get(username=username)
+        
             product = Products.objects.get(id=product_id)
             quantity = request.POST.get("quantity")
+
+
+            cartobjs=Cart.objects.filter(user=user)
+            for item in cartobjs:
+                if item.product==product:
+                    item.quantity+=int(quantity)
+                    item.save()
+                    return redirect('usercart') 
+
             if quantity:
                 quantity = int(quantity)
                 total = Decimal(quantity) * product.price

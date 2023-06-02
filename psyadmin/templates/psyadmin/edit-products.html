@@ -20,6 +20,14 @@
       <input  value="{{content.quantity}}"  name="quantity" type="text" class="form-control" id="inputPassword" placeholder="Quantity">
     </div>
 
+    <div>
+      <label>Images</label>
+      <br>
+      {% for image in content.images.all %}
+          <img src="{{ image.url }}" alt="{{ content.name }}" width="100" height="100">
+      {% endfor %}
+  </div>
+
 
     <div class="form-group mt-2">
 
@@ -32,10 +40,7 @@
       </select> 
 
 
-
-      {% comment %} <label for="inputConfirmPassword">Category </label>
-      <input  value="{{content.category.name}}"   name="category" type="text" class="form-control" id="inputConfirmPassword" placeholder="Confirm Password"> {% endcomment %}
-    </div>
+</div>
 
 
 

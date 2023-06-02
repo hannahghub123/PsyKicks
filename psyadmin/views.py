@@ -28,8 +28,8 @@ def admin_login(request):
             request.session['adminuser'] = adminuser
             return redirect('admin_index')
         else:
-            error = 'Invalid username or password!'
-            return render(request,"psyadmin/admin-login.html",{"error":error})
+            error_message = 'Invalid username or password!'
+            return render(request,"psyadmin/admin-login.html",{"error_message":error_message})
 
     
     return render(request, 'psyadmin/admin-login.html')
@@ -109,6 +109,7 @@ def addproducts(request):
 def editproducts(request, someid):
     content=Products.objects.get(id=someid)
     categoryobjs=Category.objects.all()
+    
 
     if request.method == 'POST':
         name=request.POST.get("name")
@@ -138,13 +139,16 @@ def editproducts(request, someid):
             content.description = request.POST.get('description')
             content.price = request.POST.get('price')
             content.quantity=quantity
+            images = content.images.all()
 
             # Check if new images are provided
-            if 'image1' in request.FILES:
+            if 'image' in request.FILES:
                 # Delete the existing image1 file
-                if content.image1:
-                    os.remove(content.image1.path)
-                content.image1 = request.FILES.get('image1')
+                if content.image:
+                    os.remove(content.image.path)
+                content.image = request.FILES.get('image')
+
+
 
             # category_name = request.POST.get('category')
 
@@ -157,7 +161,7 @@ def editproducts(request, someid):
             return redirect(products)
         
         if error:
-            return render(request,"psyadmin/edit-products.html",{"content":content,"error":error,"categoryobjs":categoryobjs})
+            return render(request,"psyadmin/edit-products.html",{"content":content,"error":error,"categoryobjs":categoryobjs, "images": images})
 
     return render(request,"psyadmin/edit-products.html",{"content":content,"categoryobjs":categoryobjs})
 
@@ -283,6 +287,14 @@ def unblockcategory(request,someid):
     obj.isblocked=False
     obj.save()
     return redirect(categories)
+
+def orders(request):
+    if "adminuser" in request.session:
+        datas=Order.objects.all()
+
+        return render(request,"psyadmin/orders.html",{"datas":datas})
+    else:
+        return redirect(admin_login)
 
 
 

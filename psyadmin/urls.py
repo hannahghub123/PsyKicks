@@ -21,6 +21,7 @@ urlpatterns = [
   path("blockcategory/<int:someid>",views.blockcategory,name="blockcategory"),
   path("unblockcategory/<int:someid>",views.unblockcategory,name="unblockcategory"),
 
+  path("orders/",views.orders, name="orders")
 ]
 
   

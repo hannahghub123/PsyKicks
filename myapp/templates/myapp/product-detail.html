@@ -145,7 +145,7 @@
 								{% for img in images %}
 									<div class="item-slick3" data-thumb="{{ img.image.url }}">
 										<div class="wrap-pic-w pos-relative">
-										<a class="zoom-image" href="{{ img.image.url }}" data-zoom-image="{{ img.image.url }}">
+										<a class="MagicZoom" href="{{ img.image.url }}" data-zoom-image="{{ img.image.url }}">
 											<img src="{{ img.image.url }}" alt="IMG-PRODUCT">
 										</a>
 										</div>
@@ -759,12 +759,13 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 								<div class="flex-w flex-r-m p-b-10">
 									<div class="size-204 flex-w flex-m respon6-next">
 										<div class="wrap-num-product flex-w m-r-20 m-tb-10">
-											<form method="POST" action="">
+											<form method="POST" action={% url 'addtocart' product.id %}>
+												{% csrf_token %}
 											<div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m">
 												<i class="fs-16 zmdi zmdi-minus"></i>
 											</div>
 
-											<input class="mtext-104 cl3 txt-center num-product" type="number" name="quantity" value="1">
+											<input class="mtext-104 cl3 txt-center num-product" type="number" name="quantity" value="">
 
 											<div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m">
 												<i class="fs-16 zmdi zmdi-plus"></i>
@@ -772,7 +773,7 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 										</div>
 
 										
-											{% csrf_token %}
+											
 											<input type="hidden" name="product_id" value="{{ product.id }}">
 											<button type="submit" class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04 js-addcart-detail">
 											  Add to cart

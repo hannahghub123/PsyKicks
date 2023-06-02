@@ -14,6 +14,8 @@ urlpatterns = [
     path("signout/",views.signout,name="signout"),
     path("product/",views.product,name="product"),
     path("userproduct/",views.userproduct,name="userproduct"),
+
+    path("blog/",views.blog,name="blog"),
     
     path("cart/",views.cart,name="cart"),
     path("usercart/",views.usercart,name="usercart"),

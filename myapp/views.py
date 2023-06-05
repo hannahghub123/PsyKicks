@@ -246,6 +246,22 @@ def blog(request):
 
 
 def pdetails(request, product_id):
+    if request.method=="POST":
+        quantity=request.POST.get("quantity")
+        pdtobj=Products.objects.get(id=product_id)
+        print(quantity,"HHHHHHHHHHHHHHH")
+        username=request.session.get("username")
+        user=customer.objects.get(username=username)
+        total=Decimal(quantity)*pdtobj.price
+        
+        if pdtobj in Cart.user:
+            quantity += quantity
+            cartobj=Cart.user(quantity=quantity,total=total)
+            cartobj.save()
+        else:
+            cartobj=Cart(user=user,product=pdtobj,quantity=quantity,total=total)
+            cartobj.save()
+
     product = Products.objects.prefetch_related('images').filter(id=product_id).first()
     images = product.images.all() if product else []
     products_in_same_category = Products.objects.filter(category=product.category)
@@ -256,6 +272,35 @@ def pdetails(request, product_id):
         'products_in_same_category': products_in_same_category
     })
 
+def user_pdetails(request, product_id):
+    if request.method == "POST":
+        quantity = int(request.POST.get("quantity"))
+        pdtobj = Products.objects.get(id=product_id)
+        username = request.session.get("username")
+        user = customer.objects.get(username=username)
+        total = Decimal(quantity) * pdtobj.price
+        
+        try:
+            # Check if the product is already in the cart
+            cartobj = Cart.objects.get(user=user, product=pdtobj)
+            cartobj.quantity += quantity  # Increase the quantity
+            cartobj.total += total  # Update the total
+            cartobj.save()
+        except Cart.DoesNotExist:
+            cartobj = Cart(user=user, product=pdtobj, quantity=quantity, total=total)
+            cartobj.save()
+
+    product = Products.objects.prefetch_related('images').filter(id=product_id).first()
+    images = product.images.all() if product else []
+    products_in_same_category = Products.objects.filter(category=product.category)
+    
+    return render(request, 'myapp/user-pdetails.html', {
+        'product': product,
+        'images': images,
+        'products_in_same_category': products_in_same_category
+    })
+
+
 
 def addtocart(request, product_id):
     if request.method == "POST":
@@ -265,22 +310,23 @@ def addtocart(request, product_id):
             user = customer.objects.get(username=username)
         
             product = Products.objects.get(id=product_id)
-            quantity = request.POST.get("quantity")
+            # quantity = request.POST.get("quantity")
 
 
             cartobjs=Cart.objects.filter(user=user)
+            # for item in cartobjs:
+            #     if item.product==product:
+            #         item.quantity+=int(quantity)
+            #         item.save()
+            #         return redirect('usercart') 
+
+            
             for item in cartobjs:
                 if item.product==product:
-                    item.quantity+=int(quantity)
-                    item.save()
-                    return redirect('usercart') 
-
-            if quantity:
-                quantity = int(quantity)
-                total = Decimal(quantity) * product.price
-                cartobj = Cart(user=user, product=product, total=total, quantity=quantity)
-                cartobj.save()
-                return redirect('usercart')  # Replace 'cart' with the appropriate URL name for your cart view
+                    return redirect ('userproduct')
+            cartobj = Cart(user=user, product=product,total=product.price, quantity=1)
+            cartobj.save()
+            return redirect('usercart')  # Replace 'cart' with the appropriate URL name for your cart view
         else:
             return redirect('login')  # Replace 'login' with the appropriate URL name for your login view
 
@@ -367,8 +413,8 @@ def usercheckout(request):
                     error_message["city"] = "District name should contain a minimum of five characters"
                 if len(address) < 5:
                     error_message["address"] = "House name should contain a minimum of three characters"
-                if not address.isalpha():
-                    error_message["address"] = "Address should be alphabetic"
+                if not all(c.isalnum() or c.isspace() for c in username):
+                    error_message["name"] = "Invalid string entry" 
                 if zipcode.isalpha():
                     error_message["zipcode"] = "Zipcode can't have alphabets"
                 if len(zipcode) != 6:
@@ -391,6 +437,12 @@ def usercheckout(request):
 
                 address_details = ShippingAddress(customer=user, address=address, city=city, state=state,
                                                 zipcode=zipcode, country=country)
+                for item in cartobj:
+
+                    orderobj = Order(customer=user,cart=item,complete=True)
+                    orderobj.save()
+                
+
                 address_details.save()
                 # requser=Cart.objects.get(user=user)
                 # orderobj=Order(cart=cartobj,customer=requser,complete=True,transaction_id="ddd")

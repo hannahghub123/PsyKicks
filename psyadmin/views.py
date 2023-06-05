@@ -290,11 +290,15 @@ def unblockcategory(request,someid):
 
 def orders(request):
     if "adminuser" in request.session:
-        datas=Order.objects.all()
+        datas = Order.objects.select_related('cart__product').prefetch_related('cart__product__images').all()
+
+       
 
         return render(request,"psyadmin/orders.html",{"datas":datas})
     else:
         return redirect(admin_login)
+
+
 
 
 

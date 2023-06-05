@@ -53,23 +53,26 @@
             <td>{{ item.cart.quantity }}</td>
            
             <td>
-              {% if item.images.all %}
-                <img src="{{ item.images.first.image.url }}" alt="{{ item.name }}" width="100" height="100">
-          
-              {% endif %}
+                {% if item.cart.product.images.all %}
+            <img class="row-image" src="{{ item.cart.product.images.first.image.url }}" alt="Product Image">
+          {% else %}
+            <span>No Image Available</span>
+          {% endif %}
           </td>
           
-          <td>{{ item.complete}}</td>
             <td>
-              {% comment %} <a href={% url 'order_details'   %}> {% endcomment %}
+        {% if item.complete %}
+            <a href="#" class="btn btn-success btn-sm" onclick="updateOrderStatus('{{ item.id }}', false)">Complete</a>
+        {% else %}
+            <a href="#" class="btn btn-warning btn-sm" onclick="updateOrderStatus('{{ item.id }}', true)">Incomplete</a>
+        {% endif %}
+    </td>
+            <td>
+            
                 <button class="btn edit-btn btn-warning">Cancel Order</button>
-              </a>
+            
             </td>
-            {% comment %} <td>
-              <a href={% url 'deleteproducts' item.id  %}>
-                <button class="btn edit-btn btn-danger">Delete</button>
-              </a>
-            </td> {% endcomment %}
+           
           </tr>
           {% endfor %}
         </tbody>
@@ -81,30 +84,6 @@
 
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js" integrity="sha512-pumBsjNRGGqkPzKHndZMaAG+bir374sORyzM3uulLV14lN5LyykqNk8eEeUlUkB3U0M4FApyaHraT65ihJhDpQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script>
-
-  $(".delete-btn").click(function() {
-    var someid = $(this).data("category-id");
-    if (confirm("Are you sure you want to delete this product?")) {
-        
-        $.ajax({
-            url: "/storeadmin/deleteproducts/" + someid + "/",
-            type: "DELETE",
-            beforeSend: function(xhr) {
-              xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
-            },
-            success: function(response) {
-                alert(response.message);
-                location.reload();
-            },
-            error: function(xhr, status, error) {
-                alert("Error: " + error);
-            }
-        });
-    }
-});  
-</script>
 
 {% comment %} <div class="mt-5"></div>
 <div class="mt-5"></div>

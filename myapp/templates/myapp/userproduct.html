@@ -14,25 +14,12 @@
 					All Products
 				</button>
 
-				<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter=".women">
-					Women
-				</button>
+				{% for gender in gender %}
+					<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter=".women">
+						<a href="?gender={{gender.name}}">{{gender.name}}</a>
+					</button>
+				{% endfor %}
 
-				<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter=".men">
-					Men
-				</button>
-
-				{% comment %} <button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter=".bag">
-					Bag
-				</button>
-
-				<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter=".shoes">
-					Shoes
-				</button>
-
-				<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter=".watches">
-					Watches
-				</button> {% endcomment %}
 			</div>
 
 			<div class="flex-w flex-c-m m-tb-10">
@@ -151,99 +138,79 @@
 						</ul>
 					</div>
 
+					
 					<div class="filter-col3 p-r-15 p-b-27">
+						<div class="mtext-102 cl2 p-b-15">
+							Size
+						</div>
+
+						<ul>
+							{% for size in size %}
+							<li class="p-b-6">
+								<a href="?size={{size.name}}" class="filter-link stext-106 trans-04">
+									{{size.name}}
+								</a>
+							</li>
+							{% endfor %}
+						
+						</ul>
+					</div>
+
+					<div class="filter-col3 p-r-10 p-b-27">
 						<div class="mtext-102 cl2 p-b-15">
 							Color
 						</div>
 
 						<ul>
+							{% for color in colors %}
 							<li class="p-b-6">
-								<span class="fs-15 lh-12 m-r-6" style="color: #222;">
+								<span class="fs-15 lh-12 m-r-6" style="color:{{color.name}}">
 									<i class="zmdi zmdi-circle"></i>
 								</span>
 
-								<a href="#" class="filter-link stext-106 trans-04">
-									Black
+								<a href="?color={{color.name}}" class="filter-link stext-106 trans-04">
+									{{color.name}}
 								</a>
 							</li>
+							{% endfor %}
+						</ul>
+					</div>
 
+					<div class="filter-col3 p-r-10 p-b-27">
+						<div class="mtext-102 cl2 p-b-15">
+							Brands
+						</div>
+
+						<ul>
+							<a href="?brand=" class="filter-link stext-106 trans-04">
+								All Brands
+							</a>
+							{% for brand in brand %}
 							<li class="p-b-6">
-								<span class="fs-15 lh-12 m-r-6" style="color: #4272d7;">
-									<i class="zmdi zmdi-circle"></i>
-								</span>
-
-								<a href="#" class="filter-link stext-106 trans-04 filter-link-active">
-									Blue
+								<a href="?brand={{ brand.name }}" class="filter-link stext-106 trans-04">
+									{{brand.name}}
 								</a>
 							</li>
-
-							<li class="p-b-6">
-								<span class="fs-15 lh-12 m-r-6" style="color: #b3b3b3;">
-									<i class="zmdi zmdi-circle"></i>
-								</span>
-
-								<a href="#" class="filter-link stext-106 trans-04">
-									Grey
-								</a>
-							</li>
-
-							<li class="p-b-6">
-								<span class="fs-15 lh-12 m-r-6" style="color: #00ad5f;">
-									<i class="zmdi zmdi-circle"></i>
-								</span>
-
-								<a href="#" class="filter-link stext-106 trans-04">
-									Green
-								</a>
-							</li>
-
-							<li class="p-b-6">
-								<span class="fs-15 lh-12 m-r-6" style="color: #fa4251;">
-									<i class="zmdi zmdi-circle"></i>
-								</span>
-
-								<a href="#" class="filter-link stext-106 trans-04">
-									Red
-								</a>
-							</li>
-
-							<li class="p-b-6">
-								<span class="fs-15 lh-12 m-r-6" style="color: #aaa;">
-									<i class="zmdi zmdi-circle-o"></i>
-								</span>
-
-								<a href="#" class="filter-link stext-106 trans-04">
-									White
-								</a>
-							</li>
+							{% endfor %}
 						</ul>
 					</div>
 
 					<div class="filter-col4 p-b-27">
 						<div class="mtext-102 cl2 p-b-15">
-							Tags
+							Types
 						</div>
 
 						<div class="flex-w p-t-4 m-r--5">
-							<a href="#" class="flex-c-m stext-107 cl6 size-301 bor7 p-lr-15 hov-tag1 trans-04 m-r-5 m-b-5">
-								Fashion
-							</a>
 
-							<a href="#" class="flex-c-m stext-107 cl6 size-301 bor7 p-lr-15 hov-tag1 trans-04 m-r-5 m-b-5">
-								Lifestyle
+							<a href="?category=" class="flex-c-m stext-107 cl6 size-301 bor7 p-lr-15 hov-tag1 trans-04 m-r-5 m-b-5">
+								All Types
 							</a>
+							{% for category in category.all %}
+							<a href="?category={{ category.name }}" class="flex-c-m stext-107 cl6 size-301 bor7 p-lr-15 hov-tag1 trans-04 m-r-5 m-b-5">
+								{{category.name}}
+							</a>
+							{% endfor %}
 
-							<a href="#" class="flex-c-m stext-107 cl6 size-301 bor7 p-lr-15 hov-tag1 trans-04 m-r-5 m-b-5">
-								Denim
-							</a>
-
-							<a href="#" class="flex-c-m stext-107 cl6 size-301 bor7 p-lr-15 hov-tag1 trans-04 m-r-5 m-b-5">
-								Streetstyle
-							</a>
-
-							<a href="#" class="flex-c-m stext-107 cl6 size-301 bor7 p-lr-15 hov-tag1 trans-04 m-r-5 m-b-5">
-								Crafts
-							</a>
 						</div>
 					</div>
 				</div>

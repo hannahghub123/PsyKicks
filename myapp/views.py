@@ -36,12 +36,46 @@ def userindex(request):
         cartItems = order['get_cart_items']
 
     datas = Products.objects.all()
+    colors = Color.objects.all()
+    category = Category.objects.all()
+    brand = Brand.objects.all()
+    size = Size.objects.all()
+    gender = Gender.objects.all()
+    
+    selected_category = request.GET.get('category')  # Get the selected category from the query parameters
+    selected_brand = request.GET.get('brand')
+    selected_color = request.GET.get('color')
+    selected_size = request.GET.get('size')
+    selected_gender = request.GET.get('gender')
+
+    if selected_category:
+        datas = datas.filter(category__name=selected_category)
+    if selected_brand:
+        datas = datas.filter(brand__name=selected_brand)
+    if selected_color:
+        datas = datas.filter(color__name=selected_color)
+    if selected_size:
+        datas = datas.filter(size__name=selected_size)
+    if selected_gender:
+        datas = datas.filter(gender__name=selected_gender)
+
+
+
     context = {
         'datas': datas,
         'cartItems': cartItems,
+        'colors': colors,
+        'category': category,
+        'brand': brand,
+        'size': size,
+        'gender':gender,
+        'selected_category': selected_category,
+        'selected_brand':selected_brand,
+        'selected_color':selected_color,
     }
 
     return render(request, "myapp/userindex.html", context)
+
 
 
 
@@ -218,13 +252,47 @@ def otp_verify(request):
 def userproduct(request):
     if "username" in request.session:
         datas=Products.objects.all()
+        category = Category.objects.all()
+        colors = Color.objects.all()
+        brand = Brand.objects.all()
+        size = Size.objects.all()
+        gender = Gender.objects.all()
 
         # if request.method=="POST":
         #     enteredproduct=request.POST.get("searchitem")
         #     datas=Products.objects.filter(name=enteredproduct)
         #     return render(request,"myapp/userproduct.html",{"datas":datas})
         
-        return render(request,"myapp/userproduct.html",{"datas":datas})
+    selected_category = request.GET.get('category')  # Get the selected category from the query parameters
+    selected_brand = request.GET.get('brand')
+    selected_color = request.GET.get('color')
+    selected_size = request.GET.get('size')
+    selected_gender = request.GET.get('gender')
+
+    if selected_category:
+        datas = datas.filter(category__name=selected_category)
+    if selected_brand:
+        datas = datas.filter(brand__name=selected_brand)
+    if selected_color:
+        datas = datas.filter(color__name=selected_color)
+    if selected_size:
+        datas = datas.filter(size__name=selected_size)
+    if selected_gender:
+        datas = datas.filter(gender__name=selected_gender)
+
+    context = {
+        'datas': datas,
+        'category':category,
+        'colors':colors,
+        'brand':brand,
+        'size':size,
+        'gender':gender,
+        'selected_category': selected_category,
+        'selected_brand':selected_brand,
+        'selected_color':selected_color,
+    }
+
+    return render(request,"myapp/userproduct.html",context)
     # else:
         # return redirect(userindex)
     

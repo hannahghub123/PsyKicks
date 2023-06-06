@@ -56,6 +56,7 @@ def products(request):
     
 
 def addproducts(request):
+    error_message = {}
     categoryobjs=Category.objects.all()
     if request.method=="POST":
         name=request.POST.get("name")
@@ -67,21 +68,24 @@ def addproducts(request):
        
 
         if len(name)<4:
-            error="Productname should contain minimum four characters"
+            error_message["name"]="Productname should contain minimum four characters"
         elif len(name)>20:
-            error="Username can only have upto 20 characters"
-        elif name.isalpha()==False:
-            error="Productname can't have numbers" 
+            error_message["name"]="Username can only have upto 20 characters"
+        if not all(c.isalnum() or c.isspace() for c in name):
+            error_message["name"] = "Invalid string entry" 
+        elif Products.objects.filter(name__iexact=name.replace(" ", "")).exists():
+            error_message["name"] = "A product with a similar name already exists"
+
         elif price.isalpha()==True:
-            error="Price can't have letters"
+            error_message["price"]="Price can't have letters"
         elif quantity.isalpha()==True:
-            error="Quantity can't have letters"
+            error_message["quantity"]="Quantity can't have letters"
         elif category_name.isalpha==False:
-            error="Category field can't have numbers"
+            error_message["category"]="Category field can't have numbers"
         elif category_name not in Category.objects.filter(name=category_name).values_list('name', flat=True):
-            error="Invalid category"
+            error_message["category"]="Invalid category"
         elif len(description)<4:
-            error="Description should contain minimum four characters"
+            error_message["description"]="Description should contain minimum four characters"
         else:
             category_object=Category.objects.get(name=category_name)
             product_items, created = Products.objects.get_or_create(
@@ -97,11 +101,10 @@ def addproducts(request):
             for image in images:
                 ProductImage.objects.create(product=product_items, image=image)
            
-            # newproduct=Products(name=name,price=price,quantity=quantity,category=categoryobject,description=description,image1=image1,image2=image2,image3=image3,image4=image4)
-            # newproduct.save()
+           
             return redirect(products)
-        if error:
-            return render(request,"psyadmin/add-products.html",{"error":error,"categoryobjs":categoryobjs})
+        if error_message:
+            return render(request,"psyadmin/add-products.html",{"error_message":error_message,"categoryobjs":categoryobjs})
 
     return render(request,"psyadmin/add-products.html",{"categoryobjs":categoryobjs})
     
@@ -109,6 +112,8 @@ def addproducts(request):
 def editproducts(request, someid):
     content=Products.objects.get(id=someid)
     categoryobjs=Category.objects.all()
+    image = ProductImage.objects.filter(product=content)
+    print("DDDDDDDDD")
     
 
     if request.method == 'POST':
@@ -139,14 +144,14 @@ def editproducts(request, someid):
             content.description = request.POST.get('description')
             content.price = request.POST.get('price')
             content.quantity=quantity
-            images = content.images.all()
+            image = ProductImage.objects.filter(product=content)
 
-            # Check if new images are provided
-            if 'image' in request.FILES:
-                # Delete the existing image1 file
-                if content.image:
-                    os.remove(content.image.path)
-                content.image = request.FILES.get('image')
+            # # Check if new images are provided
+            # if 'image' in request.FILES:
+            #     # Delete the existing image1 file
+            #     if content.image:
+            #         os.remove(content.image.path)
+            #     content.image = request.FILES.get('image')
 
 
 
@@ -161,9 +166,9 @@ def editproducts(request, someid):
             return redirect(products)
         
         if error:
-            return render(request,"psyadmin/edit-products.html",{"content":content,"error":error,"categoryobjs":categoryobjs, "images": images})
+            return render(request,"psyadmin/edit-products.html",{"content":content,"error":error,"categoryobjs":categoryobjs, "image": image})
 
-    return render(request,"psyadmin/edit-products.html",{"content":content,"categoryobjs":categoryobjs})
+    return render(request,"psyadmin/edit-products.html",{"content":content,"categoryobjs":categoryobjs,"image": image})
 
 def deleteproducts(request, someid):
     content = get_object_or_404(Products, id=someid)
@@ -199,8 +204,9 @@ def addcategories(request):
             error_message["name"] = "Category name should have at least 4 letters"
         elif len(name) > 20:
             error_message["name"] = "Category name can have at most 20 letters"
-        elif Category.objects.filter(name=name).exists():
+        elif Category.objects.filter(name__iexact=name.replace(" ", "")).exists():
             error_message["name"] = "Category already exists!!"
+
         if error_message:
             return render(request, "psyadmin/addcategories.html", {"datas": datas, "error_message": error_message})
         else:

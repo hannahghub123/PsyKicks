@@ -8,6 +8,10 @@ class productAdmin(admin.ModelAdmin):
 
 admin.site.register(customer)
 admin.site.register(Category)
+admin.site.register(Color)
+admin.site.register(Size)
+admin.site.register(Brand)
+admin.site.register(Gender)
 admin.site.register(Products)
 admin.site.register(Order)
 admin.site.register(OrderItem)

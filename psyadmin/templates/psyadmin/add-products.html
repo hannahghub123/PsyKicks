@@ -1,6 +1,15 @@
 {% extends 'psyadmin/admin-index.html' %}
 {% block content %}
 
+<style>
+
+  .error-message {
+    color: red;
+    font-size:12px;
+  }
+
+</style>
+
 
 <div class="container" style="width:fit-content">
 <form class="p-5" method="POST" action="" enctype="multipart/form-data"> 
@@ -11,15 +20,17 @@
       {% comment %} {% for item in content  %} {% endcomment %}
       <label for="username">Name</label>
       <input value="" name="name" type="text" class="form-control" id="username" placeholder="Enter productname">
+      <span class="error-message">{{error_message.name}}</span>
     </div>
     <div class="form-group mt-2">
       <label for="email">Price</label>
-      <input value="" name="price" type="text" class="form-control" id="email" aria-describedby="emailHelp" placeholder="Enter price">
-      {% comment %} <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> {% endcomment %}
-    </div>
+      <input value="" name="price" type="number" class="form-control" id="price" placeholder="Enter price">
+      <span class="error-message">{{error_message.price}}</span></div>
+    
     <div class="form-group mt-2">
       <label for="inputPassword">Quantity</label>
-      <input  value=""  name="quantity" type="text" class="form-control" id="inputPassword" placeholder="Enter Quantity">
+      <input  value=""  name="quantity" type="number" class="form-control"  placeholder="Enter Quantity">
+      <span class="error-message">{{error_message.quantity}}</span>
     </div>
     <div class="form-group mt-2">
       <label for="inputPassword">Category</label>
@@ -29,13 +40,15 @@
         <option value="{{item.name}}">{{item.name}}<br><br> </option>
         {% endif %}
         {% endfor %}
-  
+        <span class="error-message">{{error_message.category}}</span>
       </select> 
 
     </div>
+ 
     <div class="form-group mt-2">
         <label for="inputConfirmPassword">Description </label>
         <input value=""  name="description" type="text" class="form-control" id="inputConfirmPassword" placeholder="Description">
+        <span class="error-message">{{error_message.description}}</span>
     </div>
 
 
@@ -45,28 +58,10 @@
       
       <input type="file" class="form-control" id="image" name="image" accept="image/*" multiple >
     </div>
-    {% comment %} <div class="mb-3">
-      <label for="image2">Image 2</label>
-      
-      <input type="file" class="form-control" id="image2" name="image2" accept="image/*">
-    </div> {% endcomment %}
-    {% comment %} <div class="mb-3">
-      <label for="image3">Image 3</label>
-      <div class="card-img-top">
-        
-      </div>
-      <input type="file" class="form-control mt-3" id="image3" name="image3" accept="image/*">
-    </div> {% endcomment %}
-    {% comment %} <div class="mb-3">
-      <label for="image4">Image 4</label>
-      <div class="card-img-top">
-        
-      </div>
-      <input type="file" class="form-control mt-3" id="image4" name="image4" accept="image/*">
-    </div> {% endcomment %}
+    
 
     <button type="submit" class="btn btn-primary mt-4">Add Product</button>
-    <h5>{{successmsg}} {{error}}</h5>
+   
   
   </div>
   </form>

@@ -4,7 +4,7 @@
 	
  {% block content %}
 
-<div class="container" style="width:fit-content; position:relative; margin-right:70px">
+<div class="container" style="width:fit-content; position:relative; margin-right:5px ">
 	<div class="container mt-5" >
   		<div class="col-md-10">
     		<form action="" method="POST">
@@ -26,13 +26,15 @@
       </a>
     </div>
     
-	<div class="row">
+	<div class="row" style="width:fit-content">
       <table class="table table-striped">
         <thead>
           <tr>
             <th>Name</th>
-            <th>Price</th>
-            <th>Quantity</th>
+            <th>Brand</th>
+            <th>Color</th>
+            <th>Size</th>
+         
             <th>Category</th>
             <th>Description</th>
             <th>Image</th>
@@ -45,8 +47,20 @@
             
           <tr>
             <td>{{ item.name }}</td>
-            <td>{{ item.price }}</td>
-            <td>{{ item.quantity }}</td>
+            <td>{{ item.brand.name }}</td>
+            <td>
+              {% for color in item.color.all %}
+                {{ color.name }}
+                {% if not forloop.last %}, {% endif %}
+              {% endfor %}
+            </td>
+            <td>
+              {% for size in item.size.all %}
+                {{ size.name }}
+                {% if not forloop.last %}, {% endif %}
+              {% endfor %}
+            </td>
+            
             <td>{{ item.category.name }}</td>
             <td>{{ item.description }}</td>
             <td>

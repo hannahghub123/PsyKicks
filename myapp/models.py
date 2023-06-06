@@ -17,39 +17,50 @@ class customer(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=200, unique=True)
-    stock = models.IntegerField(null=True)
     isblocked = models.BooleanField(default=False)
 
+    def __str__(self):
+        return self.name
 
+class Color(models.Model):
+    name = models.CharField(max_length=200, unique=True)
+    isblocked = models.BooleanField(default=False)
 
-# class Products(models.Model):
-#     name=models.CharField(max_length=200,unique=True)
-#     price = models.DecimalField(max_digits=10, decimal_places=2)
-#     quantity=models.PositiveIntegerField()
-#     category=models.ForeignKey(Category,on_delete=models.CASCADE)
-#     description=models.TextField(blank=True)
-#     image = models.ImageField(null=True, blank=True)
-
-#     def __str__(self):
-#         return self.name
+    def __str__(self):
+        return self.name
     
-#     @property
-#     def imageURL(self):
-#         try:
-#             url = self.image.url
-#         except:
-#             url = ''
-        
-#         return url
+class Gender(models.Model):
+    name = models.CharField(max_length=200, unique=True)
+    isblocked = models.BooleanField(default=False)
 
+    def __str__(self):
+        return self.name
+
+class Size(models.Model):
+    name = models.CharField(max_length=200, unique=True)
+    isblocked = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
+
+class Brand(models.Model):
+    name = models.CharField(max_length=200, unique=True)
+    isblocked = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
 
 class Products(models.Model):
     name = models.CharField(max_length=200, unique=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.PositiveIntegerField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    color = models.ManyToManyField(Color)
+    gender = models.ForeignKey(Gender, on_delete=models.CASCADE, default=None, null=True)
+    size = models.ManyToManyField(Size)
+    brand = models.ForeignKey(Brand, on_delete=models.CASCADE, default=None, null=True)
     description = models.TextField(blank=True)
-    digital = models.BooleanField(default=False, null=True, blank=False)
+    digital = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name

@@ -4,7 +4,7 @@
 	
  {% block content %}
 
-<div class="container" style="width:fit-content; position:relative; margin-right:5px ">
+<div class="container" style="width:fit-content; position:relative; margin-right:2px ">
 	<div class="container mt-5" >
   		<div class="col-md-10">
     		<form action="" method="POST">
@@ -71,14 +71,14 @@
           </td>
             <td>
               <a href={% url 'editproducts' item.id  %}>
-                <button class="btn edit-btn btn-warning">Edit</button>
+                <button class="btn edit-btn btn-warning p-2">Edit</button>
               </a>
             </td>
-            {% comment %} <td>
-              <a href={% url 'deleteproducts' item.id  %}>
-                <button class="btn edit-btn btn-danger">Delete</button>
+            <td>
+              <a href="{% url 'deleteproducts' item.id %}" onclick="return confirmDelete();">
+                <button class="btn edit-btn btn-danger p-2">Delete</button>
               </a>
-            </td> {% endcomment %}
+            </td>
           </tr>
           {% endfor %}
         </tbody>
@@ -114,6 +114,12 @@
     }
 });  
 </script>
+<script>
+  function confirmDelete() {
+    return confirm('Are you sure you want to delete this product?');
+  }
+</script>
+
 
 {% comment %} <div class="mt-5"></div>
 <div class="mt-5"></div>

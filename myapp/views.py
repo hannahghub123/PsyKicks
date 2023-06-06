@@ -359,7 +359,7 @@ def user_pdetails(request, product_id):
             cartobj.save()
 
     product = Products.objects.prefetch_related('images').filter(id=product_id).first()
-    images = product.images.all() if product else []
+    images = product.images.all() 
     products_in_same_category = Products.objects.filter(category=product.category)
     
     return render(request, 'myapp/user-pdetails.html', {

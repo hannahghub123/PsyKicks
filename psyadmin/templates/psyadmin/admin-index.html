@@ -36,7 +36,7 @@
   <div class="container-scroller m-0" >
     <!-- partial:partials/_navbar.html -->
     <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
-      <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center" >
+      <div class="text-center navbar-brand-wrapper " >
         <a class="navbar-brand brand-logo d-flex align-items-center justify-content-center" href="#" style="font-weight:bold" >PSYKICKS</a>
       </div>
       <div class="navbar-menu-wrapper d-flex align-items-stretch">
@@ -46,7 +46,7 @@
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle nav-profile" id="profileDropdown" href="#" data-toggle="dropdown" aria-expanded="false">
               <img src="{% static 'psyadmin/images/admin.jpeg'%}" alt="image">
-              <span class="d-none d-lg-inline">PsyKicks Admin</span>
+              <span class="d-none d-lg-inline" >PsyKicks Admin</span>
             </a>
            
           </li>
@@ -62,7 +62,7 @@
 
 
   
-    <nav class="sidebar sidebar-offcanvas" id="sidebar">
+    <nav class="sidebar sidebar-offcanvas" id="sidebar " style="width:220px">
       <ul class="nav">
         <li class="nav-item">
           <a class="nav-link" href={% url 'admin_index' %}>

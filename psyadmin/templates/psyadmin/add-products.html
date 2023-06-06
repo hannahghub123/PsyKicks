@@ -11,30 +11,30 @@
 </style>
 
 
-<div class="container" style="width:fit-content">
+<div class="container" style=" display:flex; justify-content:center; align-items:center">
 <form class="p-5" method="POST" action="" enctype="multipart/form-data"> 
   
   {% csrf_token %}
           
     <div class="form-group mt-2">
       {% comment %} {% for item in content  %} {% endcomment %}
-      <label for="username">Name</label>
-      <input value="" name="name" type="text" class="form-control" id="username" placeholder="Enter productname">
+      <label for="product-name">Name</label>
+      <input value="{{item.name}}" name="name" type="text" class="form-control" id="username" placeholder="Enter productname" required>
       <span class="error-message">{{error_message.name}}</span>
     </div>
     <div class="form-group mt-2">
-      <label for="email">Price</label>
-      <input value="" name="price" type="number" class="form-control" id="price" placeholder="Enter price">
+      <label for="price">Price</label>
+      <input value="{{item.price}}" name="price" type="number" class="form-control" id="price" placeholder="Enter price" required>
       <span class="error-message">{{error_message.price}}</span></div>
     
     <div class="form-group mt-2">
-      <label for="inputPassword">Quantity</label>
-      <input  value=""  name="quantity" type="number" class="form-control"  placeholder="Enter Quantity">
+      <label for="quantity">Quantity</label>
+      <input  value="{{item.quantity}}"  name="quantity" type="number" class="form-control"  placeholder="Enter Quantity" required>
       <span class="error-message">{{error_message.quantity}}</span>
     </div>
     <div class="form-group mt-2">
-      <label for="inputPassword">Category</label>
-      <select id="dropdown" name="category">
+      <label for="category">Category</label>
+      <select id="dropdown" name="category" required>
         {% for item in categoryobjs  %}
         {% if not item.isblocked %}
         <option value="{{item.name}}">{{item.name}}<br><br> </option>
@@ -44,10 +44,64 @@
       </select> 
 
     </div>
+
+    <div class="form-group mt-2">
+      <label for="color">Color</label>
+      <select id="dropdown" name="color" multiple required>
+        {% for item in colors  %}
+       
+        <option value="{{item.name}}">{{item.name}}<br><br> </option>
+      
+        {% endfor %}
+        <span class="error-message">{{error_message.color}}</span>
+      </select> 
+
+    </div>
+
+    
+    <div class="form-group mt-2">
+      <label for="size">Size</label>
+      <select id="dropdown" name="size" multiple required>
+        {% for item in sizes  %}
+       
+        <option value="{{item.name}}">{{item.name}}<br><br> </option>
+      
+        {% endfor %}
+        <span class="error-message">{{error_message.size}}</span>
+      </select> 
+
+    </div>
+
+    <div class="form-group mt-2">
+      <label for="brand">Brand</label>
+      <select id="dropdown" name="brand" required>
+        {% for item in brands  %}
+        {% if not item.isblocked %}
+        <option value="{{item.name}}">{{item.name}}<br><br> </option>
+        {% endif %}
+        {% endfor %}
+        <span class="error-message">{{error_message.brand}}</span>
+      </select> 
+
+    </div>
+
+     
+    <div class="form-group mt-2">
+      <label for="gender">Gender</label>
+      <select id="dropdown" name="gender" required>
+        {% for item in genders  %}
+       
+        <option value="{{item.name}}">{{item.name}}<br><br> </option>
+      
+        {% endfor %}
+        <span class="error-message">{{error_message.gender}}</span>
+      </select> 
+
+    </div>
  
     <div class="form-group mt-2">
-        <label for="inputConfirmPassword">Description </label>
-        <input value=""  name="description" type="text" class="form-control" id="inputConfirmPassword" placeholder="Description">
+        <label for="description">Description </label>
+        <input value="{{item.description}}"  name="description" type="text" class="form-control" placeholder="Description">
         <span class="error-message">{{error_message.description}}</span>
     </div>
 
@@ -56,7 +110,7 @@
     <div class="mb-3">
       <label for="image">Image </label>
       
-      <input type="file" class="form-control" id="image" name="image" accept="image/*" multiple >
+      <input type="file" class="form-control" id="image" name="image" accept="image/*" multiple required>
     </div>
     
 

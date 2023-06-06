@@ -1,32 +1,66 @@
 {% extends 'psyadmin/admin-index.html' %}
 {% block content %}
 
+<style>
+  {% block style%}
+  .error-message{
+    color:red;
+    font-size:12px;
+  }
+  {% endblock style %}
+</style>
+
 <div class="container" style="width:fit-content; display:flex; ">
 <form class="p-5" method="POST" action="" enctype="multipart/form-data"> 
  
   {% csrf_token %}
           
     <div class="form-group mt-2">
-      {% comment %} {% for item in content  %} {% endcomment %}
       <label for="productname">Name</label>
-      <input value="{{content.name}}" name="name" type="text" class="form-control" id="username" placeholder="Enter username">
+      <input value="{{content.name}}" name="name" type="text"  placeholder="Product Name">
     </div>
+    
+    <span class="error-message">{{error_message.name}}</span>
+
     <div class="form-group mt-2">
-      <label for="email">Price</label>
-      <input value="{{content.price}}" name="price" type="text" class="form-control" id="email" aria-describedby="emailHelp" placeholder=" Price">
+      <label for="price">Price</label>
+      <input value="{{content.price}}" name="price" type="number"  placeholder=" Price">
+  
     </div>
+    <span class="error-message">{{error_message.price}}</span>
+
     <div class="form-group mt-2">
       <label for="inputPassword">Quantity</label>
-      <input  value="{{content.quantity}}"  name="quantity" type="text" class="form-control" id="inputPassword" placeholder="Quantity">
+      <input  value="{{content.quantity}}"  name="quantity" type="number"  placeholder="Quantity">
+  
     </div>
+
+    <span class="error-message">{{error_message.quantity}}</span>
 
     <div>
       <label>Images</label>
       <br>
-      {% for i in image %}
-          <img src="{{ i.url }}" alt="{{ content.name }}" width="100" height="100">
+      {% for image in images %}
+      <img src="{{ image.image.url }}" alt="{{ content.name }}" width="100" height="100">
       {% endfor %}
+    
   </div>
+  
+  <div class="form-group mt-2">
+      <label for="newImages">Add New Images</label>
+      <input type="file" name="image" multiple>
+  </div>
+  
+  <div class="form-group mt-2">
+      <label for="deleteImages">Delete Images</label>
+      <select name="delete_images" multiple>
+          {% for image in images %}
+          <option value="{{ image.id }}">{{ image.image.name }}</option>
+          {% endfor %}
+      </select>
+     
+  </div>
+  
 
 
     <div class="form-group mt-2">
@@ -38,9 +72,55 @@
         {% endfor %}
   
       </select> 
-
-
 </div>
+
+<span class="error-message">{{error_message.category}}</span>
+
+<div class="form-group mt-2">
+  <label for="color">Color</label>
+  <select name="color" multiple>
+      {% for item in colors %}
+      <option value="{{ item.id }}" {% if item in content.color.all %}selected{% endif %}>{{ item.name }}</option>
+      {% endfor %}
+  </select>
+</div>
+
+<span class="error-message">{{error_message.color}}</span>
+
+<div class="form-group mt-2">
+  <label for="gender">Gender</label>
+  <select name="gender">
+      <option value="" {% if not content.gender %}selected{% endif %}>None</option>
+      {% for item in genders %}
+      <option value="{{ item.id }}" {% if item == content.gender %}selected{% endif %}>{{ item.name }}</option>
+      {% endfor %}
+  </select>
+</div>
+<span class="error-message">{{error_message.gender}}</span>
+
+<div class="form-group mt-2">
+  <label for="size">Size</label>
+  <select name="size" multiple>
+      {% for item in sizes %}
+      <option value="{{ item.id }}" {% if item in content.size.all %}selected{% endif %}>{{ item.name }}</option>
+      {% endfor %}
+  </select>
+</div>
+
+<span class="error-message">{{error_message.size}}</span>
+
+<div class="form-group mt-2">
+  <label for="brand">Brand</label>
+  <select name="brand">
+      <option value="" {% if not content.brand %}selected{% endif %}>None</option>
+      {% for item in brands %}
+      <option value="{{ item.id }}" {% if item == content.brand %}selected{% endif %}>{{ item.name }}</option>
+      {% endfor %}
+  </select>
+</div>
+
+<span class="error-message">{{error_message.brand}}</span>
+
 
 
 
@@ -48,9 +128,12 @@
         <label for="inputConfirmPassword">Description </label>
         <input value="{{content.description}}"  name="description" type="text" class="form-control" id="inputConfirmPassword" placeholder="Confirm Password">
       </div>
+      <span class="error-message">{{error_message.description}}</span>
+
+
     <button type="submit" class="btn btn-primary mt-4">Update</button>
-    <h5>{{successmsg}} {{error}}</h5>
-    {% comment %} {% endfor %} {% endcomment %}
+    
+   
   
   </form> 
 </div>

@@ -55,120 +55,182 @@ def products(request):
         return redirect(admin_login)
     
 
+from django.shortcuts import get_object_or_404
+
 def addproducts(request):
     error_message = {}
-    categoryobjs=Category.objects.all()
-    if request.method=="POST":
-        name=request.POST.get("name")
-        price=request.POST.get("price")
-        quantity=request.POST.get("quantity")
-        category_name=request.POST.get("category")
-        description=request.POST.get("description")
-        images=request.FILES.getlist("image")
-       
+    categoryobjs = Category.objects.all()
+    colors = Color.objects.all()
+    sizes = Size.objects.all()
+    brands = Brand.objects.all()
+    genders = Gender.objects.all()
 
-        if len(name)<4:
-            error_message["name"]="Productname should contain minimum four characters"
-        elif len(name)>20:
-            error_message["name"]="Username can only have upto 20 characters"
-        if not all(c.isalnum() or c.isspace() for c in name):
-            error_message["name"] = "Invalid string entry" 
-        elif Products.objects.filter(name__iexact=name.replace(" ", "")).exists():
-            error_message["name"] = "A product with a similar name already exists"
+    if request.method == "POST":
+        name = request.POST.get("name")
+        price = request.POST.get("price")
+        quantity = request.POST.get("quantity")
+        category_name = request.POST.get("category")
+        color_names = request.POST.getlist("color")
+        gender_name = request.POST.get("gender")
+        size_names = request.POST.getlist("size")
+        
+        brand_name = request.POST.get("brand")
+        description = request.POST.get("description")
+        images = request.FILES.getlist("image")
 
-        elif price.isalpha()==True:
-            error_message["price"]="Price can't have letters"
-        elif quantity.isalpha()==True:
-            error_message["quantity"]="Quantity can't have letters"
-        elif category_name.isalpha==False:
-            error_message["category"]="Category field can't have numbers"
-        elif category_name not in Category.objects.filter(name=category_name).values_list('name', flat=True):
-            error_message["category"]="Invalid category"
-        elif len(description)<4:
-            error_message["description"]="Description should contain minimum four characters"
-        else:
-            category_object=Category.objects.get(name=category_name)
-            product_items, created = Products.objects.get_or_create(
-                name=name,
-                category=category_object,
-                defaults={
-                    'description': description,
-                    'quantity': quantity,
-                    'price': price,
-                }
-            )
+        if len(name) < 4:
+            error_message["name"] = "Product name should contain a minimum of four characters."
+        elif len(name) > 20:
+            error_message["name"] = "Product name can only have up to 20 characters."
+        elif not all(c.isalnum() or c.isspace() for c in name):
+            error_message["name"] = "Invalid string entry for product name."
+      
 
-            for image in images:
-                ProductImage.objects.create(product=product_items, image=image)
-           
-           
-            return redirect(products)
+        if Products.objects.filter(name__iexact=name.replace(" ", "")).exists():
+            error_message["name"] = "A product with a similar name already exists."
+        elif not price.isdigit():
+            error_message["price"] = "Price should be a numeric value."
+        elif not quantity.isdigit():
+            error_message["quantity"] = "Quantity should be a numeric value."
+        elif not Category.objects.filter(name=category_name).exists():
+            error_message["category"] = "Invalid category."
+
         if error_message:
-            return render(request,"psyadmin/add-products.html",{"error_message":error_message,"categoryobjs":categoryobjs})
+            return render(request, "psyadmin/add-products.html", {
+                "error_message": error_message,
+                "categoryobjs": categoryobjs,
+                "colors": colors,
+                "sizes": sizes,
+                "brands": brands,
+                "genders": genders
+            })
 
-    return render(request,"psyadmin/add-products.html",{"categoryobjs":categoryobjs})
-    
+        category_object = Category.objects.get(name=category_name)
+        gender_instance = get_object_or_404(Gender, name=gender_name)
+        brand_instance = get_object_or_404(Brand, name=brand_name)
+        
+
+        product = Products(
+            name=name,
+            price=price,
+            quantity=quantity,
+            category=category_object,
+            gender=gender_instance,
+            brand=brand_instance,
+            description=description
+        )
+        product.save()
+        
+
+        
+        # Get the Color objects based on the color names
+        color_objects = Color.objects.filter(name__in=color_names)
+        product.color.set(color_objects)  # Set the colors using the set() method
+
+        size_objects = Size.objects.filter(name__in=size_names)
+        product.size.set(size_objects) 
+        
+        
+        for image in images:
+            ProductImage.objects.create(product=product, image=image)
+        
+        return redirect("products")
+
+    return render(request, "psyadmin/add-products.html", {
+        "categoryobjs": categoryobjs,
+        "colors": colors,
+        "sizes": sizes,
+        "brands": brands,
+        "genders": genders
+    })
+
 
 def editproducts(request, someid):
-    content=Products.objects.get(id=someid)
-    categoryobjs=Category.objects.all()
-    image = ProductImage.objects.filter(product=content)
-    print("DDDDDDDDD")
-    
+    content = Products.objects.get(id=someid)
+    categoryobjs = Category.objects.all()
+    colors = Color.objects.all()
+    genders = Gender.objects.all()
+    sizes = Size.objects.all()
+    brands = Brand.objects.all()
+    images = ProductImage.objects.filter(product=content)
+    error_message={}
 
     if request.method == 'POST':
-        name=request.POST.get("name")
-        price=request.POST.get("price")
-        quantity=request.POST.get("quantity")
-        category_name=request.POST.get("category")
-        # image1=request.FILES.get("image")
-        # print(image1,"******")
-        description=request.POST.get("description")
-        if len(name)<4:
-            error="Productname should contain minimum four characters"
-        elif len(name)>20:
-            error="Username can only have upto 20 characters"
-        elif name.isalpha()==False:
-            error="Productname can't have numbers" 
-        elif price.isalpha()==True:
-            error="Price can't have letters"
-        elif quantity.isalpha()==True:
-            error="Quantity can't have letters"
-        # elif category.isalpha==False:
-        #     error="Category field can't have numbers"
-        elif len(description)<4:
-            error="Description should contain minimum four characters"
+        # Validate form inputs
+        name = request.POST.get("name")
+        price = request.POST.get("price")
+        quantity = request.POST.get("quantity")
+        category_name = request.POST.get("category")
+        description = request.POST.get("description")
+
+        if len(name) < 4:
+            error_message["name"] = "Product name should contain a minimum of four characters"
+        if len(name) > 20:
+            error_message["name"]  = "Product name can only have up to 20 characters"
+        if not name.isalpha():
+            error_message["name"]  = "Product name can't contain numbers"
+        if Products.objects.filter(name__iexact=name.replace(" ", "")).exists():
+            error_message["name"]  = "A product with a similar name already exists"
+        if not price.isnumeric():
+            error_message["price"]  = "Price should be a valid number"
+        if not quantity.isnumeric():
+            error_message["quantity"]  = "Quantity should be a valid number"
+        if len(description) < 4:
+            error_message["description"]  = "Description should contain a minimum of four characters"
+        if  error_message:
+            return render(request, "psyadmin/edit-products.html",{ 'content': content,'categoryobjs': categoryobjs,'colors': colors,'genders': genders,'sizes': sizes,'brands': brands,'images': images,'error_message':error_message} )
+
         else:
-
-            content.name = request.POST.get('name')
-            content.description = request.POST.get('description')
-            content.price = request.POST.get('price')
-            content.quantity=quantity
-            image = ProductImage.objects.filter(product=content)
-
-            # # Check if new images are provided
-            # if 'image' in request.FILES:
-            #     # Delete the existing image1 file
-            #     if content.image:
-            #         os.remove(content.image.path)
-            #     content.image = request.FILES.get('image')
-
-
-
-            # category_name = request.POST.get('category')
+            content.name = name
+            content.description = description
+            content.price = price
+            content.quantity = quantity
 
             # Retrieve the category if it exists, otherwise assign a default category
-            categoryobject=Category.objects.get(name=category_name)
-
+            categoryobject = Category.objects.get(name=category_name)
             content.category = categoryobject
 
-            content.save()
-            return redirect(products)
-        
-        if error:
-            return render(request,"psyadmin/edit-products.html",{"content":content,"error":error,"categoryobjs":categoryobjs, "image": image})
+            # Update color, gender, size, and brand
+            color_ids = request.POST.getlist("color")
+            content.color.set(color_ids)
 
-    return render(request,"psyadmin/edit-products.html",{"content":content,"categoryobjs":categoryobjs,"image": image})
+            gender_id = request.POST.get("gender")
+            content.gender = Gender.objects.get(id=gender_id) if gender_id else None
+
+            size_ids = request.POST.getlist("size")
+            content.size.set(size_ids)
+
+            brand_id = request.POST.get("brand")
+            content.brand = Brand.objects.get(id=brand_id) if brand_id else None
+
+            # Check if new images are provided
+            if 'image' in request.FILES:
+                # Delete the existing images
+                for image in images:
+                    os.remove(image.image.path)
+                    image.delete()
+
+                # Save new images
+                for image_file in request.FILES.getlist('image'):
+                    ProductImage.objects.create(product=content, image=image_file)
+
+            content.save()
+            return redirect('products')
+
+    context = {
+        'content': content,
+        'categoryobjs': categoryobjs,
+        'colors': colors,
+        'genders': genders,
+        'sizes': sizes,
+        'brands': brands,
+        'images': images,
+      
+    }
+
+    return render(request, "psyadmin/edit-products.html", context)
+
+
 
 def deleteproducts(request, someid):
     content = get_object_or_404(Products, id=someid)

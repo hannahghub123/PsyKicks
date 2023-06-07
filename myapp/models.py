@@ -72,11 +72,19 @@ class ProductImage(models.Model):
     def __str__(self):
         return self.image.name
 
+class Coupon(models.Model):
+    coupon_code = models.CharField(max_length=50)
+    is_expired = models.BooleanField(default=False)
+    discount_price = models.IntegerField(default=100)
+    minimum_amount = models.IntegerField(default=500)
+
+
 class Cart(models.Model):
     user = models.ForeignKey(customer, on_delete=models.CASCADE)
     product = models.ForeignKey(Products, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
     total = models.DecimalField(max_digits=10, decimal_places=2)
+    coupon = models.ForeignKey(Coupon,on_delete=models.SET_NULL,null=True, blank=True)
 
     
 class Order(models.Model):
@@ -129,6 +137,7 @@ class ShippingAddress(models.Model):
     def __str__(self):
         return self.address
     
+
 
 
 

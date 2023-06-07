@@ -61,18 +61,65 @@
            
         </div>
         <br>
+
+        <div class="box-element" style="display:flex; flex-direction:row" >
+            <label style="margin-top:10px">Have coupon? <label>
+                
+                <!-- <form action="" method="POST"> -->
+                    <div class="form-field" style="display:flex; flex-direction:row">
+                        <input type="text" class="form-control" name="coupon" placeholder="Coupon code" aria-label="Coupon code">
+
+
+                        <button class="btn btn-outline-primary" type="submit" id="button-addon2" style="margin-left:5px">Apply</button> 
+
+                    </div>
+                    <br>
+                   
+                    <div style="display:flex; flex-direction:row">
+                        <label>Coupon code:</label>
+                        {% if cartobj.first.coupon %}
+                            <a href="{% url 'remove_coupon' cartobj.first.coupon.id %}" class="btn btn-success" style="margin-left:5px">{{ cartobj.first.coupon.coupon_code }}</a>
+                        {% else %}
+                            <!-- Display a message if no coupon is applied -->
+                            <span>No coupon applied</span>
+                        {% endif %}
+                    </div>
+                    
+                    
+                    {{error_message.coupon}}
+                <!-- </form> -->
+        </div>
+
         
-            <div class="box-element" id="payment-info" style="text-align:center">
+
+
+        {% if success_message %}
+        <div class="alert alert-success">
+            {{ success_message }}
+        </div>
+        {% endif %}
+
+        {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+          <br>
+        
+            {% comment %} <div class="box-element" id="payment-info" style="text-align:center">
                 <small>Payment Methods</small>
                 <select class="custom-select" required>
-                    <option selected>Cash on Delivery </option>
+                    <option selected>Cash on Delivery </option> {% endcomment %}
                     {% comment %} <option value="1">Cash on Delivery</option>
                     <option value="2">Pay Online</option> {% endcomment %}
-                
+{% comment %}                 
                 </select>
                 
                 <input id="form-button" class="btn btn-success " type="submit" value="Confirm" action="{% url 'ordercomplete'%}">
-            </div>
+            </div> {% endcomment %}
         </form>
     </div>
 
@@ -91,8 +138,17 @@
             </div>
             {% endfor %}
 
-            <h5>Items: {{count}}</h5>
-            <h5>Total: ${{totalsum|floatformat:2}}</h5>
+            <br>
+
+            <h5>Items: {{quantsum}}</h5>
+            <h5>Total: ${{total_price|floatformat:2}}</h5>
+
+            <br>
+            
+                    <div>
+                        <a class="btn btn-outline-dark" href="#">&#x2192;
+                             Payment </a>
+                    </div>
         </div>
     </div>
 </div>

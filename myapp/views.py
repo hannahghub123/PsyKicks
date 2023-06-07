@@ -1,6 +1,6 @@
 from django.core.exceptions import ObjectDoesNotExist
 import re
-from django.shortcuts import render,redirect
+from django.shortcuts import get_object_or_404, render,redirect
 from django.contrib import messages
 from decimal import Decimal
 import requests
@@ -392,7 +392,7 @@ def addtocart(request, product_id):
             for item in cartobjs:
                 if item.product==product:
                     return redirect ('userproduct')
-            cartobj = Cart(user=user, product=product,total=product.price, quantity=1)
+            cartobj = Cart(user=user, product=product,total=product.price*product.quantity, quantity=1)
             cartobj.save()
             return redirect('usercart')  # Replace 'cart' with the appropriate URL name for your cart view
         else:
@@ -419,117 +419,178 @@ def usercart(request):
         username = request.session["username"]
         user = customer.objects.get(username=username)
         cartobj = Cart.objects.filter(user=user)
+       
         quantsum=0
+        total_price=0
+
         for item in cartobj:
             quantsum+=item.quantity
-        total = cartobj.aggregate(total=Sum('total'))['total']
+            total_price += item.product.price * item.quantity
+
+    
+
         datas = {
             'cartobj': cartobj,
-            'total': total,
+             "total_price":total_price,
             "quantsum":quantsum
         }
         return render(request, "myapp/usercart.html", datas)
     else:
         return render(request, "myapp/userindex.html")
+    
+
+from django.utils import timezone
 
 def usercheckout(request):
     if customer.objects.get(username=request.session["username"]).isblocked:
-        return redirect(login)
+        return redirect("login")
 
-    if "username" in request.session :
-        username = request.session["username"]
+    if "username" in request.session:
+        username = request.session.get("username")  # Use get() with a default value of None
+        if username is None:
+            return redirect("login")
         user = customer.objects.get(username=username)
         cartobj = Cart.objects.filter(user=user)
-        totalsum = 0
-        count = 0
+
+        quantsum = 0
+        total_price = 0
         for item in cartobj:
-            totalsum += item.total
-            count += 1
-        context = {"totalsum": totalsum, "count": count, 'cartobj': cartobj}
-        
+            quantsum += item.quantity
+            total_price += item.product.price * item.quantity
+
+        coupon = request.POST.get("coupon")
+        coupon_obj = Coupon.objects.filter(coupon_code=coupon).first()
+
+        if coupon_obj and total_price > coupon_obj.minimum_amount and not any(item.coupon for item in cartobj):
+            # Check if the coupon has been applied to any other orders by the user
+            if Order.objects.filter(customer=user, cart__coupon=coupon_obj).exists():
+                error_message = "Coupon already applied to another order."
+                context = {
+                    "error_message": error_message,
+                    "cartobj": cartobj,
+                    "quantsum": quantsum,
+                    "total_price": total_price,
+                }
+                return render(request, "myapp/checkout.html", context)
+
+            # Check if the coupon has expired
+            # if coupon_obj.expiry_date and coupon_obj.expiry_date < timezone.now():
+            #     error_message = "Coupon has expired."
+            #     context = {
+            #         "error_message": error_message,
+            #         "totalsum": totalsum,
+            #         "count": count,
+            #         "cartobj": cartobj,
+            #         "quantsum": quantsum,
+            #         "total_price": total_price,
+            #     }
+            #     return render(request, "myapp/checkout.html", context)
+
+            total_price -= coupon_obj.discount_price
+
+        context = {
+            "cartobj": cartobj,
+            "quantsum": quantsum,
+            "total_price": total_price,
+        }
 
     if request.method == "POST":
-              
-            
-                error_message = {}
-                username = request.POST.get("username")
-                email = request.POST.get("email")
-                address = request.POST.get("address")
-                city = request.POST.get("city")
-                state = request.POST.get("state")
-                zipcode = request.POST.get("zipcode")
-                country = request.POST.get("country")
+        error_message = {}
+        username = request.POST.get("username")
+        email = request.POST.get("email")
+        address = request.POST.get("address")
+        city = request.POST.get("city")
+        state = request.POST.get("state")
+        zipcode = request.POST.get("zipcode")
+        country = request.POST.get("country")
 
-                if len(username) > 10:
-                    error_message["username"] = "Username must be under 10 characters."
-                if not username.isalpha():
-                    error_message["username"] = "Name must be alphabetic."
-                if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
-                    error_message["email"] = "Invalid Email"
+        coupon = request.POST.get("coupon")
+        coupon_obj = Coupon.objects.filter(coupon_code=coupon)
 
-                if not country.isalpha():
-                    error_message["country"] = "Country name should be alphabetic"
-                if len(country) < 5:
-                    error_message["country"] = "Country name should contain a minimum of five characters"
-                if not state.isalpha():
-                    error_message["state"] = "State name can't have numbers"
-                if len(state) < 3:
-                    error_message["state"] = "State name should contain a minimum of three characters"
-                if not city.isalpha():
-                    error_message["city"] = "City name should be alphabetic"
-                if len(city) < 5:
-                    error_message["city"] = "District name should contain a minimum of five characters"
-                if len(address) < 5:
-                    error_message["address"] = "House name should contain a minimum of three characters"
-                if not all(c.isalnum() or c.isspace() for c in username):
-                    error_message["name"] = "Invalid string entry" 
-                if zipcode.isalpha():
-                    error_message["zipcode"] = "Zipcode can't have alphabets"
-                if len(zipcode) != 6:
-                    error_message["zipcode"] = "Invalid Zipcode"
-                
-                if error_message:
-                    datas = {
-                        "error_message": error_message,
-                        "username": username,
-                        "email": email,
-                        "country": country,
-                        "address": address,
-                        "city": city,
-                        "state": state,
-                        "zipcode": zipcode,
-                        "totalsum": totalsum, "count": count, 'cartobj': cartobj
-                    }
-                    
-                    return render(request, "myapp/checkout.html", datas)
-
-                address_details = ShippingAddress(customer=user, address=address, city=city, state=state,
-                                                zipcode=zipcode, country=country)
-                for item in cartobj:
-
-                    orderobj = Order(customer=user,cart=item,complete=True)
-                    orderobj.save()
-                
-
-                address_details.save()
-                # requser=Cart.objects.get(user=user)
-                # orderobj=Order(cart=cartobj,customer=requser,complete=True,transaction_id="ddd")
-                # orderobj.save()
-                    
-                    
+        if not coupon_obj.exists():
+            error_message["coupon"] = "Invalid coupon"
+        elif any(item.coupon for item in cartobj):
+            error_message["coupon"] = "Coupon already exists"
+        elif any(item.total < item.coupon.minimum_amount for item in cartobj if item.coupon):
+            error_message["coupon"] = f"Amount should be greater than {coupon_obj[0].minimum_amount}"
 
 
-                
+        for item in cartobj:
+            item.coupon = coupon_obj.first()
+            item.save()
 
+        if len(username) > 10:
+            error_message["username"] = "Username must be under 10 characters."
+        if not username.isalpha():
+            error_message["username"] = "Name must be alphabetic."
+        if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
+            error_message["email"] = "Invalid Email"
 
+        if not country.isalpha():
+            error_message["country"] = "Country name should be alphabetic"
+        if len(country) < 5:
+            error_message["country"] = "Country name should contain a minimum of five characters"
+        if not state.isalpha():
+            error_message["state"] = "State name can't have numbers"
+        if len(state) < 3:
+            error_message["state"] = "State name should contain a minimum of three characters"
+        if not city.isalpha():
+            error_message["city"] = "City name should be alphabetic"
+        if len(city) < 5:
+            error_message["city"] = "District name should contain a minimum of five characters"
+        if len(address) < 5:
+            error_message["address"] = "House name should contain a minimum of three characters"
+        if not all(c.isalnum() or c.isspace() for c in username):
+            error_message["name"] = "Invalid string entry"
+        if zipcode.isalpha():
+            error_message["zipcode"] = "Zipcode can't have alphabets"
+        if len(zipcode) != 6:
+            error_message["zipcode"] = "Invalid Zipcode"
 
-                
-                
-                return redirect('ordercomplete')  # Redirect to the appropriate view or provide correct arguments
+        if error_message:
+            data = {
+                "error_message": error_message,
+                "username": username,
+                "email": email,
+                "country": country,
+                "address": address,
+                "city": city,
+                "state": state,
+                "zipcode": zipcode,
+                "cartobj": cartobj,
+                "total_price": total_price,
+                "quantsum": quantsum,
+            }
 
-                
+            return render(request, "myapp/checkout.html", data)
+
+        address_details = ShippingAddress(
+            customer=user,
+            address=address,
+            city=city,
+            state=state,
+            zipcode=zipcode,
+            country=country,
+        )
+        address_details.save()
+
+        for item in cartobj:
+            orderobj = Order(customer=user, cart=item, complete=True)
+            orderobj.save()
+
+        success_message = "Coupon applied successfully"
+        context["success_message"] = success_message
+
+       
     return render(request, "myapp/checkout.html", context)
 
+
+def remove_coupon(request, coupon_id):
+    cart = get_object_or_404(Cart, coupon__id=coupon_id)
+    cart.coupon = None
+    cart.save()
+    messages.success(request, 'Coupon Removed')
+    return redirect('usercheckout')
 
   
 def ordercomplete(request):

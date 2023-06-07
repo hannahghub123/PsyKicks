@@ -22,7 +22,11 @@ urlpatterns = [
   path("unblockcategory/<int:someid>",views.unblockcategory,name="unblockcategory"),
 
   path('orders/', views.orders, name='orders'),
+  path('coupon_management/',views.coupon_management,name="coupon_management"),
+  path("add_coupon/",views.add_coupon, name="add_coupon"),
   
+  path("is_expired/<int:someid>",views.is_expired,name="is_expired"),
+  path("available/<int:someid>",views.available,name="available"),
 ]
 
   

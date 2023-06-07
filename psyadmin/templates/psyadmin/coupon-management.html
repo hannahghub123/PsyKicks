@@ -1,0 +1,42 @@
+{% extends 'psyadmin/admin-index.html' %}
+{% load static %}
+
+{% block content %}
+<div class="mt-5"></div>
+<div class="container" style="width:fit-content">
+  <div class="row justify-content-end">
+    <a href="{% url 'add_coupon' %}">
+      <button class="btn add-category-btn btn-primary mt-2">Add Coupon</button>
+    </a>
+  </div>
+  <hr>
+  <div class="row">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Coupon-code</th>
+          <th>Discount-price</th>
+          <th>Minimum-amount</th>
+          <th>Expiry status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in datas %}
+        <tr>
+          <td class="py-1">{{ item.coupon_code }}</td>
+          <td class="py-1">{{ item.discount_price }}</td>
+          <td class="py-1">{{ item.minimum_amount }}</td>
+          <td>
+            {% if item.is_expired %}
+            <a href="{% url 'available' item.id %}" class="btn btn-success btn-sm">Expired</a>
+            {% else %}
+            <a href="{% url 'is_expired' item.id %}" class="btn btn-warning btn-sm">Available</a>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock content %}

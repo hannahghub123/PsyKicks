@@ -231,7 +231,6 @@ def editproducts(request, someid):
     return render(request, "psyadmin/edit-products.html", context)
 
 
-
 def deleteproducts(request, someid):
     content = get_object_or_404(Products, id=someid)
 
@@ -365,6 +364,81 @@ def orders(request):
         return render(request,"psyadmin/orders.html",{"datas":datas})
     else:
         return redirect(admin_login)
+    
+
+
+def coupon_management(request):
+    if 'adminuser' in request.session:
+        datas = Coupon.objects.all()
+        return render(request, "psyadmin/coupon-management.html", {"datas": datas})
+    else:
+        # Handle the case where the user is not authenticated as an admin
+        return redirect('login')  # Replace 'login' with the appropriate URL name
+
+def add_coupon(request):
+    if 'adminuser' not in request.session:
+        return redirect('login')  # Replace 'login' with the appropriate URL name
+
+    if request.method == "POST":
+        coupon_code = request.POST.get("couponcode")
+        discount_price = request.POST.get("discountprice")
+        minimum_amount = request.POST.get("minimum_amount")
+
+        error_message = {}
+
+        if not coupon_code:
+            error_message["coupon_code"] = "Coupon code field can't be empty"
+
+        if not discount_price:
+            error_message["discount_price"] = "Discount price field can't be empty"
+
+        if not minimum_amount:
+            error_message["minimum_amount"] = "Minimum amount field can't be empty"
+
+        if Coupon.objects.filter(coupon_code=coupon_code).exists():
+            error_message["coupon_code"] = "Coupon code already exists"
+
+        if error_message:
+            datas = Coupon.objects.all()
+            return render(request, "psyadmin/add-coupon.html", {"datas": datas, "error_message": error_message})
+
+        coupon = Coupon(coupon_code=coupon_code, discount_price=discount_price, minimum_amount=minimum_amount)
+        coupon.save()
+
+        return redirect('coupon_management')  # Replace 'coupon_management' with the appropriate URL name
+
+    datas = Coupon.objects.all()
+    error_message = {}
+    return render(request, "psyadmin/add-coupon.html", {"datas": datas, "error_message": error_message})
+
+def is_expired(request, someid):
+    if 'adminuser' not in request.session:
+        return redirect('login')  # Replace 'login' with the appropriate URL name
+
+    try:
+        obj = Coupon.objects.get(id=someid)
+        obj.is_expired = True
+        obj.save()
+    except Coupon.DoesNotExist:
+        # Handle the case where the coupon with the given ID does not exist
+        pass
+
+    return redirect('coupon_management')  # Replace 'coupon_management' with the appropriate URL name
+
+def available(request, someid):
+    if 'adminuser' not in request.session:
+        return redirect('login')  # Replace 'login' with the appropriate URL name
+
+    try:
+        obj = Coupon.objects.get(id=someid)
+        obj.is_expired = False
+        obj.save()
+    except Coupon.DoesNotExist:
+        # Handle the case where the coupon with the given ID does not exist
+        pass
+
+    return redirect('coupon_management')  # Replace 'coupon_management' with the appropriate URL name
+
 
 
 

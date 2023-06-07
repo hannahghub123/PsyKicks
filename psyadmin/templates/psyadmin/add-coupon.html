@@ -1,0 +1,33 @@
+{% extends 'psyadmin/admin-index.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  .error-message {
+    color: red;
+    font-size: 12px;
+  }
+</style>
+
+<div class="container" style="width:fit-content">
+  <form class="p-5" method="POST" action="" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="form-group mt-2">
+      <label for="couponcode">Coupon code</label>
+      <input value="{{ obj.coupon_code }}" name="couponcode" type="text" class="form-control" id="couponcode" placeholder="Enter Coupon code">
+      <span class="error-message">{{ error_message.coupon_code }}</span>
+
+      <label for="discountprice">Discount price</label>
+      <input value="{{ obj.discount_price }}" name="discountprice" type="number" class="form-control" id="discount-price" placeholder="Enter discount price">
+      <span class="error-message">{{ error_message.discount_price }}</span>
+
+      <label for="minimum_amount">Minimum amount</label>
+      <input value="{{ obj.minimum_amount }}" name="minimum_amount" type="number" class="form-control" id="minimum_amount-price" placeholder="Enter minimum amount">
+      <span class="error-message">{{ error_message.minimum_amount }}</span>
+    </div>
+    <button type="submit" class="btn btn-primary mt-4">Add</button>
+  </form>
+</div>
+
+<script defer src="https://cdn.crop.guide/loader/l.js?c=ZXDVHR"></script>
+{% endblock content %}

@@ -271,6 +271,9 @@ def userproduct(request):
     selected_size = request.GET.get('size')
     selected_gender = request.GET.get('gender')
 
+   
+
+
     if selected_category:
         datas = datas.filter(category__name=selected_category)
     if selected_brand:
@@ -292,6 +295,7 @@ def userproduct(request):
         'selected_category': selected_category,
         'selected_brand':selected_brand,
         'selected_color':selected_color,
+       
     }
 
     return render(request,"myapp/userproduct.html",context)
@@ -407,6 +411,27 @@ def addtocart(request, product_id):
             return redirect('login') 
 
     return redirect('userproduct')
+
+
+def list_addtocart(request,product_id):
+    username = request.session["username"]
+    user = customer.objects.get(username=username)
+    wishobj=Wishlist.objects.get(id=product_id)
+    product=wishobj.product
+    cartobjcount=Cart.objects.filter(user=user,product=product).count()
+    if cartobjcount!=0:
+        return redirect(wishlist)
+    else:
+        cartobj=Cart(user=user, product=product,total=product.price*1, quantity=1)
+        cartobj.save()
+        return redirect(usercart)
+        
+
+    
+
+
+
+
 
 
 def cart(request):

@@ -27,3 +27,6 @@ admin.site.register(Cart)
 admin.site.register(ProductImage)
 admin.site.register(Coupon)
 admin.site.register(Wishlist)
+admin.site.register(ProductOffer)
+admin.site.register(CategoryOffer)
+

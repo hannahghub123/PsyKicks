@@ -141,8 +141,19 @@ class Wishlist(models.Model):
     customer = models.ForeignKey(customer, on_delete=models.CASCADE)
     product = models.ForeignKey(Products, on_delete=models.CASCADE)
 
+class ProductOffer(models.Model):
+    customer = models.ForeignKey(customer, on_delete=models.CASCADE)
+    product = models.ForeignKey(Products, on_delete=models.CASCADE)
+    offercode = models.CharField(max_length=50)
+    discount = models.IntegerField(default=0, null=True, blank=True)
+    is_expired = models.BooleanField(default=False)
 
 
-
+class CategoryOffer(models.Model):
+    customer = models.ForeignKey(customer, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    offercode = models.CharField(max_length=50)
+    discount = models.IntegerField(default=0, null=True, blank=True)
+    is_expired = models.BooleanField(default=False)
 
 

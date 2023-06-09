@@ -440,8 +440,162 @@ def available(request, someid):
     return redirect('coupon_management')  # Replace 'coupon_management' with the appropriate URL name
 
 
+def productoffer(request):
+    offerobj = ProductOffer.objects.all()
+
+    context={
+        'offerobj':offerobj,
+    }
+    return render(request,"psyadmin/productoffers.html",context)
+
+def productoffer_is_expired(request, someid):
+    if 'adminuser' not in request.session:
+        return redirect('login')  # Replace 'login' with the appropriate URL name
+
+    try:
+        obj = ProductOffer.objects.get(id=someid)
+        obj.is_expired = True
+        obj.save()
+    except ProductOffer.DoesNotExist:
+        # Handle the case where the coupon with the given ID does not exist
+        pass
+
+    return redirect('productoffer')  # Replace 'coupon_management' with the appropriate URL name
+
+def productoffer_available(request, someid):
+    if 'adminuser' not in request.session:
+        return redirect('login')  # Replace 'login' with the appropriate URL name
+
+    try:
+        obj = ProductOffer.objects.get(id=someid)
+        obj.is_expired = False
+        obj.save()
+    except ProductOffer.DoesNotExist:
+        # Handle the case where the coupon with the given ID does not exist
+        pass
+
+    return redirect('productoffer')  # Replace 'coupon_management' with the appropriate URL name
+
+
+def addnew_productoffer(request):
+    pobj = Products.objects.all()
+    if 'adminuser' not in request.session:
+        return redirect('login')  # Replace 'login' with the appropriate URL name
+
+    if request.method == "POST":
+        user = request.session["username"]
+        offercode = request.POST.get("offercode")
+        discount = request.POST.get("discount")
+        product_name = request.POST.get("product")
+        product = Products.objects.get(name=product_name)
+
+        error_message = {}
+
+        if not offercode:
+            error_message["offercode"] = "Coupon code field can't be empty"
+
+        if not discount:
+            error_message["discount"] = "Discount price field can't be empty"
+
+        if not product:
+            error_message["category"] = "Minimum amount field can't be empty"
+
+        if ProductOffer.objects.filter(offercode=offercode).exists():
+            error_message["offercode"] = "Coupon code already exists"
+
+        if error_message:
+            datas = ProductOffer.objects.all()
+            return render(request, "psyadmin/add_categoryoffer.html", {"datas": datas, "error_message": error_message})
+            
+
+        cus = customer.objects.get(username=user)
+
+        catobj = ProductOffer(offercode=offercode, discount=discount, product=product, customer=cus)
+        catobj.save()
+
+        return redirect('productoffer')  
+
+    datas = ProductOffer.objects.all()
+    error_message = {}
+    return render(request, "psyadmin/add_productoffer.html", {"datas": datas, "error_message": error_message,"pobj":pobj})
 
 
 
+def categoryoffer(request):
+    offerobj = CategoryOffer.objects.all()
 
+    context={
+        'offerobj':offerobj,
+    }
+    return render(request,"psyadmin/categoryoffers.html",context)
+
+def categoryoffer_is_expired(request, someid):
+    if 'adminuser' not in request.session:
+        return redirect('login')  # Replace 'login' with the appropriate URL name
+
+    try:
+        obj = CategoryOffer.objects.get(id=someid)
+        obj.is_expired = True
+        obj.save()
+    except CategoryOffer.DoesNotExist:
+        # Handle the case where the coupon with the given ID does not exist
+        pass
+
+    return redirect('categoryoffer')  # Replace 'coupon_management' with the appropriate URL name
+
+def categoryoffer_available(request, someid):
+    if 'adminuser' not in request.session:
+        return redirect('login')  # Replace 'login' with the appropriate URL name
+
+    try:
+        obj = CategoryOffer.objects.get(id=someid)
+        obj.is_expired = False
+        obj.save()
+    except CategoryOffer.DoesNotExist:
+        # Handle the case where the coupon with the given ID does not exist
+        pass
+
+    return redirect('categoryoffer')  # Replace 'coupon_management' with the appropriate URL name
+
+
+def addnew_categoryoffer(request):
+    catobj = Category.objects.all()
+    if 'adminuser' not in request.session:
+        return redirect('login')  # Replace 'login' with the appropriate URL name
+
+    if request.method == "POST":
+        user = request.session["username"]
+        offercode = request.POST.get("offercode")
+        discount = request.POST.get("discount")
+        category_id = request.POST.get("category")
+
+        error_message = {}
+
+        if not offercode:
+            error_message["offercode"] = "Coupon code field can't be empty"
+
+        if not discount:
+            error_message["discount"] = "Discount price field can't be empty"
+
+        if not category_id:
+            error_message["category"] = "Minimum amount field can't be empty"
+
+        if CategoryOffer.objects.filter(offercode=offercode).exists():
+            error_message["offercode"] = "Coupon code already exists"
+
+        if error_message:
+            datas = CategoryOffer.objects.all()
+            return render(request, "psyadmin/add_categoryoffer.html", {"datas": datas, "error_message": error_message})
+
+        category = Category.objects.get(pk=category_id)
+        cus = customer.objects.get(username=user)
+
+        catobj = CategoryOffer(offercode=offercode, discount=discount, category=category,customer=cus)
+        catobj.save()
+
+        return redirect('categoryoffer')  
+
+    datas = CategoryOffer.objects.all()
+    error_message = {}
+    return render(request, "psyadmin/add_categoryoffer.html", {"datas": datas, "error_message": error_message,"catobj":catobj})
 

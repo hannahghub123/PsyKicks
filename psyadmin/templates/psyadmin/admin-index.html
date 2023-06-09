@@ -105,9 +105,17 @@
         </li>
         <li class="nav-item">
           <a class="nav-link" data-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
-            <span class="menu-title">Sample Pages</span>
-            <i class="menu-arrow"></i>
-            <i class="mdi mdi-lock menu-icon"></i>
+            <span class="menu-title">Offers</span>
+            <i class="menu-arrow">
+              <a class="nav-link" href={% url 'productoffer' %}>
+                <span class="menu-title">Product Offer</span>
+                <i class="mdi mdi-table-large menu-icon"></i>
+                <a class="nav-link" href={% url 'categoryoffer' %}>
+                  <span class="menu-title">Category Offer</span>
+                  <i class="mdi mdi-table-large menu-icon"></i>
+              </i>
+           
+             
           </a>
           <div class="collapse" id="auth">
             <ul class="nav flex-column sub-menu">

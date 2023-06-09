@@ -27,6 +27,17 @@ urlpatterns = [
   
   path("is_expired/<int:someid>",views.is_expired,name="is_expired"),
   path("available/<int:someid>",views.available,name="available"),
+
+  path("productoffer/",views.productoffer,name="productoffer"),
+  path("productoffer_is_expired/<int:someid>",views.productoffer_is_expired,name="productoffer_is_expired"),
+  path("productoffer_available/<int:someid>",views.productoffer_available,name="productoffer_available"),
+  path("addnew_productoffer/",views.addnew_productoffer,name="addnew_productoffer"),
+  
+
+  path("categoryoffer/",views.categoryoffer,name="categoryoffer"),
+    path("categoryoffer_is_expired/<int:someid>",views.categoryoffer_is_expired,name="categoryoffer_is_expired"),
+  path("categoryoffer_available/<int:someid>",views.categoryoffer_available,name="categoryoffer_available"),
+  path("addnew_categoryoffer/",views.addnew_categoryoffer, name="addnew_categoryoffer"),
 ]
 
   

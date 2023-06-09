@@ -3,7 +3,14 @@ from .models import *
 
 class productAdmin(admin.ModelAdmin):
     list_display = ('name','price','image')
-    
+
+class customerAdmin(admin.ModelAdmin):
+    list_display = ('username','name','email','phonenumber')
+
+class AddressAdmin(admin.ModelAdmin):
+    list_display = ('address','city','country','state','zipcode')
+
+
 # Register your models here.
 
 admin.site.register(customer)
@@ -19,3 +26,4 @@ admin.site.register(ShippingAddress)
 admin.site.register(Cart)
 admin.site.register(ProductImage)
 admin.site.register(Coupon)
+admin.site.register(Wishlist)

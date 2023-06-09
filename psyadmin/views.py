@@ -271,7 +271,7 @@ def addcategories(request):
         if error_message:
             return render(request, "psyadmin/addcategories.html", {"datas": datas, "error_message": error_message})
         else:
-            category = Category(name=name, stock=stock)
+            category = Category(name=name)
             category.save()
             return redirect('categories')
 

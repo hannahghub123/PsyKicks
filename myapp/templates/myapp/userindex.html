@@ -2,7 +2,11 @@
 {% load static %}
 <html lang="en">
 <head>
-	<title>PsyKicks/Home</title>
+	<title>
+		{% block title %}
+		PsyKicks/Home
+		{% endblock title %}
+	</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 <!--===============================================================================================-->	
@@ -63,6 +67,8 @@ function getToken(name) {
 var csrftoken = getToken('csrftoken');
 
 </script>
+
+
 
 </head>
 <body class="animsition">
@@ -130,15 +136,15 @@ var csrftoken = getToken('csrftoken');
 							</li>
 
 							<li>
-								<a href="blog.html">Blog</a>
+								<a href={% url 'blog' %}>Blog</a>
 							</li>
 
 							<li>
-								<a href="about.html">About</a>
+								<a href={% url 'about' %}>About</a>
 							</li>
 
 							<li>
-								<a href="contact.html">Contact</a>
+								<a href={% url 'contact' %}>Contact</a>
 							</li>
 
 							<a href={% url 'signout' %} class="flex-c-m p-lr-10 trans-04">
@@ -155,12 +161,16 @@ var csrftoken = getToken('csrftoken');
 							<i class="zmdi zmdi-search"></i>
 						</div>
 
-						<a href={% url 'usercart' %} class="icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 icon-header-noti js-show-cart" data-notify="{{cartItems}}">
+						<a href={% url 'usercart' %} class="icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 icon-header-noti js-show-cart" data-notify="0">
 							<i class="zmdi zmdi-shopping-cart"></i>
 						</a>
 
-						<a href="#" class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 icon-header-noti" data-notify="0">
+						<a href={% url 'wishlist' %} class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 icon-header-noti" data-notify="0">
 							<i class="zmdi zmdi-favorite-outline"></i>
+						</a>
+
+						<a href={% url 'userprofile' %} class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 " >
+							<i class="fa fa-user" aria-hidden="true"></i>
 						</a>
 					</div>
 				</nav>
@@ -185,8 +195,12 @@ var csrftoken = getToken('csrftoken');
 					<i class="zmdi zmdi-shopping-cart"></i>
 				</div>
 
-				<a href="#" class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-r-11 p-l-10 icon-header-noti" data-notify="0">
+				<a href={% url 'wishlist' %} class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-r-11 p-l-10 icon-header-noti" data-notify="0">
 					<i class="zmdi zmdi-favorite-outline"></i>
+				</a>
+
+				<a href={% url 'userprofile' %} class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 " >
+					<i class="fa fa-user" aria-hidden="true"></i>
 				</a>
 			</div>
 
@@ -993,6 +1007,9 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 			</div>
 		</div>
 	</div>
+
+
+	
 
 <!--===============================================================================================-->	
 	<script src="{% static 'myapp/vendor/jquery/jquery-3.2.1.min.js' %}"></script>

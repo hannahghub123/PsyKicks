@@ -137,8 +137,9 @@ class ShippingAddress(models.Model):
     def __str__(self):
         return self.address
     
-
-
+class Wishlist(models.Model):
+    customer = models.ForeignKey(customer, on_delete=models.CASCADE)
+    product = models.ForeignKey(Products, on_delete=models.CASCADE)
 
 
 

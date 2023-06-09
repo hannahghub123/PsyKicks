@@ -4,6 +4,15 @@
 <div class="row mt-5"></div>
 {% comment %} <div class="row mt-5"></div> {% endcomment %}
 
+{% block style %}
+<style>
+.error-message{
+	color:red;
+	fon-szie:12px;
+}
+</style>
+{% endblock style %}
+
 
 
 <div class="bg0 m-t-23 p-b-140">
@@ -247,6 +256,7 @@
 							{% comment %} <a href={% url 'pdetails' i.id %}>Quick view</a> {% endcomment %}
 							
 							<br><br>
+							<span class="error-message">{{error_message.product}}</span>
 
 
 							 <form method="POST" action="{% url 'addtocart' i.id %}"> 
@@ -255,19 +265,17 @@
 								<a class="btn btn-outline-primary" href={% url 'user_pdetails' i.id %} style="display:inline-block; ">View Product</a>
 							</form>
 							
-
-							
-							
-							
-
 						</div>
 
 						<div class="block2-txt-child2 flex-r p-t-3">
-							<a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
+							{% comment %} js-addwish-b2 {% endcomment %}
+							<a href="{% url 'addtolist' i.id %}" class="btn-addwish-b2 dis-block pos-relative">
 								<img class="icon-heart1 dis-block trans-04" src="{% static 'myapp/images/icons/icon-heart-01.png'%}" alt="ICON">
 								<img class="icon-heart2 dis-block trans-04 ab-t-l" src="{% static 'myapp/images/icons/icon-heart-02.png'%}" alt="ICON">
 							</a>
+							
 						</div>
+						
 					</div>
 				</div>
 			</div>

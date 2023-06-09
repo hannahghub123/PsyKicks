@@ -16,18 +16,31 @@ urlpatterns = [
     path("userproduct/",views.userproduct,name="userproduct"),
 
     path("blog/",views.blog,name="blog"),
+    path("contact/",views.contact,name="contact"),
+    path("about/",views.about,name="about"),
     
     path("cart/",views.cart,name="cart"),
     path("usercart/",views.usercart,name="usercart"),
     path("usercheckout/",views.usercheckout, name="usercheckout"),
     path("pdetails/<int:product_id>/",views.pdetails,name="pdetails"),
     path("user_pdetails/<int:product_id>/",views.user_pdetails,name="user_pdetails"),
-    path("addtocart/<int:product_id>/",views.addtocart,name="addtocart"),
-     path('remove_coupon/<int:coupon_id>/', views.remove_coupon, name='remove_coupon'),
+    path('addtocart/<int:product_id>/', views.addtocart, name='addtocart'),
+    path('removecartitem/<int:item_id>/', views.removecartitem, name='removecartitem'),
+    path('remove_coupon/<int:coupon_id>/', views.remove_coupon, name='remove_coupon'),
 
    
     path("ordercomplete/",views.ordercomplete,name="ordercomplete"),
+    path("userprofile/",views.userprofile,name="userprofile"),
+    path("updateuser/",views.updateuser,name="updateuser"),
+    path("editaddress/<int:id>/",views.editaddress,name="editaddress"),
+    path("deliveredproducts/",views.deliveredproducts,name="deliveredproducts"),
 
+    path("wishlist/",views.wishlist,name="wishlist"),
+    path("addtolist/<int:product_id>/",views.addtolist,name="addtolist"),
+    path('removeitem/<int:item_id>/', views.removeitem, name='removeitem'),
+
+    
+  
 ]
 
 #    path('update_item/', views.updateItem, name="update_item")

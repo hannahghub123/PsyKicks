@@ -15,7 +15,7 @@
       <thead>
         <tr>
           <th>Category</th>
-          <th>Stock</th>
+        
           <th>Edit</th>
           <th>Block</th>
           {% comment %} <th>Delete</th> {% endcomment %}
@@ -25,7 +25,7 @@
         {% for item in datas %}
         <tr>
           <td class="py-1">{{ item.name }}</td>
-          <td class="py-1">{{ item.stock }}</td>
+         
           <td class="py-1">
             <a href="{% url 'editcategories' item.id %}">
               <button class="btn edit-btn btn-warning">Edit</button>

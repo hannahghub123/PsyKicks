@@ -33,7 +33,7 @@
                 <div style="flex:1"><strong>Price</strong></div>
                 <div style="flex:1"><strong>Quantity</strong></div>
                 <div style="flex:1"><strong>Total</strong></div>
-                <div style="flex:1">..</div>
+                <div style="flex:1">Remove Item</div>
             </div>
             {% for item in cartobj %}
             <div class="cart-row">
@@ -43,7 +43,14 @@
             <div style="flex:1">${{ item.product.price }}</div>
             <div style="flex:1">{{ item.quantity}}</div>
             <div style="flex:1">${{ item.total }}</div>
-            <div style="flex:1">..</div>
+            <div style="flex:1">
+
+               
+                    <a href="{% url 'removecartitem' item.id %}" onclick="return confirmDelete();">
+                      <button class="btn edit-btn btn-danger p-2">Delete</button>
+                    </a>
+              
+            </div>
             </div>
             {% endfor %}
         </div>
@@ -53,5 +60,35 @@
 <div class="row mt-5"></div>
 <div class="row mt-5"></div>
 <div class="row mt-5"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js" integrity="sha512-pumBsjNRGGqkPzKHndZMaAG+bir374sORyzM3uulLV14lN5LyykqNk8eEeUlUkB3U0M4FApyaHraT65ihJhDpQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+
+    $(".delete-btn").click(function() {
+      var someid = $(this).data("product-id");
+      if (confirm("Are you sure you want to remove this product?")) {
+          
+          $.ajax({
+              url: "/myapp/removeitem/" + someid + "/",
+              type: "DELETE",
+              beforeSend: function(xhr) {
+                xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+              },
+              success: function(response) {
+                  alert(response.message);
+                  location.reload();
+              },
+              error: function(xhr, status, error) {
+                  alert("Error: " + error);
+              }
+          });
+      }
+  });  
+  </script>
+  <script>
+    function confirmDelete() {
+      return confirm('Are you sure you want to remove this product?');
+    }
+  </script>
 
 {% endblock %}

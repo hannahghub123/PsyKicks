@@ -3,9 +3,11 @@ import re
 from django.shortcuts import get_object_or_404, render,redirect
 from django.contrib import messages
 from decimal import Decimal
+from django.views import View
 import requests
 import random
 from . models import *
+from .forms import *
 
 # Create your views here.
 def index(request):
@@ -312,6 +314,12 @@ def product(request):
 def blog(request):
     return render(request,"myapp/blog.html")
 
+def contact(request):
+    return render(request,"myapp/contact.html")
+
+def about(request):
+    return render(request,"myapp/about.html")
+
 
 def pdetails(request, product_id):
     if request.method=="POST":
@@ -394,12 +402,11 @@ def addtocart(request, product_id):
                     return redirect ('userproduct')
             cartobj = Cart(user=user, product=product,total=product.price*product.quantity, quantity=1)
             cartobj.save()
-            return redirect('usercart')  # Replace 'cart' with the appropriate URL name for your cart view
+            return redirect('usercart') 
         else:
-            return redirect('login')  # Replace 'login' with the appropriate URL name for your login view
+            return redirect('login') 
 
-    # Handle the case where the request method is not POST or if the username is not in the session
-    return redirect('userproduct')  # Replace 'product_details' with the appropriate URL name for your product details view
+    return redirect('userproduct')
 
 
 def cart(request):
@@ -412,7 +419,7 @@ def cart(request):
 
         return render(request, "myapp/cart.html", datas)
     
-from django.db.models import Sum
+
 
 def usercart(request):
     if "username" in request.session:
@@ -438,12 +445,14 @@ def usercart(request):
     else:
         return render(request, "myapp/userindex.html")
     
+def removecartitem(request,item_id):
+    item = get_object_or_404(Cart, id=item_id)
 
-from django.utils import timezone
-import re
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
-from .models import customer, Cart, Coupon, Order, ShippingAddress
+    # Delete the product
+    item.delete()
+
+    # Redirect to a specific URL or view
+    return redirect('usercart') 
 
 
 def usercheckout(request):
@@ -602,4 +611,118 @@ def ordercomplete(request):
     return render(request,"myapp/ordercomplete.html") 
 
 
+def userprofile(request):
+    username = request.session["username"]
+    customerobj = customer.objects.get(username=username)
 
+    orderobjs = Order.objects.filter(customer=customerobj).select_related('cart__product')
+    
+    addressobjs = ShippingAddress.objects.filter(customer=customerobj)
+
+    context = {
+        "orderobjs": orderobjs,
+        "username": username,
+        "addressobjs": addressobjs,
+        "customerobj": customerobj
+    }
+
+    return render(request, "myapp/userprofile.html", context)
+
+
+def updateuser(request):
+    if request.method=="POST":
+        name=request.POST["name"]
+        name=request.POST["name"]
+        email=request.POST["email"]
+        phonenumber=request.POST["phonenumber"]
+    
+    customerobj=customer.objects.get(username=request.session.get("username"))
+    customerobj.name=name
+    customerobj.email=email
+    customerobj.phonenumber=phonenumber
+    customerobj.save()
+    return redirect(userprofile)
+
+def editaddress(request,id):
+    if request.method=="POST":
+        address=request.POST["address"]
+        city=request.POST["city"]
+        state=request.POST["state"]
+        country=request.POST["country"]
+        zipcode = request.POST.get("zipcode")
+
+    
+    addressobj=ShippingAddress.objects.get(id=id)
+    addressobj.address=address
+    addressobj.city=city
+    addressobj.state=state
+    addressobj.country=country
+    addressobj.zipcode=zipcode
+    addressobj.save()
+    return redirect(userprofile)
+
+def deliveredproducts(request):
+    pass
+
+def wishlist(request):
+    listobj = Wishlist.objects.all()
+
+    context = {
+        'listobj':listobj,
+    }
+    return render(request,"myapp/wishlist.html",context)
+
+
+
+
+# def addtolist(request, product_id):
+#     if request.method == "POST":
+#         if "username" in request.session:
+#             username = request.session["username"]
+#             user = customer.objects.get(username=username)
+        
+#             product = Products.objects.get(id=product_id)
+          
+#             wishlist_obj, created = Wishlist.objects.get_or_create(customer=user, product=product)
+#             if created:
+#                 return redirect('wishlist')  
+#             else:
+#                 return redirect('userproduct') 
+#         else:
+#             return redirect('login')  
+
+    
+#     return redirect('userproduct')  
+
+
+
+
+def addtolist(request, product_id):
+    error_message={}
+    username = request.session.get("username")
+    if not username:
+        return redirect('login')  # Redirect to the login page if the username is not stored in the session
+
+    user = get_object_or_404(customer, username=username)
+    product = get_object_or_404(Products, id=product_id)
+
+    # if Wishlist.objects.filter(customer=user, product=product).exists():
+    #     error_message["product"] = "Product already added to wishlist"
+    #     # You can pass the error_message to the template or handle it as desired
+    #     return redirect('userproduct')  # Replace 'wishlist' with the actual URL name or path for the wishlist page
+
+    wishlist_item = Wishlist(customer=user, product=product)
+    wishlist_item.save()
+    return redirect('wishlist')  # Replace 'wishlist' with the actual URL name or path for the wishlist page
+
+        
+   
+
+def removeitem(request,item_id):
+    item = get_object_or_404(Wishlist, id=item_id)
+
+    # Delete the product
+    item.delete()
+
+    # Redirect to a specific URL or view
+    return redirect('wishlist') 

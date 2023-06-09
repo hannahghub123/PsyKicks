@@ -1,0 +1,97 @@
+{% extends 'myapp/userindex.html' %}
+{% load static %}
+{% block title %}Wishlist{% endblock title %}
+{% block content %}
+
+<div class="row mt-5"></div>
+<div class="row mt-5"></div>
+<div class="row mt-5"></div>
+
+<div class="col-md-8 border border-2">
+    <div class="container">
+        <div class="row">
+            <span class="block1-name ltext-102 trans-04 p-b-8 mt-3">
+                Your Wishlist
+            </span>
+            <div class="row mt-5"></div>
+            <div class="row mt-5"></div>
+        </div>
+        <div class="cart-row">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Remove Item</th>
+                        <th>action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in listobj %}
+                    <tr>
+                        <td>
+                            {% if item.product.images.all %}
+                                {% with item.product.images.first as img %}
+                                    <img src="{{ img.image.url }}" alt="IMG-PRODUCT" class="row-image">
+                                {% endwith %}
+                            {% endif %}
+                        </td>
+                        <td>{{ item.product.name }}</td>
+                        <td>${{ item.product.price }}</td>
+                      
+                        <td>
+                            <a href="{% url 'removeitem' item.id %}" onclick="return confirmDelete();">
+                              <button class="btn edit-btn btn-danger p-2">Delete</button>
+                            </a>
+                          </td>
+                        <td>
+                            <a href="{% url 'addtocart' item.id %}">
+                                <button class="btn edit-btn btn-primary p-2">Add to Cart</button>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5"></div>
+<div class="row mt-5"></div>
+<div class="row mt-5"></div>
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js" integrity="sha512-pumBsjNRGGqkPzKHndZMaAG+bir374sORyzM3uulLV14lN5LyykqNk8eEeUlUkB3U0M4FApyaHraT65ihJhDpQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+
+    $(".delete-btn").click(function() {
+      var someid = $(this).data("product-id");
+      if (confirm("Are you sure you want to remove this product?")) {
+          
+          $.ajax({
+              url: "/myapp/removeitem/" + someid + "/",
+              type: "DELETE",
+              beforeSend: function(xhr) {
+                xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+              },
+              success: function(response) {
+                  alert(response.message);
+                  location.reload();
+              },
+              error: function(xhr, status, error) {
+                  alert("Error: " + error);
+              }
+          });
+      }
+  });  
+  </script>
+  <script>
+    function confirmDelete() {
+      return confirm('Are you sure you want to remove this product?');
+    }
+  </script>
+
+  {% endblock content %}

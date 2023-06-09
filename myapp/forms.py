@@ -1,4 +1,5 @@
 from django import forms
+from .models import *
 
 class SignupForm(forms.Form):
     username = forms.CharField(max_length=10)
@@ -7,3 +8,5 @@ class SignupForm(forms.Form):
     phonenumber = forms.CharField(max_length=10)
     password = forms.CharField(widget=forms.PasswordInput())
     confirm_password = forms.CharField(widget=forms.PasswordInput())
+
+

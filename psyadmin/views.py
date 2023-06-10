@@ -318,10 +318,10 @@ def editcategories(request,someid):
 def users(request):
     if "adminuser" in request.session:
         datas=customer.objects.all()
-        # if request.method=="POST":
-        #     username=request.POST.get("searchitem")
-        #     datas=customer.objects.filter(username=username)
-        #     return render(request,"psyadmin/users.html",{"datas":datas})
+        if request.method == "POST":
+            entered_user = request.POST.get("searchitem")
+            datas = customer.objects.filter(name__icontains=entered_user)
+            return render(request, "psyadmin/users.html", {"datas": datas})
         return render(request,"psyadmin/users.html",{"datas":datas})
     else:
         return redirect(admin_login)
@@ -350,11 +350,26 @@ def unblockcategory(request,someid):
     obj.save()
     return redirect(categories)
 
+from django.contrib import messages
+
 def orders(request):
     if "adminuser" in request.session:
         datas = Order.objects.select_related('product').prefetch_related('product__images').all()
+        # search_query = request.GET.get("searchitem")
 
-       
+        # if search_query:
+        #     datas = datas.filter(Q(customer__name__icontains=search_query))
+
+        # if request.method == "POST":
+        #     entered_user = request.POST.get("searchitem")
+        #     datas = Order.objects.filter(customer__name__icontains=entered_user)
+            
+        #     return render(request, "psyadmin/orders.html", {"datas": datas})
+        
+        # if not datas:
+        #     error_message = "No matching items found."
+        #     messages.error(request, error_message)
+        #     return redirect("orders")
 
         return render(request,"psyadmin/orders.html",{"datas":datas})
     else:

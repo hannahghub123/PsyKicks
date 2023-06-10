@@ -4,31 +4,39 @@
 	
  {% block content %}
 
+
  <div class="mt-5"></div>
  <div class="mt-5"></div>
  <div class="mt-5"></div>
 
-<div class="container" style="width:fit-content; position:relative; ">
-	{% comment %} <div class="container mt-5" >
+
+<div class="container"  style="margin-right:100px">
+	<div class="container mt-5" >
   		<div class="col-md-10">
     		<form action="" method="POST">
 				{% csrf_token %}
-			
+{% comment %} 
+       {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %} {% endcomment %}
+    
 		
-        		<input type="text" name="searchitem" id="navbar-search-input" placeholder="Search user" aria-label="search" style=" font-size:15px; border-radius:2" >
+        		{% comment %} <input type="text" name="searchitem" id="navbar-search-input" placeholder="Search user" aria-label="search" style=" font-size:15px; border-radius:2" >
 				<button type="submit" class="btn btn-primary " style="padding: 6px 15px; height:28px" >Search</button>
-		
+        {% endcomment %}
 
     		</form>
 		</div>
-  	</div> {% endcomment %}
+  	</div>
+    <div class="mt-5"></div>
+ <div class="mt-5"></div>
   
   <div class="container center">
-    {% comment %} <div class="row justify-content-end">
-      <a href="{% url 'addproducts' %}">
-        <button class="btn add-product-btn btn-primary mt-2">Add Product</button>
-      </a>
-    </div> {% endcomment %}
+    
     
 	<div class="row">
       <table class="table table-striped">
@@ -41,6 +49,9 @@
             <th>Image</th>
             <th>Order status</th>
             <th>Payment status</th>
+            <th>Change Status</th>
+            <th>Change</th>
+
             {% comment %} <th>Action</th> {% endcomment %}
             {% comment %} <th>Delete</th> {% endcomment %}
           </tr>
@@ -61,7 +72,7 @@
           {% endif %}
           </td>
 
-          <td>{{ item.order_type }}</td>
+          <td id="ordertype{{item.id}}">{{ item.order_type }}</td>
 
           {% comment %} <td>
             <select class="order-status-select">
@@ -99,14 +110,34 @@
           </td>
              {% endcomment %}
 
-           
+             <td><select name="" id="">
+              <option value="ordered">
+                ordered
+              </option>
+              <option value="cancelled">
+                cancelled
+              </option>
+              <option value="shipped">
+                shipped
+              </option>
+              <option value="delivered">
+                delivered
+              </option>
+            </td>
+            <td id="changestatus" ><button data-order-id="{{item.id}}" class="btn btn-warning changebtn">Change</button> </td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
+      
     </div>
   </div>
 </div>
+
+
+
+
+
 
 
 

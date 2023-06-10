@@ -45,10 +45,11 @@ def products(request):
     if "adminuser" in request.session:
         datas=Products.objects.all()
 
-        if request.method=="POST":
-            enteredproduct=request.POST.get("searchitem")
-            datas=Products.objects.filter(name=enteredproduct)
-            return render(request,"psyadmin/products.html",{"datas":datas})
+        if request.method == "POST":
+            entered_product = request.POST.get("searchitem")
+            datas = Products.objects.filter(name__icontains=entered_product)
+            return render(request, "psyadmin/products.html", {"datas": datas})
+
         
         return render(request,"psyadmin/products.html",{"datas":datas})
     else:
@@ -259,8 +260,8 @@ def addcategories(request):
 
         if len(name) == 0:
             error_message["name"] = "Category name field can't be empty"
-        elif not name.isalpha():
-            error_message["name"] = "Category name can't contain numbers"
+        elif not name.replace(" ", "").isalpha():
+            error = "Category name can't contain numbers or special characters"
         elif len(name) < 4:
             error_message["name"] = "Category name should have at least 4 letters"
         elif len(name) > 20:
@@ -285,23 +286,24 @@ def editcategories(request,someid):
 
     if request.method=="POST":
         name=request.POST.get("name")
-        stock=request.POST.get("stock")
+       
 
         if len(name)==0:
             error="Category name field can't be empty"
-        elif name.isalpha()==False:
-            error="Category name can't be numbers"
+        elif not name.replace(" ", "").isalpha():
+            error = "Category name can't contain numbers or special characters"
+
         elif len(name)<3:
             error="Category name should atleast have 4 letters"
-        elif Category.objects.filter(name=name):
-            error="Same Category name is not allowed"
+        # elif Category.objects.filter(name=name):
+        #     error="Same Category name is not allowed"
         elif len(name)>20:
             error="Category name atmost can have only 20 letters"
         else:
             obj.name=name
-            obj.stock=stock
+            
            
-            edited = Category(id=someid, name=name, stock=stock)
+            edited = Category(id=someid, name=name)
             edited.save()
            
             return redirect(categories)
@@ -310,14 +312,7 @@ def editcategories(request,someid):
 
     return render(request,"psyadmin/editcategories.html",{"obj":obj,"categoryobjs":categoryobjs})
 
-def deletecategories(request, someid):
-    content = get_object_or_404(Category, id=someid)
 
-    # Delete the category
-    content.delete()
-
-    # Redirect to a specific URL or view
-    return redirect('categories') 
 
 @never_cache
 def users(request):
@@ -357,7 +352,7 @@ def unblockcategory(request,someid):
 
 def orders(request):
     if "adminuser" in request.session:
-        datas = Order.objects.select_related('cart__product').prefetch_related('cart__product__images').all()
+        datas = Order.objects.select_related('product').prefetch_related('product__images').all()
 
        
 
@@ -365,6 +360,26 @@ def orders(request):
     else:
         return redirect(admin_login)
     
+from django.http import JsonResponse
+
+# def update_order_status(request):
+#     if request.method == "POST":
+#         order_id = request.POST.get("id")
+#         new_status = request.POST.get("status")
+        
+#         # Retrieve the order from the database
+#         try:
+#             order = Order.objects.get(id=order_id)
+#         except Order.DoesNotExist:
+#             return JsonResponse({"status": "error", "message": "Order not found."})
+        
+#         # Update the order status
+#         order.order_type = new_status
+#         order.save()
+        
+#         return JsonResponse({"status": "success", "message": "Order status updated."})
+    
+#     return JsonResponse({"status": "error", "message": "Invalid request."})
 
 
 def coupon_management(request):

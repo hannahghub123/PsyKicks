@@ -13,7 +13,7 @@ urlpatterns = [
   path("categories/",views.categories, name="categories"),
   path("editcategories/<int:someid>",views.editcategories, name="editcategories"),
   path("addcategories/",views.addcategories, name="addcategories"),
-  path("deletecategories/<int:someid>",views.deletecategories, name="deletecategories"),
+  
   path("users/",views.users,name="users"),
   path("blockuser/<int:someid>",views.blockuser,name="blockuser"),
   path("unblockuser/<int:someid>",views.unblockuser,name="unblockuser"),
@@ -22,6 +22,8 @@ urlpatterns = [
   path("unblockcategory/<int:someid>",views.unblockcategory,name="unblockcategory"),
 
   path('orders/', views.orders, name='orders'),
+  # path('update-order-status/', views.update_order_status, name='update_order_status'),
+
   path('coupon_management/',views.coupon_management,name="coupon_management"),
   path("add_coupon/",views.add_coupon, name="add_coupon"),
   

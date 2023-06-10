@@ -126,5 +126,5 @@ MEDIA_ROOT=os.path.join(BASE_DIR,"media/")
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# RAZORPAY_API_KEY = 'rzp_test_xzyulATZoU3rSO'
-# RAZORPAY_API_SECRET_KEY = 'LnLKPgtEZdm0x353HUtbdPhq'
+RAZORPAY_API_KEY = 'rzp_test_AkR7SqZ2txt5YW'
+RAZORPAY_API_SECRET_KEY = 'oxKvx9MJ7MHdGStOOJIv013R'

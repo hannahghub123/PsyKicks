@@ -36,11 +36,12 @@
           <tr>
             <th>Customer Name</th>
             <th>Product</th>
-            <th>Quantity</th>
+            
     
             <th>Image</th>
             <th>Order status</th>
-            <th>Action</th>
+            <th>Payment status</th>
+            {% comment %} <th>Action</th> {% endcomment %}
             {% comment %} <th>Delete</th> {% endcomment %}
           </tr>
         </thead>
@@ -49,26 +50,39 @@
             
           <tr>
             <td>{{ item.customer }}</td>
-            <td>{{ item.cart.product }}</td>
-            <td>{{ item.cart.quantity }}</td>
+            <td>{{ item.product }}</td>
+            
            
             <td>
-                {% if item.cart.product.images.all %}
-            <img class="row-image" src="{{ item.cart.product.images.first.image.url }}" alt="Product Image">
+                {% if item.product.images.all %}
+            <img class="row-image" src="{{ item.product.images.first.image.url }}" alt="Product Image">
           {% else %}
             <span>No Image Available</span>
           {% endif %}
           </td>
-          
+
+          <td>{{ item.order_type }}</td>
+
+          {% comment %} <td>
+            <select class="order-status-select">
+              <option value="ordered">Ordered</option>
+              <option value="shipped">Shipped</option>
+              <option value="delivered">Delivered</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </td> {% endcomment %}
+
+          <td>{{ item.order_status }}</td>
+{% comment %}           
             <td>
         {% if item.complete %}
             <a href="#" class="btn btn-success btn-sm" onclick="updateOrderStatus('{{ item.id }}', false)">Complete</a>
         {% else %}
             <a href="#" class="btn btn-warning btn-sm" onclick="updateOrderStatus('{{ item.id }}', true)">Incomplete</a>
         {% endif %}
-    </td>
+    </td> {% endcomment %}
             
-            <td>
+            {% comment %} <td>
               <select name="" id="">
                 <option value="">
                   canceled
@@ -83,7 +97,7 @@
              
           
           </td>
-            
+             {% endcomment %}
 
            
           </tr>
@@ -93,6 +107,9 @@
     </div>
   </div>
 </div>
+
+
+
 
 {% endblock content %}
 	

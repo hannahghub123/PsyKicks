@@ -2,6 +2,8 @@
 {% load static %}
 {% block content %}
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <style>
     .error-message {
         color: red;
@@ -21,7 +23,8 @@
           
             <form id="form" method="POST">
                 {% csrf_token %}
-                <div id="user-info">
+                <h2>Shipping Information:</h2>
+                {% comment %} <div id="user-info">
                     <div class="form-field">
                         <input required class="form-control" type="text" name="username" placeholder="Name" value={{username}}>
                         <span class="error-message">{{error_message.username}}</span>
@@ -30,10 +33,10 @@
                         <input required class="form-control" type="email" name="email" placeholder="Email" value={{email}}>
                         <span class="error-message">{{error_message.email}}</span>
                     </div>
-                </div>
+                </div> {% endcomment %}
                 <div id="shipping-info">
                     <hr>
-                    <p>Shipping Information:</p>
+                    
                     <div class="form-field">
                         <input class="form-control" type="text" name="address" placeholder="Address" required value={{address}}>
                         <span class="error-message">{{error_message.address}}</span>
@@ -120,7 +123,7 @@
                 
                 <input id="form-button" class="btn btn-success " type="submit" value="Confirm" action="{% url 'ordercomplete'%}">
             </div> {% endcomment %}
-        </form>
+        
     </div>
 
     <div class="col-lg-6">
@@ -147,17 +150,71 @@
             
                     <div>
                         
-                        <button name="orderbutton" class="btn btn-outline-primary" type="submit" id="button-addon2" style="margin-left:5px">Place Order</button> 
+                        <button name="placeorder" class="btn btn-outline-primary" type="submit" id="button-addon2" style="margin-left:5px">Place Order</button> 
+                        
 
-                        <a class="btn btn-outline-dark" href="#">&#x2192;
-                             Payment </a>
-                    </div>
+                            {% comment %} <div class="col-md-6">
+                                <button name="razorpaybutton" type="submit"   class="btn btn-success" id="rzp-button1">Pay with Razorpay</button>
+                            </div> {% endcomment %}
+
+
+                        
+                        
+
+                        {% comment %} <a class="btn btn-outline-dark" href="#">&#x2192;
+                             {% comment %} Payment </a> {% endcomment %}
+                    </div> 
+                </form>
         </div>
     </div>
 </div>
 
 <div class="row mt-5"></div>
 <div class="row mt-5"></div>
+
+
+{% comment %} <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+var options = {
+	"key": "{{api_key}}", // Enter the Key ID generated from the Dashboard
+	"amount": "{{amount}}", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+	//"currency": "INR",
+	"name": "SK8 FACTORY ",
+	"description": "Test Transaction",
+	//"image": "https://example.com/your_logo",
+	"order_id": "{{order_id}}", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+	"handler": function (response){
+		alert(response.razorpay_payment_id);
+		alert(response.razorpay_order_id);
+		alert(response.razorpay_signature)
+	},
+	"prefill": {
+	"name": "Gaurav Kumar",
+	"email": "gaurav.kumar@example.com",
+	"contact": "9000090000"
+	},
+	"notes": {
+	  "address": "Razorpay Corporate Office"
+	},
+	"theme": {
+		"color": "#3399cc"
+	}
+};
+var rzp1 = new Razorpay(options);
+rzp1.on('payment.failed', function (response){
+		//alert(response.error.code);
+		alert(response.error.description);
+		//alert(response.error.source);
+		//alert(response.error.step);
+		//alert(response.error.reason);
+		//alert(response.error.metadata.order_id);
+		//alert(response.error.metadata.payment_id);
+});
+document.getElementById('rzp-button1').onclick = function(e){
+	rzp1.open();
+	e.preventDefault();
+}
+</script> {% endcomment %}
 
 
 {% endblock content %}

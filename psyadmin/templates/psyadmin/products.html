@@ -44,6 +44,7 @@
         </thead>
         <tbody>
           {% for item in datas %}
+          {% if not item.category.isblocked %}
             
           <tr>
             <td>{{ item.name }}</td>
@@ -80,6 +81,7 @@
               </a>
             </td>
           </tr>
+          {% endif %}
           {% endfor %}
         </tbody>
       </table>

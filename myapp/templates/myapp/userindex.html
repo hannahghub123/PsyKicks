@@ -656,16 +656,11 @@ var csrftoken = getToken('csrftoken');
 					<!-- Block2 -->
 					<div class="block2">
 						<div class="block2-pic hov-img0">
-
-							
-							
 							{% if i.images.all %}
 								{% with i.images.all|first as img %}
 							<img src="{{ img.image.url }}" alt="IMG-PRODUCT">
 								{% endwith %}
 							{% endif %}
-							
-							
 						</div>
 
 						<div class="block2-txt flex-w flex-t p-t-14">
@@ -674,10 +669,48 @@ var csrftoken = getToken('csrftoken');
 									{{i.name}}
 								</a>
 
+								{% for product_offer in product_offerobj %}
+									{% if i.name == product_offer.product.name and not offer.is_expired %}
+									<del>	{{ product_offer.product.price }}</del>
+								
+
+									{% endif %}
+									{% empty %}
+									no offer
+								{% endfor %}
+
+								{% with count=0 %}
+								{% for product_offer in product_offerobj %}
+									{% if i.name == product_offer.product.name and not offer.is_expired %}
+										{% with count=1 %}
+										{% endwith %}
+									{% endif %}
+									
+								{% empty %}
+									no offer
+								{% endfor %}
+
+								{% if count == 0 %}
+									{{i.price}}
+								{% endif %}
+								
+								{% endwith %}
+
+								{% comment %} {% for offer in product_offerobj %}
+								{% if offer.product.name == i.name and not offer.is_expired %}
+								<span class="stext-105 cl3">
+								<del>{{i.price|floatformat:2}}</del>	
+								</span>
+								{% elif offer.product.name != i.name and  offer.is_expired %}
 								<span class="stext-105 cl3">
 									{{i.price|floatformat:2}}
-								</span>
+									</span>
+
+								{% endif %}
+							{% endfor %}
+							 {% endcomment %}
 							</div>
+
 
 							<div class="block2-txt-child2 flex-r p-t-3">
 								<a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
@@ -685,6 +718,14 @@ var csrftoken = getToken('csrftoken');
 									<img class="icon-heart2 dis-block trans-04 ab-t-l" src="{% static 'myapp/images/icons/icon-heart-02.png' %}\" alt="ICON">
 								</a>
 							</div>
+
+							{% for offer in product_offerobj %}
+								{% if offer.product.name == i.name and not offer.is_expired %}
+									<button class="flex-c-m trans-04 mt-4">
+										<i class="fa fa-tag" aria-hidden="true">{{ offer.offercode }} - Offer Available</i>
+									</button>
+								{% endif %}
+							{% endfor %}
 						</div>
 					</div>
 				</div>

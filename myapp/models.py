@@ -89,10 +89,13 @@ class Cart(models.Model):
     
 class Order(models.Model):
     customer = models.ForeignKey(customer, on_delete=models.SET_NULL, null=True, blank=True) 
-    cart=models.ForeignKey(Cart, on_delete=models.SET_NULL, null=True, blank=True)
+    product=models.ForeignKey(Products, on_delete=models.SET_NULL, null=True, blank=True)
     date_ordered = models.DateTimeField(auto_now_add=True)
     complete = models.BooleanField(default=False)
-    transaction_id = models.CharField(max_length=100, null=True)
+    order_type = models.CharField(max_length=100,default="Ordered")
+    order_status = models.CharField(max_length=100,default="COD")
+    total = models.DecimalField(max_digits=10, decimal_places=2,default=0)
+    quantity=models.PositiveIntegerField(default=1)
 
     def __str__(self):
         return str(self.id)

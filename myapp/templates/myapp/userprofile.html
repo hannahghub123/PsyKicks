@@ -48,14 +48,23 @@
                 <div class="mt-3">
                     <label class="block1-name ltext-102 trans-04 p-b-8">Your Addresses</label>
                 </div>
+               
                 <ol>
                     {% for addressobj in addressobjs %}
                     <li class="mt-3">
                         {{ addressobj.address }}, {{ addressobj.city }},
                         <div> {{ addressobj.state }},{{ addressobj.country }}</div>
                         <div>Pincode: {{ addressobj.zipcode }}</div>
+                        <div style="display:flex; flex-direction: row;">
                          <button class="flex-c-m stext-101 cl0 size-103 bg1 bor1 hov-btn2 p-lr-15 trans-04  mt-3"  data-bs-toggle="modal" data-bs-target="#editaddress-{{forloop.counter}}" > Edit Address</button>
-                    <hr>
+                         
+                         <a href="{% url 'removeaddress' addressobj.id %}" onclick="return confirmDelete();">
+                            <button class="size-113 flex-c-m fs-16 cl2 hov-cl1 trans-04 ml-5" >
+                                <i class="fa fa-trash" aria-hidden="true"></i>
+                            </button>
+                        </a>
+                    </div>
+                     <hr>
                     {% endfor %}
                 </ol>
             </div>
@@ -160,7 +169,7 @@
 <div class="row mt-5"></div>
 <div class="row mt-5"></div>
 
-<div class="col-md-8 border border-2">
+<div class="col-md-8 border border-2" >
     <div class="container">
         <div class="row">
             <span class="block1-name ltext-102 trans-04 p-b-8 mt-3">
@@ -176,6 +185,7 @@
                         <th>Product</th>
                         <th>Price</th>
                         <th>Quantity</th>
+                        <th>Total Price</th>
                         <th>Date</th>
                         <th>Status Of Order</th>
                         <th>Image</th>
@@ -184,27 +194,26 @@
                 </thead>
                 <tbody>
                     {% for item in orderobjs %}
-                    {% if item.orderstatus != "ReturnRequested" %}
+                    {% comment %} {% if item.orderstatus != "ReturnRequested" %} {% endcomment %}
                     <tr>
-                        <td>{{ item.cart.product.name }}</td>
-                        <td>{{ item.cart.total }}</td>
-                        <td>{{ item.cart.quantity }}</td>
-                        <td>{{ item.orderdate }}</td>
-                        <td>{{ item.orderstatus }}</td>
+                        <td>{{ item.product.name }}</td>
+                        <td>{{ item.product.price }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ item.total }}</td>
+                        <td>{{ item.date_ordered }}</td>
+                        <td>{{ item.order_type }}</td>
                         <td>
                             <img class="img-fluid img-thumbnail"
-                                src="{{ item.cart.product.images.first.image.url }}" alt="" width="50"
+                                src="{{ item.product.images.first.image.url }}" alt="" width="50"
                                 height="50">
                         </td>
-                        {% if item.orderstatus != 'Cancelled' %}
-                        <td id="orderitem{{item.id}}"><button type="button"
-                                class="btn delete-btn btn-danger"
-                                data-category-id="{{ item.id }}">Cancel</button></td>
-                        {% else %}
-                        <td><span class="text-danger">Order <div>Cancelled</div> </span></td>
-                        {% endif %}
+                        
+                        <td>
+                            <button type="button" class="btn btn-danger cancel-btn">Cancel</button>
+                          </td>
+                       
                     </tr>
-                    {% endif %}
+                    {% comment %} {% endif %} {% endcomment %}
                     {% endfor %}
                 </tbody>
             </table>
@@ -218,6 +227,39 @@
 <div class="row mt-5"></div>
 <div class="row mt-5"></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js" integrity="sha512-pumBsjNRGGqkPzKHndZMaAG+bir374sORyzM3uulLV14lN5LyykqNk8eEeUlUkB3U0M4FApyaHraT65ihJhDpQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+
+    $(".delete-btn").click(function() {
+      var someid = $(this).data("product-id");
+      if (confirm("Are you sure you want to remove this product?")) {
+          
+          $.ajax({
+              url: "/myapp/removeitem/" + someid + "/",
+              type: "DELETE",
+              beforeSend: function(xhr) {
+                xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+              },
+              success: function(response) {
+                  alert(response.message);
+                  location.reload();
+              },
+              error: function(xhr, status, error) {
+                  alert("Error: " + error);
+              }
+          });
+      }
+  });  
+  </script>
+  <script>
+    function confirmDelete() {
+      return confirm('Are you sure you want to remove this address?');
+    }
+  </script>
+
+  {% comment %} order cancellation {% endcomment %}
+
+ 
 
 
 {% endblock content %}

@@ -34,6 +34,7 @@ urlpatterns = [
     path("userprofile/",views.userprofile,name="userprofile"),
     path("updateuser/",views.updateuser,name="updateuser"),
     path("editaddress/<int:id>/",views.editaddress,name="editaddress"),
+    path("removeaddress/<int:id>/",views.removeaddress,name="removeaddress"),
     path("deliveredproducts/",views.deliveredproducts,name="deliveredproducts"),
 
     path("wishlist/",views.wishlist,name="wishlist"),

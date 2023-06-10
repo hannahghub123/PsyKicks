@@ -1,6 +1,9 @@
+from datetime import date
 from django.core.exceptions import ObjectDoesNotExist
 import re
 from django.shortcuts import get_object_or_404, render,redirect
+import razorpay
+from psykicks.settings import RAZORPAY_API_SECRET_KEY,RAZORPAY_API_KEY
 from django.contrib import messages
 from decimal import Decimal
 from django.views import View
@@ -43,6 +46,8 @@ def userindex(request):
     brand = Brand.objects.all()
     size = Size.objects.all()
     gender = Gender.objects.all()
+    product_offerobj = ProductOffer.objects.all()
+    category_offerobj = CategoryOffer.objects.all()
     
     selected_category = request.GET.get('category')  # Get the selected category from the query parameters
     selected_brand = request.GET.get('brand')
@@ -74,6 +79,8 @@ def userindex(request):
         'selected_category': selected_category,
         'selected_brand':selected_brand,
         'selected_color':selected_color,
+        'category_offerobj':category_offerobj,
+        'product_offerobj':product_offerobj,
     }
 
     return render(request, "myapp/userindex.html", context)
@@ -358,7 +365,18 @@ def user_pdetails(request, product_id):
         pdtobj = Products.objects.get(id=product_id)
         username = request.session.get("username")
         user = customer.objects.get(username=username)
-        total = Decimal(quantity) * pdtobj.price
+        try:
+
+            productofferobj=ProductOffer.objects.get(product=pdtobj)
+            discount=Decimal(productofferobj.discount)
+            print("###############",discount)
+            newprice=pdtobj.price-((discount/100)*(pdtobj.price))
+            print("HANNAH",newprice)
+            total=newprice*Decimal(quantity)
+        except:
+            total = Decimal(quantity) * pdtobj.price 
+        
+        
         
         try:
             # Check if the product is already in the cart
@@ -366,9 +384,11 @@ def user_pdetails(request, product_id):
             cartobj.quantity += quantity  # Increase the quantity
             cartobj.total += total  # Update the total
             cartobj.save()
+            return redirect(usercart)
         except Cart.DoesNotExist:
             cartobj = Cart(user=user, product=pdtobj, quantity=quantity, total=total)
             cartobj.save()
+            return redirect(usercart)
 
     product = Products.objects.prefetch_related('images').filter(id=product_id).first()
     images = product.images.all() 
@@ -427,12 +447,6 @@ def list_addtocart(request,product_id):
         return redirect(usercart)
         
 
-    
-
-
-
-
-
 
 def cart(request):
     if "username" in request.session:
@@ -457,7 +471,7 @@ def usercart(request):
 
         for item in cartobj:
             quantsum+=item.quantity
-            total_price += item.product.price * item.quantity
+            total_price += item.total
 
     
 
@@ -484,8 +498,10 @@ def usercheckout(request):
     if customer.objects.get(username=request.session["username"]).isblocked:
         return redirect("login")
 
+
     if "username" in request.session:
-        username = request.session.get("username")  # Use get() with a default value of None
+        username = request.session.get("username")
+
         if username is None:
             return redirect("login")
         user = customer.objects.get(username=username)
@@ -495,22 +511,22 @@ def usercheckout(request):
         total_price = 0
         for item in cartobj:
             quantsum += item.quantity
-            total_price += item.product.price * item.quantity
+            total_price += item.total
 
         coupon = request.POST.get("coupon")
         coupon_obj = Coupon.objects.filter(coupon_code=coupon).first()
 
         if coupon_obj and total_price > coupon_obj.minimum_amount and not any(item.coupon for item in cartobj):
             # Check if the coupon has been applied to any other orders by the user
-            if Order.objects.filter(customer=user, cart__coupon=coupon_obj).exists():
-                error_message = "Coupon already applied to another order."
-                context = {
-                    "error_message": error_message,
-                    "cartobj": cartobj,
-                    "quantsum": quantsum,
-                    "total_price": total_price,
-                }
-                return render(request, "myapp/checkout.html", context)
+            # if Order.objects.filter(customer=user, cart__coupon=coupon_obj).exists():
+            #     error_message = "Coupon already applied to another order."
+            #     context = {
+            #         "error_message": error_message,
+            #         "cartobj": cartobj,
+            #         "quantsum": quantsum,
+            #         "total_price": total_price,
+            #     }
+            #     return render(request, "myapp/checkout.html", context)
 
             total_price -= coupon_obj.discount_price
 
@@ -532,12 +548,12 @@ def usercheckout(request):
             zipcode = request.POST.get("zipcode")
             country = request.POST.get("country")
 
-            if len(username) > 10:
-                error_message["username"] = "Username must be under 10 characters."
-            if not username.isalpha():
-                error_message["username"] = "Name must be alphabetic."
-            if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
-                error_message["email"] = "Invalid Email"
+            # if len(username) > 10:
+            #     error_message["username"] = "Username must be under 10 characters."
+            # if not username.isalpha():
+            #     error_message["username"] = "Name must be alphabetic."
+            # if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
+            #     error_message["email"] = "Invalid Email"
 
             if not country.isalpha():
                 error_message["country"] = "Country name should be alphabetic"
@@ -553,8 +569,8 @@ def usercheckout(request):
                 error_message["city"] = "District name should contain a minimum of five characters"
             if len(address) < 5:
                 error_message["address"] = "House name should contain a minimum of three characters"
-            if not all(c.isalnum() or c.isspace() for c in username):
-                error_message["name"] = "Invalid string entry"
+            # if not all(c.isalnum() or c.isspace() for c in username):
+            #     error_message["name"] = "Invalid string entry"
             if zipcode.isalpha():
                 error_message["zipcode"] = "Zipcode can't have alphabets"
             if len(zipcode) != 6:
@@ -617,8 +633,29 @@ def usercheckout(request):
 
             success_message = "Coupon applied successfully"
             context["success_message"] = success_message
+        
+        if "placeorder" in request.POST:
+            username = request.session.get("username")
+            user = customer.objects.get(username=username)
+            cartobj = Cart.objects.filter(user=user)
+            date_ordered = date.today()
+            complete = True
+        
+            for item in cartobj:
+                product=item.product
+                total = item.total
+                quantity=item.quantity
+                orderobj = Order(customer=user, product=product, date_ordered=date_ordered, complete=complete,total=total,quantity=quantity )
+                orderobj.save()
+                item.delete()
+
+
+
 
         return render(request, "myapp/checkout.html", context)
+    
+    
+    
 
     return render(request, "myapp/checkout.html", context)
 
@@ -640,7 +677,7 @@ def userprofile(request):
     username = request.session["username"]
     customerobj = customer.objects.get(username=username)
 
-    orderobjs = Order.objects.filter(customer=customerobj).select_related('cart__product')
+    orderobjs = Order.objects.filter(customer=customerobj)
     
     addressobjs = ShippingAddress.objects.filter(customer=customerobj)
 
@@ -685,6 +722,15 @@ def editaddress(request,id):
     addressobj.zipcode=zipcode
     addressobj.save()
     return redirect(userprofile)
+
+def removeaddress(request,id):
+    item = get_object_or_404(ShippingAddress, id=id)
+
+    # Delete the product
+    item.delete()
+
+    # Redirect to a specific URL or view
+    return redirect('userprofile') 
 
 def deliveredproducts(request):
     pass

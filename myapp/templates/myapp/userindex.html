@@ -635,12 +635,25 @@ var csrftoken = getToken('csrftoken');
 								Types
 							</div>
 
-							<div class="flex-w p-t-4 m-r--5">
+							<div class="flex-w p-t-4 m-r-5">
 								<a href="?category=" class="flex-c-m stext-107 cl6 size-301 bor7 p-lr-15 hov-tag1 trans-04 m-r-5 m-b-5">All Types</a>
 								{% for category in category.all %}
+								{% comment %} {% for offer in category_offerobj %}
+								{% if offer.category.name == category.name %} {% endcomment %}
 								<a href="?category={{ category.name }}" class="flex-c-m stext-107 cl6 size-301 bor7 p-lr-15 hov-tag1 trans-04 m-r-5 m-b-5">
 									{{category.name}}
+
+									{% comment %} <button class="flex-c-m trans-04 mt-4">
+										<i class="fa fa-tag" aria-hidden="true">{{ offer.offercode }} - Offer Available</i>
+									</button> {% endcomment %}
 								</a>
+								{% comment %} {%else%}
+								<a href="?category={{ category.name }}" class="flex-c-m stext-107 cl6 size-301 bor7 p-lr-15 hov-tag1 trans-04 m-r-5 m-b-5">
+									{{category.name}}
+								</a> {% endcomment %}
+								
+								
+								{% comment %} {% endif %}{% endfor %} {% endcomment %}
 								{% endfor %}
 							
 							</div>

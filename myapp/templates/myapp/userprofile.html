@@ -37,11 +37,19 @@
                         <span class="ml-5" id="email">{{ customerobj.phonenumber }}</span>
                     </label>
                 </div>
-                <button class="flex-c-m stext-101 cl0 size-103 bg1 bor1 hov-btn2 p-lr-15 trans-04 mt-3"
-                    data-bs-toggle="modal" data-bs-target="#editdata-modal">Edit Details
-                </button>
+                <div style="display: flex; flex-direction: row;">
+
+                    <button class="flex-c-m stext-101 cl0 size-103 bg1 bor1 hov-btn2 p-lr-15 trans-04 mt-5"
+                        data-bs-toggle="modal" data-bs-target="#editdata-modal">Edit Details
+                    </button>
+
+                    <button class="flex-c-m stext-101 cl0 size-103 bg1 bor1 hov-btn2 p-lr-15 trans-04 mt-5 ml-5 " data-bs-toggle="modal" data-bs-target="#add-address-modal">Add Address
+                    </button>
+
+                </div>
             </div>
         </div>
+        
 
         <div class="col-md-6">
             <div class="container formcont p-4 border border-1">
@@ -56,13 +64,15 @@
                         <div> {{ addressobj.state }},{{ addressobj.country }}</div>
                         <div>Pincode: {{ addressobj.zipcode }}</div>
                         <div style="display:flex; flex-direction: row;">
+
                          <button class="flex-c-m stext-101 cl0 size-103 bg1 bor1 hov-btn2 p-lr-15 trans-04  mt-3"  data-bs-toggle="modal" data-bs-target="#editaddress-{{forloop.counter}}" > Edit Address</button>
-                         
-                         <a href="{% url 'removeaddress' addressobj.id %}" onclick="return confirmDelete();">
+                       
+                        <a href="{% url 'removeaddress' addressobj.id %}" onclick="return confirmDelete();">
                             <button class="size-113 flex-c-m fs-16 cl2 hov-cl1 trans-04 ml-5" >
                                 <i class="fa fa-trash" aria-hidden="true"></i>
-                            </button>
+                            </button> 
                         </a>
+                        
                     </div>
                      <hr>
                     {% endfor %}
@@ -72,6 +82,44 @@
     </div>
 </div>
 
+<!-- Add address modal -->
+
+<div class="modal fade" id="add-address-modal" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addAddressModalLabel">Add Address</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Add your form elements for adding the address -->
+                <form action="{% url 'add_address' %}" method="POST">
+                    {% csrf_token %}
+                    <!-- Form inputs for address details -->
+                    <label for="address">Address</label>
+                    <input type="text" id="address" name="address" placeholder="Enter your address" required>
+
+                    <label for="city">City</label>
+                    <input type="text" id="city" name="city" placeholder="Enter your city" required>
+
+                    <label for="city">State</label>
+                    <input type="text" id="state" name="state" placeholder="Enter your state" required>
+
+                    <label for="city">Country</label>
+                    <input type="text" id="country" name="country" placeholder="Enter your country" required>
+
+                    <label for="city">ZipCode</label>
+                    <input type="text" id="zipcode" name="zipcode" placeholder="Enter your zipcode" required>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="flex-c-m stext-101 cl0 size-103 bg1 bor1 hov-btn2 p-lr-15 trans-04">Save Address</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 <!-- Edit User Details Modal -->

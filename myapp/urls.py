@@ -35,6 +35,7 @@ urlpatterns = [
     path("updateuser/",views.updateuser,name="updateuser"),
     path("editaddress/<int:id>/",views.editaddress,name="editaddress"),
     path("removeaddress/<int:id>/",views.removeaddress,name="removeaddress"),
+    path('add_address/', views.add_address, name='add_address'),
     path("deliveredproducts/",views.deliveredproducts,name="deliveredproducts"),
 
     path("wishlist/",views.wishlist,name="wishlist"),

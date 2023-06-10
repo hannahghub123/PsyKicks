@@ -92,8 +92,8 @@ class Order(models.Model):
     product=models.ForeignKey(Products, on_delete=models.SET_NULL, null=True, blank=True)
     date_ordered = models.DateTimeField(auto_now_add=True)
     complete = models.BooleanField(default=False)
-    order_type = models.CharField(max_length=100,default="Ordered")
-    order_status = models.CharField(max_length=100,default="COD")
+    order_status = models.CharField(max_length=100,default="Ordered")
+    payment_type = models.CharField(max_length=100,default="COD")
     total = models.DecimalField(max_digits=10, decimal_places=2,default=0)
     quantity=models.PositiveIntegerField(default=1)
 
@@ -158,5 +158,4 @@ class CategoryOffer(models.Model):
     offercode = models.CharField(max_length=50)
     discount = models.IntegerField(default=0, null=True, blank=True)
     is_expired = models.BooleanField(default=False)
-
 

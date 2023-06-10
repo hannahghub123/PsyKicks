@@ -49,8 +49,8 @@
             <th>Image</th>
             <th>Order status</th>
             <th>Payment status</th>
-            <th>Change Status</th>
-            <th>Change</th>
+           
+            <th>Change status</th>
 
             {% comment %} <th>Action</th> {% endcomment %}
             {% comment %} <th>Delete</th> {% endcomment %}
@@ -72,7 +72,7 @@
           {% endif %}
           </td>
 
-          <td id="ordertype{{item.id}}">{{ item.order_type }}</td>
+          <td id="ordertype{{item.id}}">{{ item.order_status }}</td>
 
           {% comment %} <td>
             <select class="order-status-select">
@@ -83,48 +83,11 @@
             </select>
           </td> {% endcomment %}
 
-          <td>{{ item.order_status }}</td>
-{% comment %}           
-            <td>
-        {% if item.complete %}
-            <a href="#" class="btn btn-success btn-sm" onclick="updateOrderStatus('{{ item.id }}', false)">Complete</a>
-        {% else %}
-            <a href="#" class="btn btn-warning btn-sm" onclick="updateOrderStatus('{{ item.id }}', true)">Incomplete</a>
-        {% endif %}
-    </td> {% endcomment %}
-            
-            {% comment %} <td>
-              <select name="" id="">
-                <option value="">
-                  canceled
-                </option>
-                <option value="">
-                  ordered
-                </option>
-        
+          <td>{{ item.payment_type }}</td>
 
 
-              </select>
              
-          
-          </td>
-             {% endcomment %}
-
-             <td><select name="" id="">
-              <option value="ordered">
-                ordered
-              </option>
-              <option value="cancelled">
-                cancelled
-              </option>
-              <option value="shipped">
-                shipped
-              </option>
-              <option value="delivered">
-                delivered
-              </option>
-            </td>
-            <td id="changestatus" ><button data-order-id="{{item.id}}" class="btn btn-warning changebtn">Change</button> </td>
+            <td id="changestatus" ><button data-order-id="{{item.id}}" class="btn btn-warning changebtn">Edit Details </button> </td>
           </tr>
           {% endfor %}
         </tbody>

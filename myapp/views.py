@@ -2,8 +2,8 @@ from datetime import date
 from django.core.exceptions import ObjectDoesNotExist
 import re
 from django.shortcuts import get_object_or_404, render,redirect
-import razorpay
-from psykicks.settings import RAZORPAY_API_SECRET_KEY,RAZORPAY_API_KEY
+# import razorpay
+# from psykicks.settings import RAZORPAY_API_SECRET_KEY,RAZORPAY_API_KEY
 from django.contrib import messages
 from decimal import Decimal
 from django.views import View
@@ -731,6 +731,27 @@ def removeaddress(request,id):
 
     # Redirect to a specific URL or view
     return redirect('userprofile') 
+
+
+def add_address(request):
+    if "username" in request.session:
+        if request.method == 'POST':
+            user = request.session.get('username')
+            customerr = customer.objects.get(username=user)
+            address = request.POST.get('address')
+            city = request.POST.get('city')
+            state = request.POST.get('state')
+            country = request.POST.get('country')
+            zipcode = request.POST.get('zipcode')
+
+            new_address = ShippingAddress(customer=customerr, address=address, city=city, state=state, country=country, zipcode=zipcode)
+            new_address.save()
+
+            return redirect('userprofile')  
+
+    return render(request, 'myapp/userprofile.html')
+
+
 
 def deliveredproducts(request):
     pass

@@ -350,7 +350,7 @@ def unblockcategory(request,someid):
     obj.save()
     return redirect(categories)
 
-from django.contrib import messages
+# from django.contrib import messages
 
 def orders(request):
     if "adminuser" in request.session:
@@ -375,7 +375,7 @@ def orders(request):
     else:
         return redirect(admin_login)
     
-from django.http import JsonResponse
+# from django.http import JsonResponse
 
 # def update_order_status(request):
 #     if request.method == "POST":
@@ -403,7 +403,7 @@ def coupon_management(request):
         return render(request, "psyadmin/coupon-management.html", {"datas": datas})
     else:
         # Handle the case where the user is not authenticated as an admin
-        return redirect('login')  # Replace 'login' with the appropriate URL name
+        return redirect('admin_login')  # Replace 'login' with the appropriate URL name
 
 def add_coupon(request):
     if 'adminuser' not in request.session:

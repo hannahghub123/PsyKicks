@@ -27,11 +27,11 @@ def userindex(request):
         username = request.session["username"]
         user = customer.objects.get(username=username)
 
-        orders = Order.objects.filter(customer=user, complete=False)
+        orders = Order.objects.filter(customer=user)
         if orders.exists():
             order = orders.first()
         else:
-            order = Order.objects.create(customer=user, complete=False)
+            order = Order.objects.create(customer=user)
 
         items = order.orderitem_set.all()
         cartItems = order.get_cart_items
@@ -82,6 +82,11 @@ def userindex(request):
         'category_offerobj':category_offerobj,
         'product_offerobj':product_offerobj,
     }
+
+    if request.method == "POST":
+        entered_product = request.POST.get("searchitem")
+        datas = Products.objects.filter(name__icontains=entered_product)
+        return render(request, "myapp/userindex.html", {"datas": datas})
 
     return render(request, "myapp/userindex.html", context)
 
@@ -278,9 +283,7 @@ def userproduct(request):
     selected_size = request.GET.get('size')
     selected_gender = request.GET.get('gender')
 
-   
-
-
+ 
     if selected_category:
         datas = datas.filter(category__name=selected_category)
     if selected_brand:
@@ -304,6 +307,11 @@ def userproduct(request):
         'selected_color':selected_color,
        
     }
+
+    if request.method == "POST":
+        entered_product = request.POST.get("searchitem")
+        datas = Products.objects.filter(name__icontains=entered_product)
+        return render(request, "myapp/userproduct.html", {"datas": datas})
 
     return render(request,"myapp/userproduct.html",context)
     # else:
@@ -336,7 +344,7 @@ def pdetails(request, product_id):
     if request.method=="POST":
         quantity=request.POST.get("quantity")
         pdtobj=Products.objects.get(id=product_id)
-        print(quantity,"HHHHHHHHHHHHHHH")
+        # print(quantity,"HHHHHHHHHHHHHHH")
         username=request.session.get("username")
         user=customer.objects.get(username=username)
         total=Decimal(quantity)*pdtobj.price
@@ -365,6 +373,7 @@ def user_pdetails(request, product_id):
         pdtobj = Products.objects.get(id=product_id)
         username = request.session.get("username")
         user = customer.objects.get(username=username)
+        
         try:
 
             productofferobj=ProductOffer.objects.get(product=pdtobj)
@@ -432,6 +441,11 @@ def addtocart(request, product_id):
 
     return redirect('userproduct')
 
+def quantity_inc(request,item_id):
+    pass
+def quantity_dec(request,item_id):
+    pass
+
 
 def list_addtocart(request,product_id):
     username = request.session["username"]
@@ -473,8 +487,6 @@ def usercart(request):
             quantsum+=item.quantity
             total_price += item.total
 
-    
-
         datas = {
             'cartobj': cartobj,
              "total_price":total_price,
@@ -483,6 +495,7 @@ def usercart(request):
         return render(request, "myapp/usercart.html", datas)
     else:
         return render(request, "myapp/userindex.html")
+    
     
 def removecartitem(request,item_id):
     item = get_object_or_404(Cart, id=item_id)
@@ -639,19 +652,29 @@ def usercheckout(request):
             user = customer.objects.get(username=username)
             cartobj = Cart.objects.filter(user=user)
             date_ordered = date.today()
-            complete = True
+
+            orderobj = Order(customer=user, date_ordered=date_ordered, total=0 )
+            orderobj.save()
+            
         
             for item in cartobj:
+
                 product=item.product
-                total = item.total
+                price = item.product.price
                 quantity=item.quantity
-                orderobj = Order(customer=user, product=product, date_ordered=date_ordered, complete=complete,total=total,quantity=quantity )
-                orderobj.save()
+                itemtotal = quantity*price
+
+                orderitemobj = OrderItem(product=product, order = orderobj,quantity=quantity, price=price, total=itemtotal )
+                orderitemobj.save()
+
+                orderobj.total += item.total
+
                 item.delete()
 
+            orderobj.save()
 
 
-
+        
         return render(request, "myapp/checkout.html", context)
     
     
@@ -671,6 +694,19 @@ def remove_coupon(request, coupon_id):
   
 def ordercomplete(request):
     return render(request,"myapp/ordercomplete.html") 
+
+def orderdetails(request,item_id):
+    if "username" in request.session:
+        username = request.session.get('username')
+        orderobj = Order.objects.filter(customer__username=username)
+        orderitemobj = OrderItem.objects.filter(order__id=item_id)
+
+        context = {
+            'orderobj':orderobj, 
+            'orderitemobj':orderitemobj
+        }
+
+    return render(request, "myapp/orderdetails.html",context)
 
 
 def userprofile(request):

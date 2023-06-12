@@ -479,8 +479,11 @@ var csrftoken = getToken('csrftoken');
 						<button class="size-113 flex-c-m fs-16 cl2 hov-cl1 trans-04">
 							<i class="zmdi zmdi-search"></i>
 						</button>
-
-						<input class="mtext-107 cl2 size-114 plh2 p-r-15" type="text" name="search-product" placeholder="Search">
+						<form action="" method="POST">
+							{% csrf_token %}
+							<input type="text" name="searchitem" id="navbar-search-input" placeholder="Search user" aria-label="search" style=" font-size:15px; border-radius:2" >
+							<button type="submit" class="btn btn-primary mt-5" style="padding: 6px 15px; height:28px " >Search</button>
+						</form>
 					</div>	
 				</div>
 
@@ -671,7 +674,8 @@ var csrftoken = getToken('csrftoken');
 						<div class="block2-pic hov-img0">
 							{% if i.images.all %}
 								{% with i.images.all|first as img %}
-							<img src="{{ img.image.url }}" alt="IMG-PRODUCT">
+								<a href={% url 'user_pdetails' i.id %}>
+							<img src="{{ img.image.url }}" alt="IMG-PRODUCT"></a>
 								{% endwith %}
 							{% endif %}
 						</div>
@@ -683,16 +687,16 @@ var csrftoken = getToken('csrftoken');
 								</a>
 
 								{% for product_offer in product_offerobj %}
-									{% if i.name == product_offer.product.name and not offer.is_expired %}
+									{% if i.name == product_offer.product.name %}
+									{% if not offer.is_expired %}
 									<del>	{{ product_offer.product.price }}</del>
-								
-
+								{% endif %}
 									{% endif %}
-									{% empty %}
-									no offer
 								{% endfor %}
 
-								{% with count=0 %}
+								
+
+								{% comment %} {% with count=0 %}
 								{% for product_offer in product_offerobj %}
 									{% if i.name == product_offer.product.name and not offer.is_expired %}
 										{% with count=1 %}
@@ -707,7 +711,7 @@ var csrftoken = getToken('csrftoken');
 									{{i.price}}
 								{% endif %}
 								
-								{% endwith %}
+								{% endwith %} {% endcomment %}
 
 								{% comment %} {% for offer in product_offerobj %}
 								{% if offer.product.name == i.name and not offer.is_expired %}
@@ -735,7 +739,7 @@ var csrftoken = getToken('csrftoken');
 							{% for offer in product_offerobj %}
 								{% if offer.product.name == i.name and not offer.is_expired %}
 									<button class="flex-c-m trans-04 mt-4">
-										<i class="fa fa-tag" aria-hidden="true">{{ offer.offercode }} - Offer Available</i>
+										<i class="fa fa-tag" aria-hidden="true">{{ offer.offercode }} - {{offer.discount}}% discount</i>
 									</button>
 								{% endif %}
 							{% endfor %}

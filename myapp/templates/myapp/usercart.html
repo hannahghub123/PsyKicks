@@ -26,7 +26,7 @@
    
         <br>
     
-        <div class="box-element" style="margin-left:20px; margin-right:20px">
+        <div class="box-element" style="margin-left: 20px; margin-right: 20px">
             <div class="cart-row">
                 <div style="flex:1"></div>
                 <div style="flex:1"><strong>Item</strong></div>
@@ -37,22 +37,32 @@
             </div>
             {% for item in cartobj %}
             <div class="cart-row">
-                <!-- Update the 'src' attribute to access the correct image URL -->
-            <div style="flex:1"><img class="row-image" src="{{ item.product.images.first.image.url }}"></div>
-            <div style="flex:1">{{ item.product.name }}</div>
-            <div style="flex:1">${{ item.product.price }}</div>
-            <div style="flex:1">{{ item.quantity}}</div>
-            <div style="flex:1">${{ item.total }}</div>
-            <div style="flex:1">
-
-               
+                <div style="flex:1"><img class="row-image" src="{{ item.product.images.first.image.url }}"></div>
+                <div style="flex:1">{{ item.product.name }}</div>
+                <div style="flex:1">${{ item.product.price }}</div>
+                <div style="flex:1; display: flex;">
+                    <form action="" method="POST">
+                        {% csrf_token %}
+                        <span class="quantity" style="margin-top: 7px;">{{ item.quantity }}</span>
+                        <div class="quantity-control" style="display: flex; flex-direction: column;">
+                            <button class="btn-quantity" data-id="{{ item.id }}" name="action">
+                                <a href="{% url 'quantity_inc' item.id %}"><i class="fa fa-caret-up" aria-hidden="true"></i></a>
+                            </button>
+                            <button class="btn-quantity" data-id="{{ item.id }}" name="action">
+                                <a href="{% url 'quantity_dec' item.id %}"><i class="fa fa-caret-down" aria-hidden="true"></i></a>  
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div style="flex:1">${{ item.total }}</div>
+                <div style="flex:1">
                     <a href="{% url 'removecartitem' item.id %}" onclick="return confirmDelete();">
-                      <button class="btn edit-btn btn-danger p-2">Delete</button>
+                        <button class="btn edit-btn btn-danger p-2">Delete</button>
                     </a>
-              
+                </div>
             </div>
-            </div>
-            {% endfor %}
+        {% endfor %}
+        
         </div>
     </div>
 </div>
@@ -90,5 +100,7 @@
       return confirm('Are you sure you want to remove this product?');
     }
   </script>
+
+ 
 
 {% endblock %}

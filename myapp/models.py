@@ -88,19 +88,33 @@ class Cart(models.Model):
 
     
 class Order(models.Model):
+    ORDER_STATUS_CHOICES = (
+        ('order_pending', 'Order_Pending'),
+        ('order_confirmed', 'Order_Confirmed'),
+        ('delivered', 'Delivered'),
+        ('returned', 'Returned'),
+        ('cancelled', 'Cancelled'),
+    )
+
+    PAYMENT_CHOICES = (
+        ('cash_on_delivery', 'Cash_on_Delivery'),
+        ('online_payment', 'Online_payment'),
+    )
+    # order_id = models.AutoField(primary_key=True)
     customer = models.ForeignKey(customer, on_delete=models.SET_NULL, null=True, blank=True) 
-    product=models.ForeignKey(Products, on_delete=models.SET_NULL, null=True, blank=True)
     date_ordered = models.DateTimeField(auto_now_add=True)
-    complete = models.BooleanField(default=False)
-    order_status = models.CharField(max_length=100,default="Ordered")
-    payment_type = models.CharField(max_length=100,default="COD")
+    order_status = models.CharField(max_length=100,choices=ORDER_STATUS_CHOICES,
+        default='order_pending')
+    payment_type = models.CharField(max_length=100,choices=PAYMENT_CHOICES,default="Cash on delivery")
+    # discount is to store the discount amount applied
+    discount = models.DecimalField(max_digits=10, decimal_places=2,default=0) 
     total = models.DecimalField(max_digits=10, decimal_places=2,default=0)
-    quantity=models.PositiveIntegerField(default=1)
+
+    # def __str__(self):
+    #     return str(self.id)
 
     def __str__(self):
-        return str(self.id)
-    
-    
+        return f"Order #{self.id} - {self.order_status}"
     
     @property
     def get_cart_total(self):
@@ -120,6 +134,8 @@ class OrderItem(models.Model):
     product = models.ForeignKey(Products, on_delete=models.SET_NULL, blank=True, null=True)
     order = models.ForeignKey(Order, on_delete=models.SET_NULL, blank=True, null=True)
     quantity = models.IntegerField(default=0, null=True, blank=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2,default=0)
+    total = models.DecimalField(max_digits=10, decimal_places=2,default=0)
     date_added = models.DateTimeField(auto_now_add=True)
 
     @property

@@ -52,7 +52,11 @@
 						<i class="zmdi zmdi-search"></i>
 					</button>
 
-					<input class="mtext-107 cl2 size-114 plh2 p-r-15" type="text" name="search-product" placeholder="Search">
+					<form action="" method="POST">
+						{% csrf_token %}
+						<input type="text" name="searchitem" id="navbar-search-input" placeholder="Search user" aria-label="search" style=" font-size:15px; border-radius:2" >
+						<button type="submit" class="btn btn-primary mt-5" style="padding: 6px 15px; height:28px " >Search</button>
+					</form>
 				</div>	
 			</div>
 

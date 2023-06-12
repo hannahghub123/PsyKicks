@@ -40,6 +40,7 @@ urlpatterns = [
     path("categoryoffer_is_expired/<int:someid>",views.categoryoffer_is_expired,name="categoryoffer_is_expired"),
   path("categoryoffer_available/<int:someid>",views.categoryoffer_available,name="categoryoffer_available"),
   path("addnew_categoryoffer/",views.addnew_categoryoffer, name="addnew_categoryoffer"),
+
 ]
 
   

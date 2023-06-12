@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate, login
 from myapp.models import *
 import os
 
+
 @never_cache
 def admin_index(request):
     if 'adminuser' in request.session:

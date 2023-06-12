@@ -22,7 +22,7 @@ urlpatterns = [
   path("unblockcategory/<int:someid>",views.unblockcategory,name="unblockcategory"),
 
   path('orders/', views.orders, name='orders'),
-  # path('update-order-status/', views.update_order_status, name='update_order_status'),
+  path('orderitems/<int:item_id>', views.orderitems, name='orderitems'),
 
   path('coupon_management/',views.coupon_management,name="coupon_management"),
   path("add_coupon/",views.add_coupon, name="add_coupon"),

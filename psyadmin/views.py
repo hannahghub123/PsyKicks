@@ -355,47 +355,26 @@ def unblockcategory(request,someid):
 
 def orders(request):
     if "adminuser" in request.session:
-        datas = Order.objects.select_related('product').prefetch_related('product__images').all()
-        # search_query = request.GET.get("searchitem")
+        orderobj = Order.objects.all()
+        itemobj = OrderItem.objects.all()
 
-        # if search_query:
-        #     datas = datas.filter(Q(customer__name__icontains=search_query))
 
-        # if request.method == "POST":
-        #     entered_user = request.POST.get("searchitem")
-        #     datas = Order.objects.filter(customer__name__icontains=entered_user)
-            
-        #     return render(request, "psyadmin/orders.html", {"datas": datas})
         
-        # if not datas:
-        #     error_message = "No matching items found."
-        #     messages.error(request, error_message)
-        #     return redirect("orders")
 
-        return render(request,"psyadmin/orders.html",{"datas":datas})
+        return render(request,"psyadmin/orders.html",{"orderobj":orderobj,"itemobj":itemobj})
     else:
         return redirect(admin_login)
     
-# from django.http import JsonResponse
+def orderitems(request,item_id):
+    orderobj = Order.objects.all()
+    orderitemobj = OrderItem.objects.filter(order__id=item_id)
 
-# def update_order_status(request):
-#     if request.method == "POST":
-#         order_id = request.POST.get("id")
-#         new_status = request.POST.get("status")
-        
-#         # Retrieve the order from the database
-#         try:
-#             order = Order.objects.get(id=order_id)
-#         except Order.DoesNotExist:
-#             return JsonResponse({"status": "error", "message": "Order not found."})
-        
-#         # Update the order status
-#         order.order_type = new_status
-#         order.save()
-        
-#         return JsonResponse({"status": "success", "message": "Order status updated."})
-    
-#     return JsonResponse({"status": "error", "message": "Invalid request."})
+    context = {
+        'orderobj':orderobj, 
+        'orderitemobj':orderitemobj
+    }
+
+    return render(request, "psyadmin/orderitems.html",context)
 
 
 def coupon_management(request):

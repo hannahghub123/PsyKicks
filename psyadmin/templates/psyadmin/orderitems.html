@@ -1,0 +1,86 @@
+{% extends 'psyadmin/admin-index.html' %}
+{% load static %}
+
+	
+ {% block content %}
+
+
+ <div class="mt-5"></div>
+ <div class="mt-5"></div>
+ <div class="mt-5"></div>
+
+
+<div class="container"  style="margin-right:100px">
+	
+    <div class="mt-5"></div>
+ <div class="mt-5"></div>
+  
+  <div class="container center">
+    
+    
+	<div class="row">
+      <table class="table table-striped">
+        <span class="block1-name ltext-102 trans-04"><strong>Orders Items</strong></span>
+
+        <div class="mt-5"></div>
+        <div class="mt-5"></div>
+
+        <thead>
+            <tr>
+                <th scope="col">OrderId</th>
+                <th scope="col">Image</th>
+                <th scope="col">Product</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Price</th>
+                <th scope="col">Date Ordered</th>
+                <th scope="col">Total Price</th>
+              </tr>
+        </thead>
+        <tbody>
+            {% for item in orderitemobj  %}
+                <tr>
+                    <th scope="row">{{item.order.id}}</th>
+                    <th>
+                        <img class="img-fluid img-thumbnail"
+                        src="{{ item.product.images.first.image.url }}" alt="" width="50"
+                        height="50">
+                    </th>
+                    <td>{{item.product.name}}</td>
+                    <td>{{item.quantity}}</td>
+                    <td>{{item.price}}</td>
+                    <td>{{item.date_added}}</td>
+                    <td>{{item.total}}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+      </table>
+      
+    </div>
+  </div>
+</div>
+
+<div style="display: flex; justify-content: flex-end; margin-right:120px;  ">
+    <button class="btn btn-secondary mt-5">
+        <a href="{% url 'orders' %}">Back to Orders</a>
+    </button>
+</div>
+
+<div class="row mt-5"></div>
+<div class="row mt-5"></div>
+<div class="row mt-5"></div>
+<div class="row mt-5"></div>
+<div class="row mt-5"></div>
+<div class="row mt-5"></div>
+<div class="row mt-5"></div>
+<div class="row mt-5"></div>
+
+
+
+
+{% endblock content %}
+	
+
+   
+
+
+

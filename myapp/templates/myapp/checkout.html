@@ -2,7 +2,7 @@
 {% load static %}
 {% block content %}
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{% comment %} <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> {% endcomment %}
 
 <style>
     .error-message {
@@ -153,9 +153,7 @@
                         <button name="placeorder" class="btn btn-outline-primary" type="submit" id="button-addon2" style="margin-left:5px">Place Order</button> 
                         
 
-                            {% comment %} <div class="col-md-6">
-                                <button name="razorpaybutton" type="submit"   class="btn btn-success" id="rzp-button1">Pay with Razorpay</button>
-                            </div> {% endcomment %}
+                            
 
 
                         
@@ -168,12 +166,15 @@
         </div>
     </div>
 </div>
+<div class="col-md-6">
+    <button name="razorpaybutton" type="submit"   class="btn btn-success" id="rzp-button1">Pay with Razorpay</button>
+</div> 
 
 <div class="row mt-5"></div>
 <div class="row mt-5"></div>
 
 
-{% comment %} <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+ <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
 var options = {
 	"key": "{{api_key}}", // Enter the Key ID generated from the Dashboard
@@ -184,12 +185,12 @@ var options = {
 	//"image": "https://example.com/your_logo",
 	"order_id": "{{order_id}}", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
 	"handler": function (response){
-		alert(response.razorpay_payment_id);
-		alert(response.razorpay_order_id);
-		alert(response.razorpay_signature)
+		//alert(response.razorpay_payment_id);
+		//alert(response.razorpay_order_id);
+		//alert(response.razorpay_signature)
 	},
 	"prefill": {
-	"name": "Gaurav Kumar",
+	"name": "Hannah Elsa Joy",
 	"email": "gaurav.kumar@example.com",
 	"contact": "9000090000"
 	},
@@ -214,7 +215,7 @@ document.getElementById('rzp-button1').onclick = function(e){
 	rzp1.open();
 	e.preventDefault();
 }
-</script> {% endcomment %}
+</script> 
 
 
 {% endblock content %}

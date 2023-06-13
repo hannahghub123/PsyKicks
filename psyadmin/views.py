@@ -376,6 +376,26 @@ def orderitems(request,item_id):
 
     return render(request, "psyadmin/orderitems.html",context)
 
+from django.shortcuts import get_object_or_404
+
+def update_orderstatus(request, item_id):
+    order = get_object_or_404(Order, id=item_id)
+    
+    if request.method == 'POST':
+        new_status = request.POST.get('status')
+        order.order_status = new_status
+        order.save()
+        
+        return redirect(orders)
+        
+    context = {
+        'order': order,
+        'order_status_choices': Order.ORDER_STATUS_CHOICES
+    }
+
+    return render(request, "psyadmin/update_orderstatus.html", context)
+
+
 
 def coupon_management(request):
     if 'adminuser' in request.session:

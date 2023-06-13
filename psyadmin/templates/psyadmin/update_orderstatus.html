@@ -1,0 +1,41 @@
+{% extends 'psyadmin/admin-index.html' %}
+{% load static %}
+
+
+
+{% block content %}
+<style>
+  .error-message {
+      color: red;
+      font-size:12px;
+    }
+</style>
+
+<div class="container" style="width:fit-content">
+<form class="p-5" method="POST" action="" enctype="multipart/form-data"> {% csrf_token %}
+          
+  <h1>Update Order Status</h1>
+  <p>Current Status: {{ order.order_status }}</p>
+  
+  <form method="POST">
+    {% csrf_token %}
+    <label for="status">New Status:</label>
+    <select name="status" id="status">
+      {% for status in order_status_choices %}
+        <option value="{{ status.0 }}">{{ status.1 }}</option>
+      {% endfor %}
+    </select>
+    <br>
+    <input type="submit" value="Update">
+  </form>
+  
+    {% comment %} <h5> {{error}} {{duplicate}}</h5> {% endcomment %}
+    {% comment %} {% endfor %} {% endcomment %}
+  
+  </form> 
+</div>
+
+  <script defer src="https://cdn.crop.guide/loader/l.js?c=ZXDVHR"></script>
+
+
+{% endblock content %}

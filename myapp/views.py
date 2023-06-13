@@ -2,8 +2,8 @@ from datetime import date
 from django.core.exceptions import ObjectDoesNotExist
 import re
 from django.shortcuts import get_object_or_404, render,redirect
-# import razorpay
-# from psykicks.settings import RAZORPAY_API_SECRET_KEY,RAZORPAY_API_KEY
+import razorpay
+from psykicks.settings import RAZORPAY_API_SECRET_KEY,RAZORPAY_API_KEY
 from django.contrib import messages
 from decimal import Decimal
 from django.views import View
@@ -67,6 +67,10 @@ def userindex(request):
         datas = datas.filter(gender__name=selected_gender)
 
 
+    username = request.session["username"]
+    user = customer.objects.get(username=username)
+    wishlist_items = Wishlist.objects.filter(customer=user)
+    count = wishlist_items.count()
 
     context = {
         'datas': datas,
@@ -81,6 +85,7 @@ def userindex(request):
         'selected_color':selected_color,
         'category_offerobj':category_offerobj,
         'product_offerobj':product_offerobj,
+        'count':count,
     }
 
     if request.method == "POST":
@@ -283,6 +288,11 @@ def userproduct(request):
     selected_size = request.GET.get('size')
     selected_gender = request.GET.get('gender')
 
+    username = request.session["username"]
+    user = customer.objects.get(username=username)
+    wishlist_items = Wishlist.objects.filter(customer=user)
+    count = wishlist_items.count()
+
  
     if selected_category:
         datas = datas.filter(category__name=selected_category)
@@ -305,7 +315,7 @@ def userproduct(request):
         'selected_category': selected_category,
         'selected_brand':selected_brand,
         'selected_color':selected_color,
-       
+       'count':count,
     }
 
     if request.method == "POST":
@@ -331,13 +341,38 @@ def product(request):
         #     return redirect(userindex)
     
 def blog(request):
-    return render(request,"myapp/blog.html")
+
+    if "username" in request.session:
+        username = request.session["username"]
+        user = customer.objects.get(username=username)
+        wishlist_items = Wishlist.objects.filter(customer=user)
+        count = wishlist_items.count()
+        context={
+            'count':count
+        }
+    return render(request,"myapp/blog.html",context)
 
 def contact(request):
-    return render(request,"myapp/contact.html")
+    if "username" in request.session:
+        username = request.session["username"]
+        user = customer.objects.get(username=username)
+        wishlist_items = Wishlist.objects.filter(customer=user)
+        count = wishlist_items.count()
+        context={
+            'count':count
+        }
+    return render(request,"myapp/contact.html",context)
 
 def about(request):
-    return render(request,"myapp/about.html")
+    if "username" in request.session:
+        username = request.session["username"]
+        user = customer.objects.get(username=username)
+        wishlist_items = Wishlist.objects.filter(customer=user)
+        count = wishlist_items.count()
+        context={
+            'count':count
+        }
+    return render(request,"myapp/about.html",context)
 
 
 def pdetails(request, product_id):
@@ -402,11 +437,17 @@ def user_pdetails(request, product_id):
     product = Products.objects.prefetch_related('images').filter(id=product_id).first()
     images = product.images.all() 
     products_in_same_category = Products.objects.filter(category=product.category)
+
+    username = request.session["username"]
+    user = customer.objects.get(username=username)
+    wishlist_items = Wishlist.objects.filter(customer=user)
+    count = wishlist_items.count()
     
     return render(request, 'myapp/user-pdetails.html', {
         'product': product,
         'images': images,
-        'products_in_same_category': products_in_same_category
+        'products_in_same_category': products_in_same_category,
+        'count':count
     })
 
 
@@ -479,6 +520,9 @@ def usercart(request):
         username = request.session["username"]
         user = customer.objects.get(username=username)
         cartobj = Cart.objects.filter(user=user)
+
+        wishlist_items = Wishlist.objects.filter(customer=user)
+        count = wishlist_items.count()
        
         quantsum=0
         total_price=0
@@ -490,7 +534,8 @@ def usercart(request):
         datas = {
             'cartobj': cartobj,
              "total_price":total_price,
-            "quantsum":quantsum
+            "quantsum":quantsum,
+            'count':count
         }
         return render(request, "myapp/usercart.html", datas)
     else:
@@ -513,7 +558,28 @@ def usercheckout(request):
 
 
     if "username" in request.session:
+
+        client = razorpay.Client(
+        auth=(RAZORPAY_API_KEY, RAZORPAY_API_SECRET_KEY))
         username = request.session.get("username")
+        userobj = customer.objects.get(username=username)
+        cartobj = Cart.objects.filter(user=userobj)
+        totalsum = 0
+        for item in cartobj:
+            totalsum += item.total
+            
+        amount=float(totalsum*100)
+        currency='INR'
+        data = dict(amount=amount,currency=currency,payment_capture=1)
+                
+        payment_order = client.order.create(data=data)
+        payment_order_id=payment_order['id']
+        # print(payment_order)
+        
+
+
+
+        
 
         if username is None:
             return redirect("login")
@@ -543,10 +609,18 @@ def usercheckout(request):
 
             total_price -= coupon_obj.discount_price
 
+        username = request.session["username"]
+        user = customer.objects.get(username=username)
+        wishlist_items = Wishlist.objects.filter(customer=user)
+        count = wishlist_items.count()
+
         context = {
             "cartobj": cartobj,
             "quantsum": quantsum,
             "total_price": total_price,
+            'count':count,
+            "order_id":payment_order_id,
+            "api_key":RAZORPAY_API_KEY ,
         }
 
     if request.method == "POST":
@@ -713,6 +787,10 @@ def userprofile(request):
     username = request.session["username"]
     customerobj = customer.objects.get(username=username)
 
+ 
+    wishlist_items = Wishlist.objects.filter(customer=customerobj)
+    count = wishlist_items.count()
+
     orderobjs = Order.objects.filter(customer=customerobj)
     
     addressobjs = ShippingAddress.objects.filter(customer=customerobj)
@@ -721,7 +799,8 @@ def userprofile(request):
         "orderobjs": orderobjs,
         "username": username,
         "addressobjs": addressobjs,
-        "customerobj": customerobj
+        "customerobj": customerobj,
+        'count':count,
     }
 
     return render(request, "myapp/userprofile.html", context)
@@ -793,11 +872,20 @@ def deliveredproducts(request):
     pass
 
 def wishlist(request):
-    listobj = Wishlist.objects.all()
+    if "username" in request.session:
+        username = request.session["username"]
+        user = customer.objects.get(username=username)
+        listobj = Wishlist.objects.filter(customer=user)
+        count = listobj.count()
+
+    else:
+        listobj=[]
+        count=0
 
     context = {
-        'listobj':listobj,
-    }
+            'listobj':listobj,
+            'count':count 
+        }
     return render(request,"myapp/wishlist.html",context)
 
 
@@ -826,7 +914,7 @@ def wishlist(request):
 
 
 def addtolist(request, product_id):
-    error_message={}
+ 
     username = request.session.get("username")
     if not username:
         return redirect('login')  # Redirect to the login page if the username is not stored in the session
@@ -834,10 +922,10 @@ def addtolist(request, product_id):
     user = get_object_or_404(customer, username=username)
     product = get_object_or_404(Products, id=product_id)
 
-    # if Wishlist.objects.filter(customer=user, product=product).exists():
-    #     error_message["product"] = "Product already added to wishlist"
-    #     # You can pass the error_message to the template or handle it as desired
-    #     return redirect('userproduct')  # Replace 'wishlist' with the actual URL name or path for the wishlist page
+    if Wishlist.objects.filter(customer=user, product=product).exists():
+        messages.warning(request, "Product already added to wishlist") 
+        
+        return redirect('userproduct') 
 
     wishlist_item = Wishlist(customer=user, product=product)
     wishlist_item.save()

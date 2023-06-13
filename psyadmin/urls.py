@@ -23,6 +23,7 @@ urlpatterns = [
 
   path('orders/', views.orders, name='orders'),
   path('orderitems/<int:item_id>', views.orderitems, name='orderitems'),
+  path('update_orderstatus/<int:item_id>', views.update_orderstatus, name='update_orderstatus'),
 
   path('coupon_management/',views.coupon_management,name="coupon_management"),
   path("add_coupon/",views.add_coupon, name="add_coupon"),

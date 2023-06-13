@@ -48,7 +48,7 @@
             <td>{{ item.payment_type }}</td>
             
             <td id="changestatus" >
-              <button data-order-id="{{item.id}}" class="btn btn-warning changebtn">Edit Details </button> 
+              <a href="{% url 'update_orderstatus' item.id %}"><button data-order-id="{{item.id}}" class="btn btn-warning changebtn">Edit Details </button> </a>
             </td>
           </tr>
           {% endfor %}

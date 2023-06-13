@@ -175,3 +175,4 @@ class CategoryOffer(models.Model):
     discount = models.IntegerField(default=0, null=True, blank=True)
     is_expired = models.BooleanField(default=False)
 
+

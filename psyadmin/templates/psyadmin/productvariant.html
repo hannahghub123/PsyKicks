@@ -20,9 +20,11 @@
   
   <div class="container">
     <div class="row justify-content-end">
-      <a href="{% url 'addproducts' %}">
-        <button class="btn add-product-btn btn-primary mt-2">Add Product</button>
+        
+      <a href="{% url 'add_productvariant'  %}">
+        <button class="btn add-product-btn btn-primary mt-2">Add Product-Variant</button>
       </a>
+     
     </div>
 
     <div class="mt-5"></div>
@@ -35,27 +37,31 @@
       <table class="table table-striped">
         <thead>
           <tr>
-            <th>Name</th>
+            <th>Product</th>
             <th>Brand</th>
-            {% comment %} <th>Color</th> {% endcomment %}
-            {% comment %} <th>Size</th> {% endcomment %}
-         
             <th>Category</th>
-            {% comment %} <th>Description</th> {% endcomment %}
-            {% comment %} <th>Image</th> {% endcomment %}
+            <th>Gender</th>
+            <th>Color</th>
+            <th>Size</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Description</th>
+            <th>Image</th>
             <th>Edit</th>
             <th>Delete</th>
-            <th>....</th>
+            
           </tr>
         </thead>
         <tbody>
-          {% for item in datas %}
-          {% if not item.category.isblocked %}
+          {% for item in variant %}
+          {% comment %} {% if not item.category.isblocked %} {% endcomment %}
             
           <tr>
-            <td>{{ item.name }}</td>
-            <td>{{ item.brand.name }}</td>
-            {% comment %} <td>
+            <td>{{ item.product.name }}</td>
+            <td>{{ item.product.brand.name }}</td>
+            <td>{{ item.product.category.name }}</td>
+            <td>{{ item.gender.name }}</td>
+            <td>
               {% for color in item.color.all %}
                 {{ color.name }}
                 {% if not forloop.last %}, {% endif %}
@@ -66,16 +72,17 @@
                 {{ size.name }}
                 {% if not forloop.last %}, {% endif %}
               {% endfor %}
-            </td> {% endcomment %}
+            </td> 
             
-            <td>{{ item.category.name }}</td>
-            {% comment %} <td>{{ item.description }}</td> {% endcomment %}
-            {% comment %} <td>
-              {% if item.images.all %}
-                <img src="{{ item.images.first.image.url }}" alt="{{ item.name }}" width="100" height="100">
-          
-              {% endif %}
-          </td> {% endcomment %}
+            <td>${{ item.price }}</td>
+            <td>{{ item.stock }}</td>
+            <td>{{ item.description }}</td>
+            <td>
+                {% if item.product.images.all %}
+                    <img src="{{ item.product.images.first.image.url }}" alt="{{ item.product.name }}" width="100" height="100">
+                {% endif %}
+            </td>
+            
             <td>
               <a href={% url 'editproducts' item.id  %}>
                 <button class="btn edit-btn btn-warning p-2">Edit</button>
@@ -86,13 +93,9 @@
                 <button class="btn edit-btn btn-danger p-2">Delete</button>
               </a>
             </td>
-            <td>
-              <a href="{% url 'productvariant' item.id %}" >
-                <button class="btn edit-btn btn-info p-2">Show Product Variants</button>
-              </a>
-            </td>
+            
           </tr>
-          {% endif %}
+          {% comment %} {% endif %} {% endcomment %}
           {% endfor %}
         </tbody>
       </table>

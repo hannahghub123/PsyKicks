@@ -29,4 +29,4 @@ admin.site.register(Coupon)
 admin.site.register(Wishlist)
 admin.site.register(ProductOffer)
 admin.site.register(CategoryOffer)
-
+admin.site.register(Productvariant)

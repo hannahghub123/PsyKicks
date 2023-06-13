@@ -51,15 +51,9 @@ class Brand(models.Model):
         return self.name
 
 class Products(models.Model):
-    name = models.CharField(max_length=200, unique=True)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    quantity = models.PositiveIntegerField()
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    color = models.ManyToManyField(Color)
-    gender = models.ForeignKey(Gender, on_delete=models.CASCADE, default=None, null=True)
-    size = models.ManyToManyField(Size)
+    name = models.CharField(max_length=200, unique=True)    
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)   
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE, default=None, null=True)
-    description = models.TextField(blank=True)
     digital = models.BooleanField(default=False)
 
     def __str__(self):
@@ -72,6 +66,18 @@ class ProductImage(models.Model):
     def __str__(self):
         return self.image.name
     
+class Productvariant(models.Model):
+    product = models.ForeignKey(Products, on_delete=models.CASCADE,null=True, blank=True, related_name='image', default=None)
+    gender = models.ForeignKey(Gender, on_delete=models.CASCADE, default=None, null=True)
+    color = models.ManyToManyField(Color)
+    size = models.ManyToManyField(Size)
+    price = models.PositiveIntegerField()
+    stock = models.PositiveIntegerField()
+    image = models.ImageField(upload_to='products/', null=True, blank=True)
+    description = models.TextField(blank=True)
+
+    def __str__(self):
+        return self.product.name
 
 
 class Coupon(models.Model):

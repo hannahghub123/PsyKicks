@@ -55,45 +55,39 @@ def products(request):
         return render(request,"psyadmin/products.html",{"datas":datas})
     else:
         return redirect(admin_login)
-    
+
+
+def productvariant(request,item_id):
+    pobj = Products.objects.get(id=item_id)
+    variant = Productvariant.objects.filter(product=pobj)
+
+    context={
+        "variant":variant
+    }
+    return render(request,"psyadmin/productvariant.html",context)
+
 
 from django.shortcuts import get_object_or_404
 
 def addproducts(request):
     error_message = {}
     categoryobjs = Category.objects.all()
-    colors = Color.objects.all()
-    sizes = Size.objects.all()
     brands = Brand.objects.all()
-    genders = Gender.objects.all()
 
     if request.method == "POST":
         name = request.POST.get("name")
-        price = request.POST.get("price")
-        quantity = request.POST.get("quantity")
-        category_name = request.POST.get("category")
-        color_names = request.POST.getlist("color")
-        gender_name = request.POST.get("gender")
-        size_names = request.POST.getlist("size")
-        
         brand_name = request.POST.get("brand")
-        description = request.POST.get("description")
-        images = request.FILES.getlist("image")
-
+        category_name = request.POST.get("category")
+        
+        
         if len(name) < 4:
             error_message["name"] = "Product name should contain a minimum of four characters."
         elif len(name) > 20:
             error_message["name"] = "Product name can only have up to 20 characters."
         elif not all(c.isalnum() or c.isspace() for c in name):
             error_message["name"] = "Invalid string entry for product name."
-      
-
-        if Products.objects.filter(name__iexact=name.replace(" ", "")).exists():
+        elif Products.objects.filter(name__iexact=name.replace(" ", "")).exists():
             error_message["name"] = "A product with a similar name already exists."
-        elif not price.isdigit():
-            error_message["price"] = "Price should be a numeric value."
-        elif not quantity.isdigit():
-            error_message["quantity"] = "Quantity should be a numeric value."
         elif not Category.objects.filter(name=category_name).exists():
             error_message["category"] = "Invalid category."
 
@@ -101,27 +95,70 @@ def addproducts(request):
             return render(request, "psyadmin/add-products.html", {
                 "error_message": error_message,
                 "categoryobjs": categoryobjs,
-                "colors": colors,
-                "sizes": sizes,
-                "brands": brands,
-                "genders": genders
+               
             })
 
         category_object = Category.objects.get(name=category_name)
-        gender_instance = get_object_or_404(Gender, name=gender_name)
         brand_instance = get_object_or_404(Brand, name=brand_name)
         
 
         product = Products(
             name=name,
-            price=price,
-            quantity=quantity,
             category=category_object,
-            gender=gender_instance,
             brand=brand_instance,
-            description=description
         )
         product.save()
+        
+        return redirect("products")
+
+    return render(request, "psyadmin/add-products.html", {
+        "categoryobjs": categoryobjs,
+        "brands": brands,
+    })
+
+def add_productvariant(request):
+  
+    error_message = {}
+    colors = Color.objects.all()
+    sizes = Size.objects.all()
+    genders = Gender.objects.all()
+
+    if request.method == "POST":
+
+        price = request.POST.get("price")
+        stock = request.POST.get("stock")
+        color_names = request.POST.getlist("color")
+        gender_name = request.POST.get("gender")
+        size_names = request.POST.getlist("size")
+        description = request.POST.get("description")
+        images = request.FILES.getlist("image")
+
+        product = get_object_or_404(Products, id=item_id)
+
+        if not price.isdigit():
+            error_message["price"] = "Price should be a numeric value."
+        elif not stock.isdigit():
+            error_message["stock"] = "Stock should be a numeric value."
+
+        if error_message:
+            return render(request, "psyadmin/add-productvariant.html", {
+                "error_message": error_message,
+                "colors": colors,
+                "sizes": sizes,
+                "genders": genders
+            })
+
+        gender_instance = get_object_or_404(Gender, name=gender_name)
+        
+
+        variant = Productvariant(
+            product=product,
+            price=price,
+            stock=stock,
+            gender=gender_instance,
+            description=description
+        )
+        variant.save()
         
 
         
@@ -138,11 +175,9 @@ def addproducts(request):
         
         return redirect("products")
 
-    return render(request, "psyadmin/add-products.html", {
-        "categoryobjs": categoryobjs,
+    return render(request, "psyadmin/add-productvariant.html", {
         "colors": colors,
         "sizes": sizes,
-        "brands": brands,
         "genders": genders
     })
 

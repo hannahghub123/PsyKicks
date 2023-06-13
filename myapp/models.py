@@ -58,16 +58,9 @@ class Products(models.Model):
 
     def __str__(self):
         return self.name
-
-class ProductImage(models.Model):
-    product = models.ForeignKey(Products, on_delete=models.CASCADE,null=True, blank=True, related_name='images', default=None)
-    image = models.ImageField(upload_to='products/', null=True, blank=True)
-
-    def __str__(self):
-        return self.image.name
     
 class Productvariant(models.Model):
-    product = models.ForeignKey(Products, on_delete=models.CASCADE,null=True, blank=True, related_name='image', default=None)
+    product = models.ForeignKey(Products, on_delete=models.CASCADE,null=True, blank=True, default=None)
     gender = models.ForeignKey(Gender, on_delete=models.CASCADE, default=None, null=True)
     color = models.ManyToManyField(Color)
     size = models.ManyToManyField(Size)
@@ -77,8 +70,15 @@ class Productvariant(models.Model):
     description = models.TextField(blank=True)
 
     def __str__(self):
-        return self.product.name
+        return f"Variant #{self.id} - {self.product}"
 
+class ProductImage(models.Model):
+    product = models.ForeignKey(Products, on_delete=models.CASCADE,null=True, blank=True, related_name='images', default=None)
+    variant = models.ForeignKey(Productvariant, on_delete=models.CASCADE,null=True, blank=True, related_name='images', default=None)
+    image = models.ImageField(upload_to='products/', null=True, blank=True)
+
+    def __str__(self):
+        return self.image.name
 
 class Coupon(models.Model):
     coupon_code = models.CharField(max_length=50)

@@ -57,12 +57,12 @@ button[type="submit"] {
       {% csrf_token %}
       <div class="form-group">
         <label for="product-name">Name</label>
-        <input value="{{product.name}}" name="name" type="text" class="form-control" id="product-name" placeholder="Enter product name" required>
+        <input value="{{pobj.name}}" name="name" type="text" class="form-control" id="product-name" placeholder="Enter product name" readonly>
         <span class="error-message">{{error_message.name}}</span>
       </div>
 
       <div class="form-group">
-        <label for="color">Color</label>
+        <label for="color">Color - [select only one color option]</label>
         <select id="dropdown" name="color" multiple required>
           {% for item in colors %}
             <option value="{{item.name}}">{{item.name}}</option>
@@ -72,7 +72,7 @@ button[type="submit"] {
       </div>
 
       <div class="form-group">
-        <label for="size">Size</label>
+        <label for="size">Size - [select only one size option]</label>
         <select id="dropdown" name="size" multiple required>
           {% for item in sizes %}
             <option value="{{item.name}}">{{item.name}}</option>

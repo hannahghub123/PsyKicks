@@ -1,0 +1,177 @@
+{% extends 'psyadmin/admin-index.html' %}
+{% block content %}
+
+<style>
+  {% block style%}
+ 
+    /* Add your custom styles here */
+    .form-group {
+      margin-top: 10px;
+    }
+  
+    label {
+      display: block;
+      font-weight: bold;
+    }
+  
+    input[type="text"],
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+  
+    .error-message {
+      color: red;
+      font-size: 12px;
+    }
+
+  {% endblock style %}
+</style>
+
+<div class="container" style="width:fit-content; display:flex; ">
+<form class="p-5" method="POST" action="" enctype="multipart/form-data"> 
+ 
+  {% csrf_token %}
+          
+    <div class="form-group mt-2">
+      <label for="productname">Name</label>
+      <input value="{{variant.name}}" name="name" type="text"  placeholder="Product Name">
+    </div>
+    
+    <span class="error-message">{{error_message.name}}</span>
+
+    <div class="form-group mt-2">
+      <label for="price">Price</label>
+      <input value="{{variant.price}}" name="price" type="number"  placeholder=" Price">
+  
+    </div>
+    <span class="error-message">{{error_message.price}}</span>
+
+    <div class="form-group mt-2">
+      <label for="stock">Stock</label>
+      <input  value="{{variant.stock}}"  name="stock" type="number"  placeholder="Stock">
+  
+    </div>
+
+    <span class="error-message">{{error_message.quantity}}</span>
+
+    {% comment %} <div>
+      <label>Images</label>
+      <br>
+      {% for image in images %}
+      <img src="{{ image.image.url }}" alt="{{ variant.name }}" width="100" height="100">
+      {% endfor %}
+    
+  </div> {% endcomment %}
+
+  <div>
+    <label>Images</label>
+      <br>
+      {% for image in images %}
+    <img 
+    src="{{ image.image.url }}" alt="{{ variant.name }}" width="80"
+    height="80">
+    {% endfor %}
+  </div>
+  <br>
+  <div class="form-group mt-2">
+      <label for="newImages">Add New Images</label>
+      <input type="file" name="image" multiple>
+  </div>
+  
+  <div class="form-group mt-2">
+      <label for="deleteImages">Delete Images</label>
+      <select name="delete_images" multiple>
+          {% for image in images %}
+          <option value="{{ image.id }}">{{ image.image.name }}</option>
+          {% endfor %}
+      </select>
+     
+  </div>
+  
+
+
+    {% comment %} <div class="form-group mt-2">
+
+      <label for="inputPassword">Category</label>
+      <select id="dropdown" name="category">
+        {% for item in categoryobjs  %}
+        <option value="{{item.name}}">{{item.name}}<br><br> </option>
+        {% endfor %}
+  
+      </select> 
+</div> {% endcomment %}
+
+<span class="error-message">{{error_message.category}}</span>
+
+<div class="form-group mt-2">
+  <label for="color">Color</label>
+  <select name="color" multiple>
+      {% for item in colors %}
+      <option value="{{ item.id }}" {% if item in variant.color.all %}selected{% endif %}>{{ item.name }}</option>
+      {% endfor %}
+  </select>
+</div>
+
+<span class="error-message">{{error_message.color}}</span>
+
+<div class="form-group mt-2">
+  <label for="gender">Gender</label>
+  <select name="gender">
+      <option value="" {% if not variant.gender %}selected{% endif %}>None</option>
+      {% for item in genders %}
+      <option value="{{ item.id }}" {% if item == variant.gender %}selected{% endif %}>{{ item.name }}</option>
+      {% endfor %}
+  </select>
+</div>
+<span class="error-message">{{error_message.gender}}</span>
+
+<div class="form-group mt-2">
+  <label for="size">Size</label>
+  <select name="size" multiple>
+      {% for item in sizes %}
+      <option value="{{ item.id }}" {% if item in variant.size.all %}selected{% endif %}>{{ item.name }}</option>
+      {% endfor %}
+  </select>
+</div>
+
+<span class="error-message">{{error_message.size}}</span>
+
+{% comment %} <div class="form-group mt-2">
+  <label for="brand">Brand</label>
+  <select name="brand">
+      <option value="" {% if not variant.brand %}selected{% endif %}>None</option>
+      {% for item in brands %}
+      <option value="{{ item.id }}" {% if item == variant.brand %}selected{% endif %}>{{ item.name }}</option>
+      {% endfor %}
+  </select>
+</div>
+
+<span class="error-message">{{error_message.brand}}</span> {% endcomment %}
+
+
+
+
+    <div class="form-group mt-2">
+        <label for="description">Description </label>
+        <input value="{{variant.description}}"  name="description" type="text" class="form-control" id="description" placeholder="description">
+      </div>
+      <span class="error-message">{{error_message.description}}</span>
+
+
+    <button type="submit" class="btn btn-primary mt-4">Update</button>
+    
+   
+  
+  </form> 
+</div>
+
+  <script defer src="https://cdn.crop.guide/loader/l.js?c=ZXDVHR"></script>
+  
+
+
+
+{% endblock content %}

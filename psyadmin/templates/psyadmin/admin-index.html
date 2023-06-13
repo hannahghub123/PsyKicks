@@ -52,6 +52,9 @@
             </a>
            
           </li>
+          
+
+          
         
         </ul>
      
@@ -116,18 +119,17 @@
                 <a class="nav-link" href={% url 'categoryoffer' %}>
                   <span class="menu-title">Category Offer</span>
                   <i class="mdi mdi-table-large menu-icon"></i>
-              </i>
+            </i>
            
              
           </a>
-          <div class="collapse" id="auth">
-            <ul class="nav flex-column sub-menu">
-              <li class="nav-item"> <a class="nav-link" href="pages/samples/blank-page.html"> Blank Page </a></li>
-              <li class="nav-item"> <a class="nav-link" href="pages/samples/login.html"> Login </a></li>
-              <li class="nav-item"> <a class="nav-link" href="pages/samples/register.html"> Register </a></li>
-              <li class="nav-item"> <a class="nav-link" href="pages/samples/error-404.html"> 404 </a></li>
-              <li class="nav-item"> <a class="nav-link" href="pages/samples/error-500.html"> 500 </a></li>
-            </ul>
+          <div >
+          
+              <a href={% url 'admin_logout' %} class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 " >
+                Logout
+              </a>
+              
+          
           </div>
         </li>
       </ul>
@@ -150,6 +152,7 @@
       </div>
     </nav> 
 
+    
   
 
   {% block content %}

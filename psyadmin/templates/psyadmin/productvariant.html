@@ -7,21 +7,13 @@
 <div class="container" style=" margin-right:100px ">
 	<div class="container mt-5" >
   		<div class="col-md-10">
-    		<form action="" method="POST">
-				{% csrf_token %}
-			
-		
-        		<input type="text" name="searchitem" id="navbar-search-input" placeholder="Search user" aria-label="search" style=" font-size:15px; border-radius:2" >
-				<button type="submit" class="btn btn-primary " style="padding: 6px 15px; height:28px" >Search</button>
-		
-
-    		</form>
+    		
 		
   
   <div class="container">
     <div class="row justify-content-end">
         
-      <a href="{% url 'add_productvariant'  %}">
+      <a href="{% url 'addvariant' item_id %}">
         <button class="btn add-product-btn btn-primary mt-2">Add Product-Variant</button>
       </a>
      
@@ -37,9 +29,8 @@
       <table class="table table-striped">
         <thead>
           <tr>
+            <th>variantId</th>
             <th>Product</th>
-            <th>Brand</th>
-            <th>Category</th>
             <th>Gender</th>
             <th>Color</th>
             <th>Size</th>
@@ -57,9 +48,8 @@
           {% comment %} {% if not item.category.isblocked %} {% endcomment %}
             
           <tr>
+            <td>{{item.id}}</td>
             <td>{{ item.product.name }}</td>
-            <td>{{ item.product.brand.name }}</td>
-            <td>{{ item.product.category.name }}</td>
             <td>{{ item.gender.name }}</td>
             <td>
               {% for color in item.color.all %}
@@ -84,7 +74,7 @@
             </td>
             
             <td>
-              <a href={% url 'editproducts' item.id  %}>
+              <a href="#">
                 <button class="btn edit-btn btn-warning p-2">Edit</button>
               </a>
             </td>
@@ -137,10 +127,10 @@
 </script>
 
 
-{% comment %} <div class="mt-5"></div>
-<div class="mt-5"></div>
-<div class="mt-5"></div>
-<div class="mt-5"></div> {% endcomment %}
+<div class="row mt-5"></div>
+<div class="row mt-5"></div>
+<div class="row mt-5"></div>
+<div class="row mt-5"></div>
 
 
 

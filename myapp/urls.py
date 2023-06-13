@@ -44,6 +44,7 @@ urlpatterns = [
     path("addtolist/<int:product_id>/",views.addtolist,name="addtolist"),
     path('removeitem/<int:item_id>/', views.removeitem, name='removeitem'),
     path("orderdetails/<int:item_id>/",views.orderdetails,name="orderdetails"),
+    path("razorupdateorder/",views.razorupdateorder,name="razorupdateorder"),
 
     
   

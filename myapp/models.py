@@ -71,6 +71,8 @@ class ProductImage(models.Model):
 
     def __str__(self):
         return self.image.name
+    
+
 
 class Coupon(models.Model):
     coupon_code = models.CharField(max_length=50)

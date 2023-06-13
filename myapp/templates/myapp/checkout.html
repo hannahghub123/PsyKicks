@@ -3,6 +3,7 @@
 {% block content %}
 
 {% comment %} <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> {% endcomment %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
 <style>
     .error-message {
@@ -144,7 +145,7 @@
             <br>
 
             <h5>Items: {{quantsum}}</h5>
-            <h5>Total: ${{total_price|floatformat:2}}</h5>
+            <h5>Total: $ <span id="totalamount"> {{total_price|floatformat:2}} </span> </h5>
 
             <br>
             
@@ -188,6 +189,31 @@ var options = {
 		//alert(response.razorpay_payment_id);
 		//alert(response.razorpay_order_id);
 		//alert(response.razorpay_signature)
+
+        $.ajax({
+			url: '/razorupdateorder/', // Replace with the URL of your update order view
+			method: 'GET',
+			data: {
+				paymentId: response.razorpay_payment_id,
+				orderId: response.razorpay_order_id,
+				//addressval:$("#addressdropdown").val(),
+				//finalprice:$("#totalamount").text(),
+
+
+				
+			},
+			success: function(data) {
+				// Handle the response from the server
+				// For example, you can display a success message or redirect to a new page
+				//alert('Order updated successfully!');
+				//window.location.href = '../orderplaced/';
+			},
+			error: function(error) {
+				// Handle the error, if any
+				// For example, you can display an error message or perform alternative actions
+				alert('Error updating order: ' + error.message);
+			}
+		});
 	},
 	"prefill": {
 	"name": "Hannah Elsa Joy",

@@ -11,6 +11,7 @@ import requests
 import random
 from . models import *
 from .forms import *
+from django.http import JsonResponse
 
 # Create your views here.
 def index(request):
@@ -942,3 +943,45 @@ def removeitem(request,item_id):
 
     # Redirect to a specific URL or view
     return redirect('wishlist') 
+
+def razorupdateorder(request):
+    # totalamount=request.GET["totalamount"]
+    username = request.session.get("username")
+    user = customer.objects.get(username=username)
+    cartobj = Cart.objects.filter(user = user)
+    totalamount=0
+    for item in cartobj:
+        totalamount+=item.total
+
+    
+           
+    date_ordered = date.today()
+
+    orderobj = Order(customer=user, date_ordered=date_ordered, total=0 )
+    orderobj.save()
+    
+
+    for item in cartobj:
+
+        product=item.product
+        price = item.product.price
+        quantity=item.quantity
+        itemtotal = quantity*price
+
+        orderitemobj = OrderItem(product=product, order = orderobj,quantity=quantity, price=price, total=itemtotal )
+        orderitemobj.save()
+
+        orderobj.total += item.total
+
+        item.delete()
+
+    orderobj.save()
+    
+    
+
+    print("HENNAAAAAAAAAAAAAAAAAAAAAAA",totalamount)
+
+
+
+
+    return JsonResponse({"message":"done"})

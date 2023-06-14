@@ -11,7 +11,7 @@ import requests
 import random
 from . models import *
 from .forms import *
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 
 # Create your views here.
 def index(request):
@@ -784,6 +784,16 @@ def orderdetails(request,item_id):
     return render(request, "myapp/orderdetails.html",context)
 
 
+def cancel_order(request,order_id):
+
+    order = Order.objects.get(id=order_id)
+    order.order_status = 'cancelled'
+    order.save()
+
+    return redirect(userprofile)
+
+
+
 def userprofile(request):
     username = request.session["username"]
     customerobj = customer.objects.get(username=username)
@@ -870,7 +880,22 @@ def add_address(request):
 
 
 def deliveredproducts(request):
-    pass
+    if "username" in request.session:
+        orderobj = Order.objects.filter(order_status="delivered")
+        orderitemobj = OrderItem.objects.filter(order__in=orderobj)
+
+        context = {
+            'orderobj': orderobj,
+            'orderitemobj': orderitemobj
+        }
+
+        return render(request, "myapp/delivered-products.html", context)
+
+    # Handle the case when "username" is not in the session
+    # For example, redirect to a login page or display an error message
+    return HttpResponse("Unauthorized access")
+
+
 
 def wishlist(request):
     if "username" in request.session:

@@ -146,6 +146,9 @@ class OrderItem(models.Model):
     total = models.DecimalField(max_digits=10, decimal_places=2,default=0)
     date_added = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f"OrderItem #{self.id}"
+
     @property
     def get_total(self):
         total = self.product.price * self.quantity

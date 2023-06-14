@@ -289,10 +289,13 @@
         <td>{{ item.order_status }}</td>
         <td>{{ item.payment_type }}</td>
         <td>
-            <button type="button" class="btn btn-danger cancel-btn">Cancel</button>
+            <a href="{% url 'cancel_order' item.id %}"><button type="button" class="btn btn-danger cancel-btn">Cancel</button></a>            
         </td>
       </tr>
       {% endfor %}
+      <tr>
+        <th><a href="{% url 'deliveredproducts'  %}">Delivered Products</a></th> 
+      </tr>
     </tbody>
   </table>
   

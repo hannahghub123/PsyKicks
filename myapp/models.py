@@ -66,7 +66,7 @@ class Productvariant(models.Model):
     size = models.ManyToManyField(Size)
     price = models.PositiveIntegerField()
     stock = models.PositiveIntegerField()
-    image = models.ImageField(upload_to='products/', null=True, blank=True)
+    # image = models.ImageField(upload_to='products/', null=True, blank=True)
     description = models.TextField(blank=True)
 
     def __str__(self):
@@ -74,7 +74,7 @@ class Productvariant(models.Model):
 
 class ProductImage(models.Model):
     product = models.ForeignKey(Products, on_delete=models.CASCADE,null=True, blank=True, related_name='images', default=None)
-    variant = models.ForeignKey(Productvariant, on_delete=models.CASCADE,null=True, blank=True, related_name='images', default=None)
+    # variant = models.ForeignKey(Productvariant, on_delete=models.CASCADE,null=True, blank=True, related_name='images', default=None)
     image = models.ImageField(upload_to='products/', null=True, blank=True)
 
     def __str__(self):

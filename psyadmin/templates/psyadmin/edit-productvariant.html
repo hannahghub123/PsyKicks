@@ -58,39 +58,7 @@
 
     <span class="error-message">{{error_message.quantity}}</span>
 
-    {% comment %} <div>
-      <label>Images</label>
-      <br>
-      {% for image in images %}
-      <img src="{{ image.image.url }}" alt="{{ variant.name }}" width="100" height="100">
-      {% endfor %}
-    
-  </div> {% endcomment %}
 
-  <div>
-    <label>Images</label>
-      <br>
-      {% for image in images %}
-    <img 
-    src="{{ image.image.url }}" alt="{{ variant.name }}" width="80"
-    height="80">
-    {% endfor %}
-  </div>
-  <br>
-  <div class="form-group mt-2">
-      <label for="newImages">Add New Images</label>
-      <input type="file" name="image" multiple>
-  </div>
-  
-  <div class="form-group mt-2">
-      <label for="deleteImages">Delete Images</label>
-      <select name="delete_images" multiple>
-          {% for image in images %}
-          <option value="{{ image.id }}">{{ image.image.name }}</option>
-          {% endfor %}
-      </select>
-     
-  </div>
   
 
 

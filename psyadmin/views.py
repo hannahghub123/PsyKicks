@@ -86,7 +86,11 @@ def addproducts(request):
         name = request.POST.get("name")
         brand_name = request.POST.get("brand")
         category_name = request.POST.get("category")
-        
+        images = request.FILES.getlist("image")
+        product = Products.objects.filter(name=name)
+
+        category_object = Category.objects.get(name=category_name)
+        brand_instance = get_object_or_404(Brand, name=brand_name)
         
         if len(name) < 4:
             error_message["name"] = "Product name should contain a minimum of four characters."
@@ -103,11 +107,12 @@ def addproducts(request):
             return render(request, "psyadmin/add-products.html", {
                 "error_message": error_message,
                 "categoryobjs": categoryobjs,
+                "images":images,
+                "brand":brand_instance,
                
             })
 
-        category_object = Category.objects.get(name=category_name)
-        brand_instance = get_object_or_404(Brand, name=brand_name)
+        
         
 
         product = Products(
@@ -116,6 +121,12 @@ def addproducts(request):
             brand=brand_instance,
         )
         product.save()
+
+        for image in images:
+                product_image = ProductImage(product=product, image=image)
+                product_image.save()
+
+           
         
         return redirect("products")
 
@@ -301,9 +312,9 @@ def addvariant(request,item_id):
 
         variant.save()
 
-        for image in images:
-                product_image = ProductImage(product=pobj, image=image)
-                product_image.save()
+        # for image in images:
+        #         product_image = ProductImage(product=pobj, image=image)
+        #         product_image.save()
 
             
         return redirect("productvariant",item_id=item_id)
@@ -332,7 +343,7 @@ def editvariant(request,item_id):
     genders = Gender.objects.all()
     sizes = Size.objects.all()
     brands = Brand.objects.all()
-    images = ProductImage.objects.filter(id=item_id)
+    
     error_message={}
 
     if request.method == 'POST':
@@ -388,16 +399,6 @@ def editvariant(request,item_id):
             brand_id = request.POST.get("brand")
             variant.brand = Brand.objects.get(id=brand_id) if brand_id else None
 
-            # Check if new images are provided
-            if 'image' in request.FILES:
-                # Delete the existing images
-                for image in images:
-                    os.remove(image.image.path)
-                    image.delete()
-
-                # Save new images
-                for image_file in request.FILES.getlist('image'):
-                    ProductImage.objects.create(product=variant.product, image=image_file)
 
             variant.save()
             # return redirect('productvariant',item_id=item_id)
@@ -409,7 +410,7 @@ def editvariant(request,item_id):
             'genders': genders,
             'sizes': sizes,
             'brands': brands,
-            'images': images,
+            # 'images': images,
             "success":"Updated successfuly"
         
             }
@@ -424,7 +425,7 @@ def editvariant(request,item_id):
         'genders': genders,
         'sizes': sizes,
         'brands': brands,
-        'images': images,
+        # 'images': images,
       
     }
 
@@ -436,6 +437,7 @@ def editproducts(request, someid):
     content = Products.objects.get(id=someid)
     categoryobjs = Category.objects.all()
     brands = Brand.objects.all()
+    images = ProductImage.objects.filter(product=content)
 
     error_message={}
 
@@ -446,6 +448,9 @@ def editproducts(request, someid):
         # quantity = request.POST.get("quantity")
         category_name = request.POST.get("category")
         # description = request.POST.get("description")
+
+        # if 'delete_selected' in request.POST:
+        #     selected_images = request.POST.getlist('delete_images')
 
         if len(name) < 4:
             error_message["name"] = "Product name should contain a minimum of four characters"
@@ -466,28 +471,15 @@ def editproducts(request, someid):
 
         else:
             content.name = name
-            # content.description = description
-            # content.price = price
-            # content.quantity = quantity
 
             # Retrieve the category if it exists, otherwise assign a default category
             categoryobject = Category.objects.get(name=category_name)
             content.category = categoryobject
 
-            # Update color, gender, size, and brand
-            # color_ids = request.POST.getlist("color")
-            # content.color.set(color_ids)
-
-            # gender_id = request.POST.get("gender")
-            # content.gender = Gender.objects.get(id=gender_id) if gender_id else None
-
-            # size_ids = request.POST.getlist("size")
-            # content.size.set(size_ids)
-
             brand_id = request.POST.get("brand")
             content.brand = Brand.objects.get(id=brand_id) if brand_id else None
 
-            # Check if new images are provided
+            # # Check if new images are provided
             # if 'image' in request.FILES:
             #     # Delete the existing images
             #     for image in images:
@@ -498,6 +490,16 @@ def editproducts(request, someid):
             #     for image_file in request.FILES.getlist('image'):
             #         ProductImage.objects.create(product=content, image=image_file)
 
+            if 'image' in request.FILES:
+                # Save new images
+                for image_file in request.FILES.getlist('image'):
+                    ProductImage.objects.create(product=content, image=image_file)
+
+                # for image_id in selected_images:
+                #     image = ProductImage.objects.get(id=image_id)
+                #     image.delete()
+                    
+
             content.save()
             return redirect('products')
 
@@ -505,6 +507,7 @@ def editproducts(request, someid):
         'content': content,
         'categoryobjs': categoryobjs,
         'brands': brands,
+        'images':images
       
     }
 

@@ -42,7 +42,7 @@
          
             <th>Category</th>
             {% comment %} <th>Description</th> {% endcomment %}
-            {% comment %} <th>Image</th> {% endcomment %}
+            <th>Image</th>
             <th>Edit</th>
             <th>Delete</th>
             <th>More Details</th>
@@ -70,12 +70,12 @@
             
             <td>{{ item.category.name }}</td>
             {% comment %} <td>{{ item.description }}</td> {% endcomment %}
-            {% comment %} <td>
+            <td>
               {% if item.images.all %}
                 <img src="{{ item.images.first.image.url }}" alt="{{ item.name }}" width="100" height="100">
           
               {% endif %}
-          </td> {% endcomment %}
+          </td>
             <td>
               <a href={% url 'editproducts' item.id  %}>
                 <button class="btn edit-btn btn-warning p-2">Edit</button>

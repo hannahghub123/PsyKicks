@@ -661,14 +661,14 @@ var csrftoken = getToken('csrftoken');
 
 			<div class="row isotope-grid">
 
-				{% for i in datas %}
+				{% for item in datas %}
 				<div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item women">
 					<!-- Block2 -->
 					<div class="block2">
 						<div class="block2-pic hov-img0">
-							{% if i.images.all %}
-								{% with i.images.all|first as img %}
-								<a href={% url 'user_pdetails' i.id %}>
+							{% if item.images.all %}
+								{% with item.images.all|first as img %}
+								<a href={% url 'user_pdetails' item.id %}>
 							<img src="{{ img.image.url }}" alt="IMG-PRODUCT"></a>
 								{% endwith %}
 							{% endif %}
@@ -676,17 +676,17 @@ var csrftoken = getToken('csrftoken');
 
 						<div class="block2-txt flex-w flex-t p-t-14">
 							<div class="block2-txt-child1 flex-col-l ">
-								<a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-									{{i.name}}
-								</a>
+								{% comment %} <a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6"> {% endcomment %}
+									{{ item.name }}
+								{% comment %} </a> {% endcomment %}
 
-								{% for product_offer in product_offerobj %}
-									{% if i.name == product_offer.product.name %}
+								{% comment %} {% for product_offer in product_offerobj %}
+									{% if item.name == product_offer.product.name %}
 									{% if not offer.is_expired %}
 									<del>	{{ product_offer.product.price }}</del>
 								{% endif %}
 									{% endif %}
-								{% endfor %}
+								{% endfor %} {% endcomment %}
 
 								
 

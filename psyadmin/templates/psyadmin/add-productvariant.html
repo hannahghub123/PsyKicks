@@ -62,8 +62,8 @@ button[type="submit"] {
       </div>
 
       <div class="form-group">
-        <label for="color">Color - [select only one color option]</label>
-        <select id="dropdown" name="color" multiple required>
+        <label for="color">Color </label>
+        <select id="dropdown" name="color" required>
           {% for item in colors %}
             <option value="{{item.name}}">{{item.name}}</option>
           {% endfor %}
@@ -72,8 +72,8 @@ button[type="submit"] {
       </div>
 
       <div class="form-group">
-        <label for="size">Size - [select only one size option]</label>
-        <select id="dropdown" name="size" multiple required>
+        <label for="size">Size </label>
+        <select id="dropdown" name="size"  required>
           {% for item in sizes %}
             <option value="{{item.name}}">{{item.name}}</option>
           {% endfor %}

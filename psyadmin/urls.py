@@ -10,6 +10,7 @@ urlpatterns = [
   path("productvariant/<int:item_id>/",views.productvariant,name="productvariant"),
   path("addvariant/<int:item_id>/",views.addvariant,name="addvariant"),
   path("editvariant/<int:item_id>/",views.editvariant,name="editvariant"),
+  path("deletevariants/<int:someid>/",views.deletevariants,name="deletevariants"),
   path("addproducts/",views.addproducts, name="addproducts"),
   path("editproducts/<int:someid>",views.editproducts, name="editproducts"),
   path("deleteproducts/<int:someid>",views.deleteproducts, name="deleteproducts"),

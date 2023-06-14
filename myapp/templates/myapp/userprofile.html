@@ -277,7 +277,7 @@
         <th scope="col">Date Ordered</th>
         <th scope="col">Order Status</th>
         <th scope="col">Payment Type </th>
-        <th>Cancel Order</th>
+        <th>Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -289,7 +289,17 @@
         <td>{{ item.order_status }}</td>
         <td>{{ item.payment_type }}</td>
         <td>
-            <a href="{% url 'cancel_order' item.id %}"><button type="button" class="btn btn-danger cancel-btn">Cancel</button></a>            
+            {% if item.order_status == "order_confirmed" %}
+            <a href="{% url 'cancel_order' item.id %}"><button type="button" class="btn btn-danger cancel-btn">Cancel</button></a> 
+            {% elif item.order_status == "order_pending" %}
+            <a href="{% url 'cancel_order' item.id %}"><button type="button" class="btn btn-danger cancel-btn">Cancel</button></a> 
+            {% elif item.order_status == "delivered" %}    
+            <a href="{% url 'return_order' item.id %}"><button type="button" class="btn btn-warning cancel-btn">Return</button></a>
+            {% elif item.order_status == "cancelled" %} 
+            <p style="color:red">Order Cancelled</p>
+            {% elif item.order_status == "returned" %} 
+            <p style="color:blue">Order Returned</p>
+            {% endif %}      
         </td>
       </tr>
       {% endfor %}

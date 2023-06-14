@@ -41,6 +41,7 @@ urlpatterns = [
     path("deliveredproducts/",views.deliveredproducts,name="deliveredproducts"),
     path("orderdetails/<int:item_id>/",views.orderdetails,name="orderdetails"),
     path("cancel_order/<int:order_id>/",views.cancel_order,name="cancel_order"),
+    path("return_order/<int:order_id>/",views.return_order,name="return_order"),
 
     path("wishlist/",views.wishlist,name="wishlist"),
     path("addtolist/<int:product_id>/",views.addtolist,name="addtolist"),
@@ -48,6 +49,7 @@ urlpatterns = [
     path('removeitem/<int:item_id>/', views.removeitem, name='removeitem'),
     
     path("razorupdateorder/",views.razorupdateorder,name="razorupdateorder"),
+    path("updatevariant/<int:item_id>/",views.updatevariant,name="updatevariant"),
 
 ]
 

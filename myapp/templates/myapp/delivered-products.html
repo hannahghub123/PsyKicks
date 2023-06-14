@@ -28,12 +28,13 @@
         <th scope="col">Price</th>
         <th scope="col">Date Ordered</th>
         <th scope="col">Total Price</th>
+        {% comment %} <th>Return Product</th> {% endcomment %}
       </tr>
     </thead>
     <tbody>
         {% for item in orderitemobj   %}
             <tr>
-                <th scope="row">{{item.id}}</th>
+                <th scope="row">{{item.order.id}}</th>
                 <th>
                     <img class="img-fluid img-thumbnail"
                     src="{{ item.product.images.first.image.url }}" alt="" width="50"
@@ -44,6 +45,10 @@
                 <td>{{item.price}}</td>
                 <td>{{item.date_added}}</td>
                 <td>{{item.total}}</td>
+                {% comment %} <td>
+                  <a href="#">
+                  <button class="btn btn-warning">Return</button></a>
+                </td> {% endcomment %}
             </tr>
         {% endfor %}
     </tbody>

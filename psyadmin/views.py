@@ -226,6 +226,7 @@ def addvariant(request,item_id):
     colors = Color.objects.all()
     sizes = Size.objects.all()
     pobj=Products.objects.get(id=item_id)
+    product = Productvariant.objects.filter(product=pobj).first()
     variant=Productvariant.objects.filter(id=item_id)
     genders = Gender.objects.all()
 
@@ -238,20 +239,48 @@ def addvariant(request,item_id):
         description = request.POST.get("description")
         images = request.FILES.getlist("image")
 
+        # color_ids = [Color.objects.get(name=color_name).id for color_name in color_names]
+        # gender_ids = [Gender.objects.get(name=gender_name).id for gender_name in gender_name]
+        # size_ids = [Size.objects.get(name=size_name).id for size_name in size_names]
+
+        color_ids = [Color.objects.get(name=color_name).id for color_name in color_names]
+        size_ids = [Size.objects.get(name=size_name).id for size_name in size_names]
+
+
+        gender_instance = get_object_or_404(Gender, name=gender_name) 
+
         if not price.isdigit():
                 error_message["price"] = "Price should be a numeric value."
         elif not stock.isdigit():
             error_message["stock"] = "Stock should be a numeric value."
 
+        # elif Productvariant.objects.filter(
+        #     product=product.id, gender__id=gender_instance.id, color__id__in=color_ids, size__id__in=size_ids).exists():
+        #     error_message["name"] = "Variant already exists"
+
+        if Productvariant.objects.filter(
+            product=pobj,
+            gender=gender_instance,
+            color__id__in=color_ids,
+            size__id__in=size_ids
+        ).exists():
+            error_message["name"] = "Variant already exists"
+
+
         if error_message:
             return render(request, "psyadmin/add-productvariant.html", {
                 "error_message": error_message,
+                "pobj":pobj,
                 "colors": colors,
                 "sizes": sizes,
-                "genders": genders
+                "genders": genders,
+                'description':description,
+                'price':price,
+                'stock':stock,
+
             })
 
-        gender_instance = get_object_or_404(Gender, name=gender_name)       
+              
 
         variant = Productvariant(
             product=pobj,
@@ -266,9 +295,9 @@ def addvariant(request,item_id):
         color_object = Color.objects.get(name=color_name)
         variant.color.set([color_object]) 
 
-        size_name = size_names[0] 
+        size_name = size_names[0]
         size_object = Size.objects.get(name=size_name)
-        variant.size.set([size_object]) 
+        variant.size.set([size_object])
 
         variant.save()
 
@@ -285,7 +314,9 @@ def addvariant(request,item_id):
         "genders": genders,
         "variant":variant,
         "item_id":item_id,
-        "pobj":pobj
+        "pobj":pobj,
+        'price':price,
+        'stock':stock, 'description':description,
     })
  
 
@@ -488,6 +519,19 @@ def deleteproducts(request, someid):
 
     # Redirect to a specific URL or view
     return redirect('products') 
+
+def deletevariants(request, someid):
+    variant = get_object_or_404(Productvariant, id=someid)
+    # variant = Productvariant.objects.get(id=item_id)
+    product=variant.product
+    productid=product.id
+
+    # Delete the product
+    variant.delete()
+
+    # Redirect to a specific URL or view
+    # return redirect('productvariant')
+    return redirect(productvariant,productid)
 
 @never_cache
 def categories(request):

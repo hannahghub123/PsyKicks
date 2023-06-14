@@ -42,6 +42,7 @@ def userindex(request):
         cartItems = order['get_cart_items']
 
     datas = Products.objects.all()
+    # variants = {} 
     colors = Color.objects.all()
     category = Category.objects.all()
     brand = Brand.objects.all()
@@ -69,12 +70,18 @@ def userindex(request):
 
 
     username = request.session["username"]
-    user = customer.objects.get(username=username)
+    user = customer.objects.filter(username=username).first()
     wishlist_items = Wishlist.objects.filter(customer=user)
     count = wishlist_items.count()
 
+    # for product in datas:
+    #     product_variants = Productvariant.objects.filter(product=product)
+    #     variants[product.id] = product_variants
+    # print("varianttssss>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",variants)
+
     context = {
         'datas': datas,
+        # 'variants':variants,
         'cartItems': cartItems,
         'colors': colors,
         'category': category,
@@ -404,38 +411,77 @@ def pdetails(request, product_id):
     })
 
 def user_pdetails(request, product_id):
+    sizes = Size.objects.all()
+    colors = Color.objects.all()
+    genders = Gender.objects.all()
+    product = get_object_or_404(Products, id=product_id)
+    pdtvariant = Productvariant.objects.filter(product=product)
+    pdtobj1 = pdtvariant.first()
+    
     if request.method == "POST":
-        quantity = int(request.POST.get("quantity"))
-        pdtobj = Products.objects.get(id=product_id)
-        username = request.session.get("username")
-        user = customer.objects.get(username=username)
-        
-        try:
+        if "addtocart" in request.POST:
 
-            productofferobj=ProductOffer.objects.get(product=pdtobj)
-            discount=Decimal(productofferobj.discount)
-            print("###############",discount)
-            newprice=pdtobj.price-((discount/100)*(pdtobj.price))
-            print("HANNAH",newprice)
-            total=newprice*Decimal(quantity)
-        except:
-            total = Decimal(quantity) * pdtobj.price 
-        
-        
-        
-        try:
-            # Check if the product is already in the cart
-            cartobj = Cart.objects.get(user=user, product=pdtobj)
-            cartobj.quantity += quantity  # Increase the quantity
-            cartobj.total += total  # Update the total
-            cartobj.save()
-            return redirect(usercart)
-        except Cart.DoesNotExist:
-            cartobj = Cart(user=user, product=pdtobj, quantity=quantity, total=total)
-            cartobj.save()
-            return redirect(usercart)
+            quantity = int(request.POST.get("quantity"))
+            pdtobj = Products.objects.get(id=product_id)
+            username = request.session.get("username")
+            user = customer.objects.get(username=username)
+            
+            try:
 
+                productofferobj=ProductOffer.objects.get(product=pdtobj)
+                discount=Decimal(productofferobj.discount)
+                print("###############",discount)
+                newprice=pdtobj.price-((discount/100)*(pdtobj.price))
+                print("HANNAH",newprice)
+                total=newprice*Decimal(quantity)
+            except:
+                total = Decimal(quantity) * pdtobj.price 
+            
+            
+            
+            try:
+                # Check if the product is already in the cart
+                cartobj = Cart.objects.get(user=user, product=pdtobj)
+                cartobj.quantity += quantity  # Increase the quantity
+                cartobj.total += total  # Update the total
+                cartobj.save()
+                return redirect(usercart)
+            except Cart.DoesNotExist:
+                cartobj = Cart(user=user, product=pdtobj, quantity=quantity, total=total)
+                cartobj.save()
+                return redirect(usercart)
+        if "updatevariant" in request.POST:
+            size=request.POST["size"]
+            color=request.POST["color"]
+            product=Products.objects.get(id=product_id)
+            pdtobj1=Productvariant.objects.get(product=product,size=size,color=color)
+            images = product.images.all() 
+            products_in_same_category = Products.objects.filter(category=product.category)
+
+            username = request.session["username"]
+            user = customer.objects.get(username=username)
+            wishlist_items = Wishlist.objects.filter(customer=user)
+            count = wishlist_items.count()
+    
+            return render(request, 'myapp/user-pdetails.html', {
+                'pdtobj1': pdtobj1,
+                'images': images,
+                'products_in_same_category': products_in_same_category,
+                'count':count,
+                'sizes':sizes,
+                'colors':colors,
+                'genders':genders
+            })
+
+           
+
+ 
     product = Products.objects.prefetch_related('images').filter(id=product_id).first()
+    pdtvariant=Productvariant.objects.filter(product=product)
+    pdtobj1=Productvariant.objects.get(id=1)
+    print("#################",pdtobj1.product.name)
+
+
     images = product.images.all() 
     products_in_same_category = Products.objects.filter(category=product.category)
 
@@ -445,10 +491,13 @@ def user_pdetails(request, product_id):
     count = wishlist_items.count()
     
     return render(request, 'myapp/user-pdetails.html', {
-        'product': product,
+        'pdtobj1': pdtobj1,
         'images': images,
         'products_in_same_category': products_in_same_category,
-        'count':count
+        'count':count,
+        'sizes':sizes,
+        'colors':colors,
+        'genders':genders
     })
 
 
@@ -482,6 +531,17 @@ def addtocart(request, product_id):
             return redirect('login') 
 
     return redirect('userproduct')
+
+def updatevariant(request,item_id):
+    if request.method=="POST":
+        size=request.POST["size"]
+        color=request.POST["color"]
+        product=Products.objects.get(id=item_id)
+        variant=Productvariant.objects.get(product=product,size=size,color=color)
+
+    return redirect(usercart)
+
+
 
 def quantity_inc(request,item_id):
     pass
@@ -792,6 +852,14 @@ def cancel_order(request,order_id):
 
     return redirect(userprofile)
 
+def return_order(request,order_id):
+    order = Order.objects.get(id=order_id)
+    order.order_status = 'returned'
+    order.save()
+
+    return redirect(userprofile)
+
+
 
 
 def userprofile(request):
@@ -884,9 +952,15 @@ def deliveredproducts(request):
         orderobj = Order.objects.filter(order_status="delivered")
         orderitemobj = OrderItem.objects.filter(order__in=orderobj)
 
+        username = request.session["username"]
+        customerobj = customer.objects.get(username=username)
+        wishlist_items = Wishlist.objects.filter(customer=customerobj)
+        count = wishlist_items.count()
+
         context = {
             'orderobj': orderobj,
-            'orderitemobj': orderitemobj
+            'orderitemobj': orderitemobj,
+            'count':count
         }
 
         return render(request, "myapp/delivered-products.html", context)

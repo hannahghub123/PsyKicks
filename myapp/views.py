@@ -771,21 +771,22 @@ def usercheckout(request):
             username = request.session.get("username")
             user = customer.objects.get(username=username)
             cartobj = Cart.objects.filter(user=user)
-            address = request.POST.get("address")
+            addressid = request.POST.get("address")
+            address = ShippingAddress.objects.get(id=addressid)
             date_ordered = date.today()
 
-            orderobj = Order(customer=user, date_ordered=date_ordered, total=0 )
+            orderobj = Order(customer=user, date_ordered=date_ordered, total=0 ,address = address)
             orderobj.save()
             
         
             for item in cartobj:
 
-                product=item.product
-                price = item.product.price
+                pdtvariant=item.variant
+                price = item.variant.price
                 quantity=item.quantity
                 itemtotal = quantity*price
 
-                orderitemobj = OrderItem(product=product, order = orderobj,quantity=quantity, price=price, total=itemtotal,address = address)
+                orderitemobj = OrderItem(variant=pdtvariant, order = orderobj,quantity=quantity, price=price, total=itemtotal)
                 orderitemobj.save()
 
                 orderobj.total += item.total
@@ -793,6 +794,7 @@ def usercheckout(request):
                 item.delete()
 
             orderobj.save()
+            return redirect(ordercomplete)
 
 
         

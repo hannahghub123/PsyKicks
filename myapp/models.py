@@ -153,7 +153,7 @@ class Order(models.Model):
     
 class OrderItem(models.Model):
     product = models.ForeignKey(Products, on_delete=models.SET_NULL, blank=True, null=True)
-    # variant = models.ForeignKey(Productvariant, on_delete=models.SET_NULL, blank=True, null=True)
+    variant = models.ForeignKey(Productvariant, on_delete=models.SET_NULL, blank=True, null=True)
     order = models.ForeignKey(Order, on_delete=models.SET_NULL, blank=True, null=True)
     quantity = models.IntegerField(default=0, null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2,default=0)

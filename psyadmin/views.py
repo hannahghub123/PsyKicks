@@ -239,13 +239,13 @@ def addvariant(request,item_id):
     pobj=Products.objects.get(id=item_id)
     product = Productvariant.objects.filter(product=pobj).first()
     variant=Productvariant.objects.filter(id=item_id)
-    genders = Gender.objects.all()
+    # genders = Gender.objects.all()
 
     if request.method == "POST":
         price = request.POST.get("price")
         stock = request.POST.get("stock")
         color_names = request.POST.getlist("color")
-        gender_name = request.POST.get("gender")
+        # gender_name = request.POST.get("gender")
         size_names = request.POST.getlist("size")
         description = request.POST.get("description")
         images = request.FILES.getlist("image")
@@ -258,7 +258,7 @@ def addvariant(request,item_id):
         size_ids = [Size.objects.get(name=size_name).id for size_name in size_names]
 
 
-        gender_instance = get_object_or_404(Gender, name=gender_name) 
+        # gender_instance = get_object_or_404(Gender, name=gender_name) 
 
         if not price.isdigit():
                 error_message["price"] = "Price should be a numeric value."
@@ -271,7 +271,7 @@ def addvariant(request,item_id):
 
         if Productvariant.objects.filter(
             product=pobj,
-            gender=gender_instance,
+            # gender=gender_instance,
             color__id__in=color_ids,
             size__id__in=size_ids
         ).exists():

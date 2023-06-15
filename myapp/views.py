@@ -415,7 +415,7 @@ def user_pdetails(request, product_id):
     colors = Color.objects.all()
     genders = Gender.objects.all()
     product = get_object_or_404(Products, id=product_id)
-    
+    user=customer.objects.get(username=request.session["username"])
     pdtvariant = Productvariant.objects.filter(product=product)
     pdtobj1 = pdtvariant.first()
     error_message = {}
@@ -475,34 +475,40 @@ def user_pdetails(request, product_id):
 
         if "addtocart" in request.POST:
 
-            stock = request.POST.get("stock")
+            quantity = request.POST.get("quantity")
+            quantity=int(quantity)
             pdtobj = Products.objects.get(id=product_id)
+            size=request.POST["size"]
+            color=request.POST["color"]
+            pdtvariant=Productvariant.objects.get(product=product,size=size,color=color)
+            
             username = request.session.get("username")
             user = customer.objects.get(username=username)
-            
-            try:
 
-                productofferobj=ProductOffer.objects.get(product=pdtobj)
-                discount=Decimal(productofferobj.discount)
-                print("###############",discount)
-                newprice=pdtobj.price-((discount/100)*(pdtobj.price))
-                print("HANNAH",newprice)
-                total=newprice*stock
-                
-            except:
-                total = stock * pdtobj.price 
+
+            total = Decimal(quantity) * pdtvariant.price 
+            # try:
+
+            #     productofferobj=ProductOffer.objects.get(product=pdtobj)
+            #     discount=Decimal(productofferobj.discount)
+            #     print("###############",discount)
+            #     newprice=pdtobj.price-((discount/100)*(pdtobj.price))
+            #     print("HANNAH",newprice)
+            #     total=newprice*Decimal(quantity)
+            # except:
+            #     total = Decimal(quantity) * pdtobj.price 
             
             
             
             try:
                 # Check if the product is already in the cart
-                cartobj = Cart.objects.get(user=user, product=pdtobj)
-                cartobj.quantity += stock  # Increase the quantity
+                cartobj = Cart.objects.get(user=user, variant=pdtvariant)
+                cartobj.quantity += quantity  # Increase the quantity
                 cartobj.total += total  # Update the total
                 cartobj.save()
                 return redirect(usercart)
             except Cart.DoesNotExist:
-                cartobj = Cart(user=user, product=pdtobj, quantity=stock, total=total)
+                cartobj = Cart(user=user, variant=pdtvariant, quantity=quantity, total=total)
                 cartobj.save()
                 return redirect(usercart)
             

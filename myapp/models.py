@@ -168,6 +168,18 @@ class OrderItem(models.Model):
         total = self.product.price * self.quantity
         return total
     
+class Wallet(models.Model):
+    TRANSACTION_TYPES = (
+        ('deposit', 'deposit'),
+        ('paid_for_order', 'paid_for_order'),
+        ('returned_and_refund', 'returned_and_refund'),
+        ('cancelled_and_refund', 'cancelled_and_refund'),
+        ('withdraw', 'withdraw'),
+    )
+    user = models.ForeignKey(customer, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2,default=0)
+    transaction_type = models.CharField(max_length=50,default="deposit",choices=TRANSACTION_TYPES)
+    
 class Wishlist(models.Model):
     customer = models.ForeignKey(customer, on_delete=models.CASCADE)
     product = models.ForeignKey(Products, on_delete=models.CASCADE)

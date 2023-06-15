@@ -833,21 +833,41 @@ def orderdetails(request,item_id):
 
 
 def cancel_order(request,order_id):
+    if "username" in request.session:
+        username = request.session.get('username')
+        userobj = customer.objects.get(username=username)
 
-    order = Order.objects.get(id=order_id)
-    order.order_status = 'cancelled'
-    order.save()
+        order = Order.objects.get(id=order_id)
+        order.order_status = 'cancelled'
+        order.save()
 
-    return redirect(userprofile)
+        amount=order.total
+        data = Wallet(user=userobj, amount=amount,transaction_type="cancelled_and_refund")
+        data.save()
+
+        return redirect(userprofile)
 
 def return_order(request,order_id):
-    order = Order.objects.get(id=order_id)
-    order.order_status = 'returned'
-    order.save()
+    if "username" in request.session:
+        username = request.session.get('username')
+        userobj = customer.objects.get(username=username)
 
-    return redirect(userprofile)
+        order = Order.objects.get(id=order_id)
+        order.order_status = 'returned'
+        order.save()
 
+        amount=order.total
+        data = Wallet(user=userobj, amount=amount,transaction_type="returned_and_refund")
+        data.save()
 
+        return redirect(userprofile)
+
+def wallet(request):
+    datas = Wallet.objects.all()
+    context={
+        "datas":datas
+    }
+    return render(request,"myapp/wallet.html",context)
 
 
 def userprofile(request):
@@ -1069,6 +1089,46 @@ def razorupdateorder(request):
     print("HENNAAAAAAAAAAAAAAAAAAAAAAA",totalamount)
 
 
-
-
     return JsonResponse({"message":"done"})
+
+
+
+# def generateinvoice(request):
+#     user = customer.objects.get(username = request.session['username'])
+
+#     ordered_product = Order.objects.get(Q(id=request.GET.get('ord_id')) & Q(user=user)) 
+#     ordered_item = OrderItem.objects.get(order=ordered_product) 
+#     data = {
+#         # 'date' : datetime.date.today(),
+#         'orderid': ordered_product.id,
+#         'ordered_date': ordered_product.date_ordered,
+#         'name': ordered_product.address.customer.name,
+#         'housename': ordered_product.address.address,
+#         'country' : ordered_product.address.country,
+#         'city' : ordered_product.address.city, 
+#         'state' : ordered_product.address.state, 
+#         'zipcode': ordered_product.address.zipcode,
+#         'phone' : ordered_product.address.customer.phonenumber,
+#         'product': ordered_item.product.name,
+#         'amount' : ordered_product.total,
+#         'ordertype': ordered_product.payment_type,
+#     } 
+#     template_path = 'invoicepdf.html'
+#     context = {
+#         # 'date': data['date'],
+#         'orderid': data['orderid'],
+#         'name': data['name'],
+#     }
+#     html = render_to_string(template_path, data)
+#     # Create a Django response object, and specify content_type as pdf
+#     response = HttpResponse(content_type='application/pdf')
+#     response['Content-Disposition'] = f'attachment; filename="Invoice_{data["orderid"]}.pdf"'
+  
+
+#     # create a pdf
+#     pisa_status = pisa.CreatePDF(
+#        html, dest=response)
+#     # if error then show some funny view
+#     if pisa_status.err:
+#        return HttpResponse('We had some errors <pre>' + html + '</pre>')
+#     return response

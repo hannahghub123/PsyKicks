@@ -32,6 +32,7 @@ urlpatterns = [
     path("usercheckout/",views.usercheckout, name="usercheckout"),
     path('remove_coupon/<int:coupon_id>/', views.remove_coupon, name='remove_coupon'),
     path("ordercomplete/",views.ordercomplete,name="ordercomplete"),
+    path("wallet/",views.wallet,name="wallet"),
    
     path("userprofile/",views.userprofile,name="userprofile"),
     path("updateuser/",views.updateuser,name="updateuser"),

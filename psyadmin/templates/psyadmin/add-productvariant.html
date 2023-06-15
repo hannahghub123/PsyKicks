@@ -82,16 +82,6 @@ button[type="submit"] {
       </div>
 
       <div class="form-group">
-        <label for="gender">Gender</label>
-        <select id="dropdown" name="gender" required>
-          {% for item in genders %}
-            <option value="{{item.name}}">{{item.name}}</option>
-          {% endfor %}
-        </select>
-        <span class="error-message">{{error_message.gender}}</span>
-      </div>
-
-      <div class="form-group">
         <label for="price">Price</label>
         <input value="{{item.price}}" name="price" type="number" class="form-control" id="price" placeholder="Enter price" required>
         <span class="error-message">{{error_message.price}}</span>

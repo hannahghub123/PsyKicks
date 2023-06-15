@@ -46,6 +46,8 @@ urlpatterns = [
   path("categoryoffer_available/<int:someid>",views.categoryoffer_available,name="categoryoffer_available"),
   path("addnew_categoryoffer/",views.addnew_categoryoffer, name="addnew_categoryoffer"),
 
+  path("sales_report/",views.sales_report,name="sales_report"),
+
 ]
 
   

@@ -110,6 +110,12 @@
           </a>
         </li>
         <li class="nav-item">
+           <a class="nav-link" href={% url 'sales_report' %}>
+            <span class="menu-title">Sales Report</span>
+            <i class="mdi mdi-table-large menu-icon"></i>
+          </a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link" data-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
             <span class="menu-title">Offers</span>
             <i class="menu-arrow">
@@ -168,7 +174,7 @@
         </span>
       </div>
     </div>
-    <div class="row">
+    {% comment %} <div class="row">
       <div class="col-md-4 stretch-card grid-margin">
         <div class="card bg-gradient-warning text-white">
           <div class="card-body">
@@ -215,9 +221,24 @@
             </div>
           </div>
         </div>
+      </div> {% endcomment %}
+      <div class="container">
+        <h2>Order Statistics</h2>
+        <div class="row">
+          <div class="col-md-6">
+            <canvas id="pie-chart"></canvas>
+          </div>
+          <div class="col-md-6">
+            <h4>Top Product: {{ top_product }}</h4>
+            <h4>Top Returned Product: {{ top_returned_product }}</h4>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="row">
+
+
+    
+    
+    {% comment %} <div class="row">
       <div class="col-lg-12 grid-margin stretch-card">
         <div class="card">
           <div class="card-body">
@@ -563,11 +584,100 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> {% endcomment %}
   <!-- content-wrapper ends -->
 
        
+  <div class="container-fluid">
+    <div class="row justify-content-center mt-4">
+        <h4>
+            Sales Report
+        </h4>
+    </div>
+    {% comment %} <div class="row  justify-content-center mt-5">
+      <h4>
+          Download Sales Report
+      </h4>
+  </div> {% endcomment %}
 
+  <div class="row justify-content-center border mt-2  ">
+      <form action="" method="POST">
+        {% csrf_token %}
+          <label class="mt-5" for="start_date">Start Date:</label>
+          <input class="form-control" type="date" id="start_date" name="start_date" required>
+          <br>
+          <label for="end_date">End Date:</label>
+          <input  class="form-control" type="date" id="end_date" name="end_date" required>
+          <br>
+         
+   
+  
+          <div class="row mb-5">
+            <button name="show" type="submit" class="btn add-product-btn btn-primary mt-2">Show Report</button>
+            <button name="download"  type="submit" class="btn add-product-btn btn-primary mt-2 ml-4 ">Download</button>
+            <button name="downloadinexcel"  type="submit" class="btn add-product-btn btn-primary mt-2 ml-4 ">Download In Excel</button>
+              
+  
+          </div>
+          <div>
+            
+
+            
+
+          </div>
+    
+          
+      </form>
+
+  </div>
+  {% if orderobjs %}
+    <div class="row">
+        <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Ordered By</th>
+                <th>Payment Type</th>
+                <th>Quantity</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Address</th>
+                
+            
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in orderobjs %}
+              <tr>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.user.name }}</td>
+                <td>{{ item.ordertype }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.orderdate }}</td>
+                <td>{{ item.orderstatus }}</td>
+                <td>{{ item.address.house }} ,{{ item.address.locality }}</td>
+                
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+    </div>
+    
+    
+    {% endif %}
+    {% if message %}
+    <div class="text-center mt-4 text-danger">
+      {{message}}
+
+
+    </div>
+    {% endif %}
+
+
+    
+    <br><br><br><br>
+</div>
         
 
 
@@ -602,23 +712,23 @@
   <script src="node_modules/perfect-scrollbar/dist/js/perfect-scrollbar.jquery.min.js"></script> {% endcomment %}
   <!-- endinject -->
   <!-- Plugin js for this page-->
-  <script src="node_modules/chart.js/dist/Chart.min.js"></script> 
+  {% comment %} <script src="node_modules/chart.js/dist/Chart.min.js"></script> 
   <script src="{% static "psyadmin/js/chart.js"%}"></script>
-<script src="{% static "psyadmin/js/dashboard.js"%}"></script>
+<script src="{% static "psyadmin/js/dashboard.js"%}"></script> {% endcomment %}
 
   <!-- End plugin js for this page-->
   <!-- inject:js -->
-  <script src="{% static 'psyadmin/js/off-canvas.js'%}"></script>
-  <script src="{% static 'psyadmin/js/misc.js'%}"></script>
+  {% comment %} <script src="{% static 'psyadmin/js/off-canvas.js'%}"></script>
+  <script src="{% static 'psyadmin/js/misc.js'%}"></script> {% endcomment %}
   <!-- endinject -->
   <!-- Custom js for this page-->
-  <script src="{% static 'psyadmin/js/dashboard.js'%}"></script>
+  {% comment %} <script src="{% static 'psyadmin/js/dashboard.js'%}"></script> {% endcomment %}
   <!-- End custom js for this page-->
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  {% comment %} <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> {% endcomment %}
 
    
-  <script>
+ {% comment %} <script>
     var xValues = [{% for item in returndict  %} '{{item}}',  {% endfor %}];
     var yValues = [20,30];
     var yValues = [ {% for key, value in returndict.items %}
@@ -644,6 +754,36 @@
         }
       }
     });
+    </script>  {% endcomment %}
+
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        var pieData = {
+          labels: [{% for key in orderdict.keys %}'{{ key }}',{% endfor %}],
+          datasets: [{
+            data: [{% for value in orderdict.values %}{{ value }},{% endfor %}],
+            backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#33FF57', '#C7D3FF'],
+            borderColor: ['#FF6384', '#36A2EB', '#FFCE56', '#33FF57', '#C7D3FF'],
+            borderWidth: 1
+          }]
+        };
+  
+        var pieOptions = {
+          responsive: true,
+          legend: {
+            position: 'bottom'
+          }
+        };
+  
+        var ctx = document.getElementById('pie-chart').getContext('2d');
+        new Chart(ctx, {
+          type: 'pie',
+          data: pieData,
+          options: pieOptions
+        });
+      });
     </script>
 
 

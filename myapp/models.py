@@ -29,13 +29,6 @@ class Color(models.Model):
     def __str__(self):
         return self.name
     
-class Gender(models.Model):
-    name = models.CharField(max_length=200, unique=True)
-    isblocked = models.BooleanField(default=False)
-
-    def __str__(self):
-        return self.name
-
 class Size(models.Model):
     name = models.CharField(max_length=200, unique=True)
     isblocked = models.BooleanField(default=False)
@@ -61,7 +54,6 @@ class Products(models.Model):
     
 class Productvariant(models.Model):
     product = models.ForeignKey(Products, on_delete=models.CASCADE,null=True, blank=True, default=None)
-    # gender = models.ForeignKey(Gender, on_delete=models.CASCADE, default=None, null=True)
     color = models.ManyToManyField(Color)
     size = models.ManyToManyField(Size)
     price = models.DecimalField(max_digits=10, decimal_places=2)
@@ -89,7 +81,7 @@ class Coupon(models.Model):
 
 class Cart(models.Model):
     user = models.ForeignKey(customer, on_delete=models.CASCADE)
-    # product = models.ForeignKey(Products, on_delete=models.CASCADE)
+    product = models.ForeignKey(Products, on_delete=models.CASCADE)
     variant= models.ForeignKey(Productvariant,on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
     total = models.DecimalField(max_digits=10, decimal_places=2)
@@ -183,6 +175,7 @@ class Wallet(models.Model):
 class Wishlist(models.Model):
     customer = models.ForeignKey(customer, on_delete=models.CASCADE)
     product = models.ForeignKey(Products, on_delete=models.CASCADE)
+    variant = models.ForeignKey(Productvariant, on_delete=models.CASCADE)
 
 class ProductOffer(models.Model):
     customer = models.ForeignKey(customer, on_delete=models.CASCADE)

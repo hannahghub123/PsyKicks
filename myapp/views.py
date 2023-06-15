@@ -1,4 +1,5 @@
-from datetime import date
+from datetime import date,timezone
+from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
 import re
 from django.shortcuts import get_object_or_404, render,redirect
@@ -12,6 +13,9 @@ import random
 from . models import *
 from .forms import *
 from django.http import HttpResponse, JsonResponse
+
+# from xhtml2pdf import pisa
+
 
 # Create your views here.
 def index(request):
@@ -47,7 +51,6 @@ def userindex(request):
     category = Category.objects.all()
     brand = Brand.objects.all()
     size = Size.objects.all()
-    gender = Gender.objects.all()
     product_offerobj = ProductOffer.objects.all()
     category_offerobj = CategoryOffer.objects.all()
     
@@ -55,7 +58,6 @@ def userindex(request):
     selected_brand = request.GET.get('brand')
     selected_color = request.GET.get('color')
     selected_size = request.GET.get('size')
-    selected_gender = request.GET.get('gender')
 
     if selected_category:
         datas = datas.filter(category__name=selected_category)
@@ -65,8 +67,6 @@ def userindex(request):
         datas = datas.filter(color__name=selected_color)
     if selected_size:
         datas = datas.filter(size__name=selected_size)
-    if selected_gender:
-        datas = datas.filter(gender__name=selected_gender)
 
 
     username = request.session["username"]
@@ -87,7 +87,6 @@ def userindex(request):
         'category': category,
         'brand': brand,
         'size': size,
-        'gender':gender,
         'selected_category': selected_category,
         'selected_brand':selected_brand,
         'selected_color':selected_color,
@@ -283,7 +282,6 @@ def userproduct(request):
         colors = Color.objects.all()
         brand = Brand.objects.all()
         size = Size.objects.all()
-        gender = Gender.objects.all()
 
         # if request.method=="POST":
         #     enteredproduct=request.POST.get("searchitem")
@@ -294,7 +292,6 @@ def userproduct(request):
     selected_brand = request.GET.get('brand')
     selected_color = request.GET.get('color')
     selected_size = request.GET.get('size')
-    selected_gender = request.GET.get('gender')
 
     username = request.session["username"]
     user = customer.objects.get(username=username)
@@ -310,8 +307,7 @@ def userproduct(request):
         datas = datas.filter(color__name=selected_color)
     if selected_size:
         datas = datas.filter(size__name=selected_size)
-    if selected_gender:
-        datas = datas.filter(gender__name=selected_gender)
+    
 
     context = {
         'datas': datas,
@@ -319,7 +315,6 @@ def userproduct(request):
         'colors':colors,
         'brand':brand,
         'size':size,
-        'gender':gender,
         'selected_category': selected_category,
         'selected_brand':selected_brand,
         'selected_color':selected_color,
@@ -413,7 +408,7 @@ def pdetails(request, product_id):
 def user_pdetails(request, product_id):
     sizes = Size.objects.all()
     colors = Color.objects.all()
-    genders = Gender.objects.all()
+ 
     product = get_object_or_404(Products, id=product_id)
     user=customer.objects.get(username=request.session["username"])
     pdtvariant = Productvariant.objects.filter(product=product)
@@ -448,7 +443,7 @@ def user_pdetails(request, product_id):
             count = wishlist_items.count()
 
             try:
-                pdtobj1 = Productvariant.objects.get(product=product, size=size, color=color)
+                pdtobj1 = Productvariant.objects.filter(product=product, size=size, color=color).first()
                 images = product.images.all()
                 products_in_same_category = Products.objects.filter(category=product.category)
 
@@ -464,7 +459,7 @@ def user_pdetails(request, product_id):
                     'count': count,
                     'sizes': sizes,
                     'colors': colors,
-                    'genders': genders
+                    
                 })
             except Productvariant.DoesNotExist:
                 error_message["name"]="Out of stock"
@@ -476,7 +471,7 @@ def user_pdetails(request, product_id):
                              'count':count,
                             'sizes':sizes,
                             'colors':colors,
-                            'genders':genders
+                           
                         })
 
         if "addtocart" in request.POST:
@@ -486,7 +481,7 @@ def user_pdetails(request, product_id):
             pdtobj = Products.objects.get(id=product_id)
             size=request.POST["size"]
             color=request.POST["color"]
-            pdtvariant=Productvariant.objects.get(product=product,size=size,color=color)
+            pdtvariant=Productvariant.objects.filter(product=pdtobj,size=size,color=color).first()
             
             username = request.session.get("username")
             user = customer.objects.get(username=username)
@@ -508,13 +503,13 @@ def user_pdetails(request, product_id):
             
             try:
                 # Check if the product is already in the cart
-                cartobj = Cart.objects.get(user=user, variant=pdtvariant)
+                cartobj = Cart.objects.get(user=user, variant=pdtvariant,product=pdtobj)
                 cartobj.quantity += quantity  # Increase the quantity
                 cartobj.total += total  # Update the total
                 cartobj.save()
                 return redirect(usercart)
             except Cart.DoesNotExist:
-                cartobj = Cart(user=user, variant=pdtvariant, quantity=quantity, total=total)
+                cartobj = Cart(user=user,product=pdtobj, variant=pdtvariant, quantity=quantity, total=total)
                 cartobj.save()
                 return redirect(usercart)
             
@@ -526,7 +521,7 @@ def user_pdetails(request, product_id):
         'count':count,
         'sizes':sizes,
         'colors':colors,
-        'genders':genders
+       
     })
 
 
@@ -540,6 +535,7 @@ def addtocart(request, product_id):
         
             product = Products.objects.get(id=product_id)
             # quantity = request.POST.get("quantity")
+            variant = Productvariant.objects.filter(product=product).first()
 
 
             cartobjs=Cart.objects.filter(user=user)
@@ -553,7 +549,7 @@ def addtocart(request, product_id):
             for item in cartobjs:
                 if item.product==product:
                     return redirect ('userproduct')
-            cartobj = Cart(user=user, product=product,total=product.price*product.quantity, quantity=1)
+            cartobj = Cart(user=user, product=product,total=variant.price*variant.stock, quantity=1)
             cartobj.save()
             return redirect('usercart') 
         else:
@@ -583,11 +579,12 @@ def list_addtocart(request,product_id):
     user = customer.objects.get(username=username)
     wishobj=Wishlist.objects.get(id=product_id)
     product=wishobj.product
-    cartobjcount=Cart.objects.filter(user=user,product=product).count()
+    variant=wishobj.variant
+    cartobjcount=Cart.objects.filter(user=user,product=product,variant=variant).count()
     if cartobjcount!=0:
         return redirect(wishlist)
     else:
-        cartobj=Cart(user=user, product=product,total=product.price*1, quantity=1)
+        cartobj=Cart(user=user,variant=variant, product=product,total=variant.price*1, quantity=1)
         cartobj.save()
         return redirect(usercart)
         
@@ -656,6 +653,7 @@ def usercheckout(request):
         userobj = customer.objects.get(username=username)
         addressobj = ShippingAddress.objects.filter(customer=userobj)
         cartobj = Cart.objects.filter(user=userobj)
+
         totalsum = 0
         for item in cartobj:
             totalsum += item.total
@@ -683,10 +681,13 @@ def usercheckout(request):
             quantsum += item.quantity
             total_price += item.total
 
-        # coupon = request.POST.get("coupon")
-        # coupon_obj = Coupon.objects.filter(coupon_code=coupon).first()
+        coupon_discount=0
+        coupon = request.POST.get("coupon")
+        coupon_obj = Coupon.objects.filter(coupon_code=coupon).first()
+        # coupon_discount = coupon_obj.discount_price
 
-        # if coupon_obj and total_price > coupon_obj.minimum_amount and not any(item.coupon for item in cartobj):
+        if coupon_obj and total_price > coupon_obj.minimum_amount and not any(item.coupon for item in cartobj):
+
             # Check if the coupon has been applied to any other orders by the user
             # if Order.objects.filter(customer=user, cart__coupon=coupon_obj).exists():
             #     error_message = "Coupon already applied to another order."
@@ -695,10 +696,11 @@ def usercheckout(request):
             #         "cartobj": cartobj,
             #         "quantsum": quantsum,
             #         "total_price": total_price,
+            #         "addressobj":addressobj
             #     }
             #     return render(request, "myapp/checkout.html", context)
 
-            # total_price -= coupon_obj.discount_price
+            total_price = total_price-(coupon_obj.discount_price)
 
         username = request.session["username"]
         user = customer.objects.get(username=username)
@@ -708,6 +710,7 @@ def usercheckout(request):
         context = {
             "cartobj": cartobj,
             "quantsum": quantsum,
+            "coupon_discount":coupon_discount,
             "total_price": total_price,
             'count':count,
             "order_id":payment_order_id,
@@ -716,40 +719,19 @@ def usercheckout(request):
         }
 
     if request.method == "POST":
-        # if "addressbutton" in request.POST:
 
-        #     error_message = {}
-            
-        #     address = request.POST.get("address")
-        #     city = request.POST.get("city")
-        #     state = request.POST.get("state")
-        #     zipcode = request.POST.get("zipcode")
-        #     country = request.POST.get("country")
+        username = request.session.get("username")
+        userobj = customer.objects.get(username=username)
+        addressobj = ShippingAddress.objects.filter(customer=userobj)
+        cartobj = Cart.objects.filter(user=userobj)
 
-        #     address_details = ShippingAddress(
-        #         customer=user,
-        #         address=address,
-        #         city=city,
-        #         state=state,
-        #         zipcode=zipcode,
-        #         country=country,
-        #     )
-        #     address_details.save()
-        #     data = {
-              
-        #         "country": country,
-        #         "address": address,
-        #         "city": city,
-        #         "state": state,
-        #         "zipcode": zipcode,
-        #         "cartobj": cartobj,
-        #         "total_price": total_price,
-        #         "quantsum": quantsum,
-        #     }
-        #     return render(request, "myapp/checkout.html", data)
+        coupon = request.POST.get("coupon")
+        coupon_obj = Coupon.objects.filter(coupon_code=coupon)
+        
 
         if "couponbutton" in request.POST:
             error_message = {}
+            
             coupon = request.POST.get("coupon")
             coupon_obj = Coupon.objects.filter(coupon_code=coupon)
 
@@ -773,8 +755,11 @@ def usercheckout(request):
             cartobj = Cart.objects.filter(user=user)
             addressid = request.POST.get("address")
             address = ShippingAddress.objects.get(id=addressid)
-            date_ordered = date.today()
+            
 
+            date_ordered = datetime.now().date()
+
+            
             orderobj = Order(customer=user, date_ordered=date_ordered, total=0 ,address = address)
             orderobj.save()
             
@@ -795,14 +780,9 @@ def usercheckout(request):
 
             orderobj.save()
             return redirect(ordercomplete)
-
-
-        
+     
         return render(request, "myapp/checkout.html", context)
-    
-    
-    
-
+      
     return render(request, "myapp/checkout.html", context)
 
 
@@ -1029,18 +1009,20 @@ def addtolist(request, product_id):
 
     user = get_object_or_404(customer, username=username)
     product = get_object_or_404(Products, id=product_id)
+    print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",product)
+    variant = Productvariant.objects.filter(product=product).first()
+    print("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<",variant)
 
     if Wishlist.objects.filter(customer=user, product=product).exists():
         messages.warning(request, "Product already added to wishlist") 
         
         return redirect('userproduct') 
-
-    wishlist_item = Wishlist(customer=user, product=product)
+    
+    wishlist_item = Wishlist(customer=user, product=product,variant=variant)
     wishlist_item.save()
     return redirect('wishlist')  # Replace 'wishlist' with the actual URL name or path for the wishlist page
 
         
-   
 
 def removeitem(request,item_id):
     item = get_object_or_404(Wishlist, id=item_id)
@@ -1056,6 +1038,9 @@ def razorupdateorder(request):
     username = request.session.get("username")
     user = customer.objects.get(username=username)
     cartobj = Cart.objects.filter(user = user)
+    addressid = request.POST.get("address")
+    address = ShippingAddress.objects.get(id=addressid)
+    
     totalamount=0
     for item in cartobj:
         totalamount+=item.total
@@ -1064,18 +1049,19 @@ def razorupdateorder(request):
            
     date_ordered = date.today()
 
-    orderobj = Order(customer=user, date_ordered=date_ordered, total=0 )
+    orderobj = Order(customer=user,address=address, date_ordered=date_ordered, total=0 )
     orderobj.save()
     
 
     for item in cartobj:
 
         product=item.product
+        variant=item.variant
         price = item.product.price
         quantity=item.quantity
         itemtotal = quantity*price
 
-        orderitemobj = OrderItem(product=product, order = orderobj,quantity=quantity, price=price, total=itemtotal )
+        orderitemobj = OrderItem(product=product,variant=variant, order = orderobj,quantity=quantity, price=price, total=itemtotal )
         orderitemobj.save()
 
         orderobj.total += item.total
@@ -1091,6 +1077,10 @@ def razorupdateorder(request):
 
     return JsonResponse({"message":"done"})
 
+
+
+# from django.template.loader import render_to_string
+# import io
 
 
 # def generateinvoice(request):

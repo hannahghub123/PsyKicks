@@ -6,11 +6,69 @@ from myapp.models import *
 import os
 from django.http import HttpResponse
 
+from django.db import models
+from django.shortcuts import render, redirect
+from django.http import FileResponse
+from django.utils.html import format_html
+from django.contrib import messages
+from django.utils import timezone
+from datetime import datetime
+from io import BytesIO
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.lib import colors
+import xlsxwriter
+
+
+import io
+from datetime import datetime
+from django.http import FileResponse
+
+
+
 
 @never_cache
 def admin_index(request):
     if 'adminuser' in request.session:
-        return render(request, "psyadmin/admin-index.html")
+        orderobjs=OrderItem.objects.all()
+        top_returned_product=None
+        top_product=None
+
+        orderdict={}
+        for item in orderobjs:
+            if item.variant.product.name not in orderdict:
+                orderdict[item.variant.product.name]=item.quantity
+            else:
+                orderdict[item.variant.product.name]+=item.quantity
+        try:
+            top_count = max(orderdict.values())
+        except:
+            pass
+        for key,value in orderdict.items():
+            if value==top_count:
+                top_product=key
+                break
+        
+        #Most Returned Products Graph logic
+        returninitiatedobjs = OrderItem.objects.filter(order__order_status='returned')
+
+        returndict={}
+        for i in returninitiatedobjs:
+            if i.product.name not in returndict:
+                returndict[i.product.name]=1
+            else:
+                returndict[i.product.name]+=1
+        try:
+            top_returned_count=max(returndict.values())
+        except:
+            pass
+
+        for key,value in returndict.items():
+            if value==top_returned_count:
+                top_returned_product=key
+
+        return render(request, "psyadmin/admin-index.html",{"orderdict":orderdict,"returndict":returndict,"top_product":top_product,"top_count":top_count,"top_returned_product":top_returned_product})
     else:
         return redirect('admin_login')
 
@@ -112,9 +170,6 @@ def addproducts(request):
                
             })
 
-        
-        
-
         product = Products(
             name=name,
             category=category_object,
@@ -135,101 +190,6 @@ def addproducts(request):
         "brands": brands,
     })
 
-# def addvariant___(request,item_id):
-  
-#     error_message = {}
-#     # categoryobjs = Category.objects.all()
-#     colors = Color.objects.all()
-#     sizes = Size.objects.all()
-#     pobj=Products.objects.get(id=item_id)
-#     # brands = Brand.objects.all()
-#     genders = Gender.objects.all()
-
-#     if request.method == "POST":
-#         # name = request.POST.get("name")
-#         price = request.POST.get("price")
-#         stock = request.POST.get("stock")
-#         # category_name = request.POST.get("category")
-#         color_names = request.POST.getlist("color")
-#         gender_name = request.POST.get("gender")
-#         size_names = request.POST.getlist("size")
-        
-#         # brand_name = request.POST.get("brand")
-#         description = request.POST.get("description")
-#         images = request.FILES.getlist("image")
-
-#         # if len(name) < 4:
-#         #     error_message["name"] = "Product name should contain a minimum of four characters."
-#         # elif len(name) > 20:
-#         #     error_message["name"] = "Product name can only have up to 20 characters."
-#         # elif not all(c.isalnum() or c.isspace() for c in name):
-#         #     error_message["name"] = "Invalid string entry for product name."
-      
-
-#         # if Products.objects.filter(name__iexact=name.replace(" ", "")).exists():
-#             # error_message["name"] = "A product with a similar name already exists."
-#         if not price.isdigit():
-#             error_message["price"] = "Price should be a numeric value."
-#         elif not stock.isdigit():
-#             error_message["stock"] = "Stock should be a numeric value."
-#         # elif not Category.objects.filter(name=category_name).exists():
-#             # error_message["category"] = "Invalid category."
-
-#         if error_message:
-#             return render(request, "psyadmin/add-productvariant.html", {
-#                 "error_message": error_message,
-#                 # "categoryobjs": categoryobjs,
-#                 "colors": colors,
-#                 "sizes": sizes,
-#                 # "brands": brands,
-#                 "genders": genders
-#             })
-
-#         # category_object = Category.objects.get(name=category_name)
-#         gender_instance = get_object_or_404(Gender, name=gender_name)
-#         # brand_instance = get_object_or_404(Brand, name=brand_name)
-        
-
-#         variant = Productvariant(
-#             product=pobj,
-#             price=price,
-#             stock=stock,
-#             # category=category_object,
-#             gender=gender_instance,
-#             # brand=brand_instance,
-#             description=description
-#         )
-#         variant.save()
-        
-
-        
-#         color_name = color_names[0]  # Assuming you only need the first color in the list
-#         color_object = Color.objects.get(name=color_name)
-#         variant.color.set([color_object])  # Use set() method to set the color objects in the many-to-many field
-
-#         size_name = size_names[0]  # Assuming you only need the first size in the list
-#         size_object = Size.objects.get(name=size_name)
-#         variant.size.set([size_object])  # Use set() method to set the size objects in the many-to-many field
-
-#         variant.save()
- 
-        
-#         for image in images:
-#             product_image = ProductImage(product=variant.product, image=image)
-#             product_image.save()
-
-        
-#         return redirect("productvariant",item_id=item_id)
-
-#     return render(request, "psyadmin/add-productvariant.html", {
-#         # "categoryobjs": categoryobjs,
-#         "colors": colors,
-#         "sizes": sizes,
-#         # "brands": brands,
-#         "genders": genders,
-#         "pobj":pobjf
-#     })
-
 
 
 def addvariant(request,item_id):
@@ -239,39 +199,30 @@ def addvariant(request,item_id):
     pobj=Products.objects.get(id=item_id)
     product = Productvariant.objects.filter(product=pobj).first()
     variant=Productvariant.objects.filter(id=item_id)
-    # genders = Gender.objects.all()
+    
 
     if request.method == "POST":
         price = request.POST.get("price")
         stock = request.POST.get("stock")
         color_names = request.POST.getlist("color")
-        # gender_name = request.POST.get("gender")
+        
         size_names = request.POST.getlist("size")
         description = request.POST.get("description")
         images = request.FILES.getlist("image")
 
-        # color_ids = [Color.objects.get(name=color_name).id for color_name in color_names]
-        # gender_ids = [Gender.objects.get(name=gender_name).id for gender_name in gender_name]
-        # size_ids = [Size.objects.get(name=size_name).id for size_name in size_names]
-
         color_ids = [Color.objects.get(name=color_name).id for color_name in color_names]
         size_ids = [Size.objects.get(name=size_name).id for size_name in size_names]
 
-
-        # gender_instance = get_object_or_404(Gender, name=gender_name) 
 
         if not price.isdigit():
                 error_message["price"] = "Price should be a numeric value."
         elif not stock.isdigit():
             error_message["stock"] = "Stock should be a numeric value."
 
-        # elif Productvariant.objects.filter(
-        #     product=product.id, gender__id=gender_instance.id, color__id__in=color_ids, size__id__in=size_ids).exists():
-        #     error_message["name"] = "Variant already exists"
-
+      
         if Productvariant.objects.filter(
             product=pobj,
-            # gender=gender_instance,
+           
             color__id__in=color_ids,
             size__id__in=size_ids
         ).exists():
@@ -283,8 +234,7 @@ def addvariant(request,item_id):
                 "error_message": error_message,
                 "pobj":pobj,
                 "colors": colors,
-                "sizes": sizes,
-                "genders": genders,
+                "sizes": sizes,               
                 'description':description,
                 'price':price,
                 'stock':stock,
@@ -296,8 +246,7 @@ def addvariant(request,item_id):
         variant = Productvariant(
             product=pobj,
             price=price,
-            stock=stock,
-            gender=gender_instance,
+            stock=stock,       
             description=description,
         )
         variant.save()
@@ -305,7 +254,6 @@ def addvariant(request,item_id):
         color_name = color_names[0]  
         color_object = Color.objects.get(name=color_name)
         variant.color.set([color_object]) 
-
         size_name = size_names[0]
         size_object = Size.objects.get(name=size_name)
         variant.size.set([size_object])
@@ -321,8 +269,7 @@ def addvariant(request,item_id):
 
     return render(request, "psyadmin/add-productvariant.html", {
         "colors": colors,
-        "sizes": sizes,
-        "genders": genders,
+        "sizes": sizes,    
         "variant":variant,
         "item_id":item_id,
         "pobj":pobj,
@@ -340,7 +287,6 @@ def editvariant(request,item_id):
     # pobj=Products.objects.get(id=item_id)
     # categoryobjs = Category.objects.all()
     colors = Color.objects.all()
-    genders = Gender.objects.all()
     sizes = Size.objects.all()
     brands = Brand.objects.all()
     
@@ -373,7 +319,6 @@ def editvariant(request,item_id):
                  'variant': variant,
                 #  'categoryobjs': categoryobjs,
                  'colors': colors,
-                 'genders': genders,
                  'sizes': sizes,'brands': brands,
                 #  'images': images,
                  'error_message':error_message} )
@@ -388,16 +333,11 @@ def editvariant(request,item_id):
             # categoryobject = Category.objects.get(name=category_name)
             # content.category = categoryobject
 
-            # Update color, gender, size, and brand
+            # Update color, size, and brand
             color_ids = request.POST.getlist("color")
             variant.color.set(color_ids)
-
-            gender_id = request.POST.get("gender")
-            variant.gender = Gender.objects.get(id=gender_id) if gender_id else None
-
             size_ids = request.POST.getlist("size")
             variant.size.set(size_ids)
-
             brand_id = request.POST.get("brand")
             variant.brand = Brand.objects.get(id=brand_id) if brand_id else None
 
@@ -409,7 +349,7 @@ def editvariant(request,item_id):
             'product':product,
             # 'categoryobjs': categoryobjs,
             'colors': colors,
-            'genders': genders,
+       
             'sizes': sizes,
             'brands': brands,
             # 'images': images,
@@ -424,7 +364,7 @@ def editvariant(request,item_id):
         'product':product,
         # 'categoryobjs': categoryobjs,
         'colors': colors,
-        'genders': genders,
+  
         'sizes': sizes,
         'brands': brands,
         # 'images': images,
@@ -925,3 +865,225 @@ def addnew_categoryoffer(request):
     error_message = {}
     return render(request, "psyadmin/add_categoryoffer.html", {"datas": datas, "error_message": error_message,"catobj":catobj})
 
+# from django.http import FileResponse
+# import io
+# from reportlab.pdfgen import canvas
+# from reportlab.lib.units import inch
+# from reportlab.platypus import Table, TableStyle
+# from reportlab.lib.pagesizes import letter
+# from datetime import datetime
+# from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+# from reportlab.lib.pagesizes import letter
+# from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+# from reportlab.lib.styles import getSampleStyleSheet
+# from reportlab.lib import colors
+# import xlsxwriter
+
+
+# def sales_report(request):
+#     if request.method=="POST":
+#         if "show" in request.POST:
+#             start_date=request.POST.get("start_date")
+#             end_date=request.POST.get("end_date")
+#             orderobjs = Order.objects.filter(orderdate__range=[start_date, end_date])
+#             if orderobjs.count()==0:
+#                 message="Sorry! No orders in this particular date range"
+#                 context={"orderobjs":orderobjs,"message":message}
+#             else:
+
+#                 context={"orderobjs":orderobjs}
+#             return render(request,"storeadmin/salesreport.html",context)
+#         elif "download" in request.POST:
+#             start_date_str = request.POST.get('start_date')
+#             end_date_str = request.POST.get('end_date')
+
+#             start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
+#             end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
+
+#             buf = io.BytesIO()
+#             doc = SimpleDocTemplate(buf, pagesize=letter)
+#             elements = []
+
+#             # Add heading
+#             styles = getSampleStyleSheet()
+#             heading_style = styles['Heading1']
+#             heading = "Sales Report"
+#             heading_paragraph = Paragraph(heading, heading_style)
+#             elements.append(heading_paragraph)
+#             elements.append(Spacer(1, 12))  # Add space after heading
+
+#             ords = Orders.objects.filter(orderdate__range=[start_date, end_date])
+            
+
+#             if ords:
+#                 data = [['Sl.No.', 'Name', 'Product', 'House', 'Order Date', 'Order Status', 'Quantity']]
+#                 slno = 0
+#                 for ord in ords:
+#                     slno += 1
+#                     row = [slno, ord.user.name, ord.product.name, ord.address.house, ord.orderdate, ord.orderstatus, ord.quantity]
+#                     data.append(row)
+
+#                 table = Table(data)
+#                 table.setStyle(TableStyle([
+#                     ('BACKGROUND', (0, 0), (-1, 0), colors.gray),
+#                     ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+#                     ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+#                     ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+#                     ('FONTSIZE', (0, 0), (-1, 0), 12),
+#                     ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+#                     ('BACKGROUND', (0, 1), (-1, -1), colors.lightgrey),
+#                     ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
+#                     ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+#                     ('FONTSIZE', (0, 1), (-1, -1), 10),
+#                     ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+#                 ]))
+
+#                 elements.append(table)
+#             else:
+#                 elements.append(Paragraph("No orders", styles['Normal']))
+#             if elements:
+
+#                 doc.build(elements)
+#                 buf.seek(0)
+#                 return FileResponse(buf, as_attachment=True, filename='Orders.pdf')
+        
+#         elif "downloadinexcel" in request.POST:
+
+#             start_date_str = request.POST.get('start_date')
+#             end_date_str = request.POST.get('end_date')
+
+#             start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
+#             end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
+
+
+
+#             ords = Orders.objects.filter(orderdate__range=[start_date, end_date])
+
+#             # Create Excel workbook and worksheet
+#             workbook = xlsxwriter.Workbook("Sales_Report.xlsx")
+#             worksheet = workbook.add_worksheet('Sales Report')
+
+#             # Write the table headers
+#             headers = ['Sl.No.', 'Name', 'Product', 'House', 'Order Date', 'Order Status', 'Quantity']
+#             for col, header in enumerate(headers):
+#                 worksheet.write(0, col, header)
+
+#             # Write the data rows
+#             row = 1
+#             for slno, ord in enumerate(ords, start=1):
+#                 worksheet.write(row, 0, slno)
+#                 worksheet.write(row, 1, ord.user.name)
+#                 worksheet.write(row, 2, ord.product.name)
+#                 worksheet.write(row, 3, ord.address.house)
+#                 worksheet.write(row, 4, str(ord.orderdate))
+#                 worksheet.write(row, 5, ord.orderstatus)
+#                 worksheet.write(row, 6, ord.quantity)
+#                 row += 1
+
+#             workbook.close()
+
+#             # Create a file-like buffer to receive the workbook data
+#             buf = io.BytesIO()
+            
+#             buf.seek(0)
+            
+
+#             # Return the Excel file as a FileResponse
+#             return FileResponse(buf, as_attachment=True, filename='Sales_Report.xlsx', content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+
+
+#     return render(request,"storeadmin/sales-report.html")
+
+
+def sales_report(request):
+    if 'adminuser' in request.session:
+        if request.method == 'POST':
+            if "show" in request.POST:
+                start_date = request.POST.get("start_date")
+                end_date = request.POST.get("end_date")
+                orderobjs = Order.objects.filter(date_ordered__range=[start_date, end_date])[:1]
+                itemobj = OrderItem.objects.filter(order=orderobjs).first()
+                if orderobjs.count() == 0:
+                    message = "Sorry! No orders in this particular date range"
+                    context = {"orderobjs": orderobjs, "itemobj": itemobj, "message": message}
+                else:
+                    context = {"orderobjs": orderobjs,"itemobj":itemobj}
+                return render(request, "psyadmin/sales-report.html", context)
+            
+            elif "download" in request.POST:
+                start_date_str = request.POST.get('start_date')
+                end_date_str = request.POST.get('end_date')
+                start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
+                end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
+                orders = Order.objects.filter(date_ordered__range=[start_date, end_date])
+                orderitem = OrderItem.objects.filter(order=orders).first()
+                if orders:
+                    response = HttpResponse(content_type='application/pdf')
+                    response['Content-Disposition'] = 'attachment; filename="Sales_Report.pdf"'
+                    p = canvas.Canvas(response, pagesize=letter)
+                    p.setFont("Helvetica-Bold", 14)
+                    p.drawCentredString(300, 750, "Sales Report")
+                    p.setFont("Helvetica-Bold", 12)
+                    p.drawString(50, 700, "Sl.No.")
+                    p.drawString(100, 700, "Name")
+                    p.drawString(200, 700, "Product")
+                    p.drawString(300, 700, "House")
+                    p.drawString(400, 700, "Order Date")
+                    p.drawString(500, 700, "Order Status")
+                    p.drawString(600, 700, "Quantity")
+                    p.setFont("Helvetica", 12)
+                    y = 680
+                    slno = 0
+                    for order in orders:
+                        slno += 1
+                        p.drawString(50, y, str(slno))
+                        p.drawString(100, y, order.customer.name)
+                        p.drawString(200, y, orderitem.variant.product.name)
+                        p.drawString(300, y, order.address)
+                        p.drawString(400, y, str(order.date_ordered))
+                        p.drawString(500, y, order.order_status)
+                        p.drawString(600, y, str(order.get_cart_items))
+                        y -= 20
+                    p.showPage()
+                    p.save()
+                    return response
+                else:
+                    messages.error(request, "No orders found in the specified date range.")
+                    return redirect('sales_report')
+                
+            elif "downloadinexcel" in request.POST:
+                start_date_str = request.POST.get('start_date')
+                end_date_str = request.POST.get('end_date')
+                start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
+                end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
+                orders = Order.objects.filter(date_ordered__range=[start_date, end_date])
+                orderitems = OrderItem.objects.filter(order=orders).first()
+                if orders:
+                    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+                    response['Content-Disposition'] = 'attachment; filename="Sales_Report.xlsx"'
+                    workbook = xlsxwriter.Workbook(response, {'in_memory': True})
+                    worksheet = workbook.add_worksheet('Sales Report')
+                    bold = workbook.add_format({'bold': True})
+                    headers = ['Sl.No.', 'Name', 'Product', 'House', 'Order Date', 'Order Status', 'Quantity']
+                    for col, header in enumerate(headers):
+                        worksheet.write(0, col, header, bold)
+                    row = 1
+                    slno = 0
+                    for order in orders:
+                        slno += 1
+                        worksheet.write(row, 0, slno)
+                        worksheet.write(row, 1, order.customer.name)
+                        worksheet.write(row, 2, orderitems.variant.product.name)
+                        worksheet.write(row, 3, order.address)
+                        worksheet.write(row, 4, str(order.date_ordered))
+                        worksheet.write(row, 5, order.order_status)
+                        worksheet.write(row, 6, order.get_cart_items)
+                        row += 1
+                    workbook.close()
+                    return response
+                else:
+                    messages.error(request, "No orders found in the specified date range.")
+                    return redirect('sales_report')
+        return render(request, "psyadmin/sales-report.html")
+    else:
+        return redirect('admin_login')

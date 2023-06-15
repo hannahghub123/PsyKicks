@@ -38,7 +38,7 @@
                             {% endif %}
                         </td>
                         <td>{{ item.product.name }}</td>
-                        <td>${{ item.product.price }}</td>
+                        <td>${{ item.variant.price }}</td>
                       
                         <td>
                             <a href="{% url 'removeitem' item.id %}" onclick="return confirmDelete();">

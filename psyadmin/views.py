@@ -374,7 +374,9 @@ def editvariant(request,item_id):
                 #  'categoryobjs': categoryobjs,
                  'colors': colors,
                  'genders': genders,
-                 'sizes': sizes,'brands': brands,'images': images,'error_message':error_message} )
+                 'sizes': sizes,'brands': brands,
+                #  'images': images,
+                 'error_message':error_message} )
 
         else:
             # variant.name = name

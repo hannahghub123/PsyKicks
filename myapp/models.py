@@ -64,8 +64,8 @@ class Productvariant(models.Model):
     gender = models.ForeignKey(Gender, on_delete=models.CASCADE, default=None, null=True)
     color = models.ManyToManyField(Color)
     size = models.ManyToManyField(Size)
-    price = models.PositiveIntegerField()
-    stock = models.PositiveIntegerField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    stock = models.IntegerField()
     # image = models.ImageField(upload_to='products/', null=True, blank=True)
     description = models.TextField(blank=True)
 

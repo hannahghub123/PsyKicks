@@ -415,13 +415,67 @@ def user_pdetails(request, product_id):
     colors = Color.objects.all()
     genders = Gender.objects.all()
     product = get_object_or_404(Products, id=product_id)
+    
     pdtvariant = Productvariant.objects.filter(product=product)
     pdtobj1 = pdtvariant.first()
-    
+    error_message = {}
+
     if request.method == "POST":
+
+        if "updatevariant" in request.POST:
+            size=request.POST["size"]
+            color=request.POST["color"]
+            product=Products.objects.get(id=product_id)
+
+            product = Products.objects.prefetch_related('images').filter(id=product_id).first()
+            pdtvariant=Productvariant.objects.filter(product=product)
+            pdtobj1=Productvariant.objects.get(id=1)
+            print("#################",pdtobj1.product.name)
+
+
+            images = product.images.all() 
+            products_in_same_category = Products.objects.filter(category=product.category)
+
+            username = request.session["username"]
+            user = customer.objects.get(username=username)
+            wishlist_items = Wishlist.objects.filter(customer=user)
+            count = wishlist_items.count()
+
+            try:
+                pdtobj1 = Productvariant.objects.get(product=product, size=size, color=color)
+                images = product.images.all()
+                products_in_same_category = Products.objects.filter(category=product.category)
+
+                username = request.session["username"]
+                user = customer.objects.get(username=username)
+                wishlist_items = Wishlist.objects.filter(customer=user)
+                count = wishlist_items.count()
+
+                return render(request, 'myapp/user-pdetails.html', {
+                    'pdtobj1': pdtobj1,
+                    'images': images,
+                    'products_in_same_category': products_in_same_category,
+                    'count': count,
+                    'sizes': sizes,
+                    'colors': colors,
+                    'genders': genders
+                })
+            except Productvariant.DoesNotExist:
+                error_message["name"]="Out of stock"
+                return render(request, 'myapp/user-pdetails.html', {
+                    "error_message":error_message,
+                            'pdtobj1': pdtobj1,
+                             'images': images,
+                             'products_in_same_category': products_in_same_category,
+                             'count':count,
+                            'sizes':sizes,
+                            'colors':colors,
+                            'genders':genders
+                        })
+
         if "addtocart" in request.POST:
 
-            quantity = int(request.POST.get("quantity"))
+            stock = request.POST.get("stock")
             pdtobj = Products.objects.get(id=product_id)
             username = request.session.get("username")
             user = customer.objects.get(username=username)
@@ -433,63 +487,26 @@ def user_pdetails(request, product_id):
                 print("###############",discount)
                 newprice=pdtobj.price-((discount/100)*(pdtobj.price))
                 print("HANNAH",newprice)
-                total=newprice*Decimal(quantity)
+                total=newprice*stock
+                
             except:
-                total = Decimal(quantity) * pdtobj.price 
+                total = stock * pdtobj.price 
             
             
             
             try:
                 # Check if the product is already in the cart
                 cartobj = Cart.objects.get(user=user, product=pdtobj)
-                cartobj.quantity += quantity  # Increase the quantity
+                cartobj.quantity += stock  # Increase the quantity
                 cartobj.total += total  # Update the total
                 cartobj.save()
                 return redirect(usercart)
             except Cart.DoesNotExist:
-                cartobj = Cart(user=user, product=pdtobj, quantity=quantity, total=total)
+                cartobj = Cart(user=user, product=pdtobj, quantity=stock, total=total)
                 cartobj.save()
                 return redirect(usercart)
-        if "updatevariant" in request.POST:
-            size=request.POST["size"]
-            color=request.POST["color"]
-            product=Products.objects.get(id=product_id)
-            pdtobj1=Productvariant.objects.get(product=product,size=size,color=color)
-            images = product.images.all() 
-            products_in_same_category = Products.objects.filter(category=product.category)
-
-            username = request.session["username"]
-            user = customer.objects.get(username=username)
-            wishlist_items = Wishlist.objects.filter(customer=user)
-            count = wishlist_items.count()
-    
-            return render(request, 'myapp/user-pdetails.html', {
-                'pdtobj1': pdtobj1,
-                'images': images,
-                'products_in_same_category': products_in_same_category,
-                'count':count,
-                'sizes':sizes,
-                'colors':colors,
-                'genders':genders
-            })
-
-           
-
- 
-    product = Products.objects.prefetch_related('images').filter(id=product_id).first()
-    pdtvariant=Productvariant.objects.filter(product=product)
-    pdtobj1=Productvariant.objects.get(id=1)
-    print("#################",pdtobj1.product.name)
-
-
-    images = product.images.all() 
-    products_in_same_category = Products.objects.filter(category=product.category)
-
-    username = request.session["username"]
-    user = customer.objects.get(username=username)
-    wishlist_items = Wishlist.objects.filter(customer=user)
-    count = wishlist_items.count()
-    
+            
+                
     return render(request, 'myapp/user-pdetails.html', {
         'pdtobj1': pdtobj1,
         'images': images,

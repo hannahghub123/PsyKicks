@@ -85,8 +85,12 @@
 </div>
 
 <!-- Add address modal -->
+<div class="row mt-5"></div>
+<div class="row mt-5"></div>
 
 <div class="modal fade" id="add-address-modal" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
+    <div class="row mt-5"></div>
+    <div class="row mt-5"></div>
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -99,19 +103,19 @@
                     {% csrf_token %}
                     <!-- Form inputs for address details -->
                     <label for="address">Address</label>
-                    <input type="text" id="address" name="address" placeholder="Enter your address" required>
+                    <input type="text" id="address" name="address" placeholder="Enter your address" required><br>
 
                     <label for="city">City</label>
-                    <input type="text" id="city" name="city" placeholder="Enter your city" required>
+                    <input type="text" id="city" name="city" placeholder="Enter your city" required><br>
 
                     <label for="city">State</label>
-                    <input type="text" id="state" name="state" placeholder="Enter your state" required>
+                    <input type="text" id="state" name="state" placeholder="Enter your state" required><br>
 
                     <label for="city">Country</label>
-                    <input type="text" id="country" name="country" placeholder="Enter your country" required>
+                    <input type="text" id="country" name="country" placeholder="Enter your country" required><br>
 
                     <label for="city">ZipCode</label>
-                    <input type="text" id="zipcode" name="zipcode" placeholder="Enter your zipcode" required>
+                    <input type="text" id="zipcode" name="zipcode" placeholder="Enter your zipcode" required><br>
 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>

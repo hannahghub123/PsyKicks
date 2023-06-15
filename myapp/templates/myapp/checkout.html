@@ -39,29 +39,36 @@
                     <hr>
                     
                     <div class="form-field">
-                        <input class="form-control" type="text" name="address" placeholder="Address" required value={{address}}>
-                        <span class="error-message">{{error_message.address}}</span>
+                        <div class="row mt-3"></div>
+                        {% comment %} <input class="form-control" type="text" name="address" placeholder="Address" required value={{address}}> {% endcomment %}
+                        {% comment %} {% for data in addobj %} {% endcomment %}
+                        <div class="size-204 respon6-next">
+                            <div class="rs1-select2 bor8 bg0" style="width:600px">
+                                <select name="address" class="js-select2"  value="">
+                                    <option>Choose Address</option>
+                                    {% for item in addressobj %}
+                                    <option value="{{ item.id }}">
+                                        {{ item.address }}, {{ item.city }}, {{ item.state }}, {{ item.country }}, {{ item.zipcode }}
+                                    </option>
+                                    {% endfor %}
+                                    
+                                </select>
+                                <div class="dropDownSelect2"></div>
+                            </div>
+                        </div>
+                        {% comment %} {% endfor %} {% endcomment %}
+                        
                     </div>
-                    <div class="form-field">
-                        <input class="form-control" type="text" name="city" placeholder="City" required value={{city}}>
-                        <span class="error-message">{{error_message.city}}</span>
+                    <div class="row mt-4"></div>
+                    <div style="display:flex; flex-direction:row">
+                        <label>Note: Need to add new address? <a href="{% url 'userprofile' %}">Go to your profile </a>and update!</label>
+                    
                     </div>
-                    <div class="form-field">
-                        <input class="form-control" type="text" name="state" placeholder="State" required value={{state}}>
-                        <span class="error-message">{{error_message.state}}</span>
-                    </div>
-                    <div class="form-field">
-                        <input class="form-control" type="text" name="zipcode" placeholder="Zipcode" required value={{zipcode}}>
-                        <span class="error-message">{{error_message.zipcode}}</span>
-                    </div>
-                    <div class="form-field">
-                        <input class="form-control" type="text" name="country" placeholder="Country" required value={{country}}>
-                        <span class="error-message">{{error_message.country}}</span>
-                    </div>
+                    
                 </div>
                 
               
-                <input name="addressbutton" id="form-button" class="btn btn-success btn-block" type="submit" value="Continue">
+                {% comment %} <input name="addressbutton" id="form-button" class="btn btn-success btn-block" type="submit" value="Continue"> {% endcomment %}
            
         </div>
         <br>
@@ -135,9 +142,9 @@
             <hr>
             {% for item in cartobj %}
             <div class="cart-row">
-                <div style="flex:2"><img class="row-image" src="{{ item.product.images.first.image.url }}"></div>
-                <div style="flex:2"><p>{{item.product.name}}</p></div>
-                <div style="flex:2"><p>${{item.product.price}}</p></div>
+                <div style="flex:2"><img class="row-image" src="{{ item.variant.product.images.first.image.url }}"></div>
+                <div style="flex:2"><p>{{item.variant.product.name}}</p></div>
+                <div style="flex:2"><p>${{item.variant.price}}</p></div>
                 <div style="flex:1"><p>x{{item.quantity}}</p></div>
             </div>
             {% endfor %}

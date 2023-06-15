@@ -418,6 +418,12 @@ def user_pdetails(request, product_id):
     user=customer.objects.get(username=request.session["username"])
     pdtvariant = Productvariant.objects.filter(product=product)
     pdtobj1 = pdtvariant.first()
+    images = product.images.all() 
+    products_in_same_category = Products.objects.filter(category=product.category)
+    username = request.session["username"]
+    user = customer.objects.get(username=username)
+    wishlist_items = Wishlist.objects.filter(customer=user)
+    count = wishlist_items.count()
     error_message = {}
 
     if request.method == "POST":
@@ -637,6 +643,7 @@ def removecartitem(request,item_id):
 
 
 def usercheckout(request):
+
     if customer.objects.get(username=request.session["username"]).isblocked:
         return redirect("login")
 
@@ -647,6 +654,7 @@ def usercheckout(request):
         auth=(RAZORPAY_API_KEY, RAZORPAY_API_SECRET_KEY))
         username = request.session.get("username")
         userobj = customer.objects.get(username=username)
+        addressobj = ShippingAddress.objects.filter(customer=userobj)
         cartobj = Cart.objects.filter(user=userobj)
         totalsum = 0
         for item in cartobj:
@@ -662,11 +670,10 @@ def usercheckout(request):
         
 
 
-
-        
-
         if username is None:
             return redirect("login")
+        
+
         user = customer.objects.get(username=username)
         cartobj = Cart.objects.filter(user=user)
 
@@ -676,10 +683,10 @@ def usercheckout(request):
             quantsum += item.quantity
             total_price += item.total
 
-        coupon = request.POST.get("coupon")
-        coupon_obj = Coupon.objects.filter(coupon_code=coupon).first()
+        # coupon = request.POST.get("coupon")
+        # coupon_obj = Coupon.objects.filter(coupon_code=coupon).first()
 
-        if coupon_obj and total_price > coupon_obj.minimum_amount and not any(item.coupon for item in cartobj):
+        # if coupon_obj and total_price > coupon_obj.minimum_amount and not any(item.coupon for item in cartobj):
             # Check if the coupon has been applied to any other orders by the user
             # if Order.objects.filter(customer=user, cart__coupon=coupon_obj).exists():
             #     error_message = "Coupon already applied to another order."
@@ -691,7 +698,7 @@ def usercheckout(request):
             #     }
             #     return render(request, "myapp/checkout.html", context)
 
-            total_price -= coupon_obj.discount_price
+            # total_price -= coupon_obj.discount_price
 
         username = request.session["username"]
         user = customer.objects.get(username=username)
@@ -705,86 +712,41 @@ def usercheckout(request):
             'count':count,
             "order_id":payment_order_id,
             "api_key":RAZORPAY_API_KEY ,
+            "addressobj":addressobj
         }
 
     if request.method == "POST":
-        if "addressbutton" in request.POST:
+        # if "addressbutton" in request.POST:
 
-            error_message = {}
-            username = request.POST.get("username")
-            email = request.POST.get("email")
-            address = request.POST.get("address")
-            city = request.POST.get("city")
-            state = request.POST.get("state")
-            zipcode = request.POST.get("zipcode")
-            country = request.POST.get("country")
+        #     error_message = {}
+            
+        #     address = request.POST.get("address")
+        #     city = request.POST.get("city")
+        #     state = request.POST.get("state")
+        #     zipcode = request.POST.get("zipcode")
+        #     country = request.POST.get("country")
 
-            # if len(username) > 10:
-            #     error_message["username"] = "Username must be under 10 characters."
-            # if not username.isalpha():
-            #     error_message["username"] = "Name must be alphabetic."
-            # if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
-            #     error_message["email"] = "Invalid Email"
-
-            if not country.isalpha():
-                error_message["country"] = "Country name should be alphabetic"
-            if len(country) < 5:
-                error_message["country"] = "Country name should contain a minimum of five characters"
-            if not state.isalpha():
-                error_message["state"] = "State name can't have numbers"
-            if len(state) < 3:
-                error_message["state"] = "State name should contain a minimum of three characters"
-            if not city.isalpha():
-                error_message["city"] = "City name should be alphabetic"
-            if len(city) < 5:
-                error_message["city"] = "District name should contain a minimum of five characters"
-            if len(address) < 5:
-                error_message["address"] = "House name should contain a minimum of three characters"
-            # if not all(c.isalnum() or c.isspace() for c in username):
-            #     error_message["name"] = "Invalid string entry"
-            if zipcode.isalpha():
-                error_message["zipcode"] = "Zipcode can't have alphabets"
-            if len(zipcode) != 6:
-                error_message["zipcode"] = "Invalid Zipcode"
-
-            if error_message:
-                data = {
-                    "error_message": error_message,
-                    "username": username,
-                    "email": email,
-                    "country": country,
-                    "address": address,
-                    "city": city,
-                    "state": state,
-                    "zipcode": zipcode,
-                    "cartobj": cartobj,
-                    "total_price": total_price,
-                    "quantsum": quantsum,
-                }
-                return render(request, "myapp/checkout.html", data)
-
-            address_details = ShippingAddress(
-                customer=user,
-                address=address,
-                city=city,
-                state=state,
-                zipcode=zipcode,
-                country=country,
-            )
-            address_details.save()
-            data = {
-                "username": username,
-                "email": email,
-                "country": country,
-                "address": address,
-                "city": city,
-                "state": state,
-                "zipcode": zipcode,
-                "cartobj": cartobj,
-                "total_price": total_price,
-                "quantsum": quantsum,
-            }
-            return render(request, "myapp/checkout.html", data)
+        #     address_details = ShippingAddress(
+        #         customer=user,
+        #         address=address,
+        #         city=city,
+        #         state=state,
+        #         zipcode=zipcode,
+        #         country=country,
+        #     )
+        #     address_details.save()
+        #     data = {
+              
+        #         "country": country,
+        #         "address": address,
+        #         "city": city,
+        #         "state": state,
+        #         "zipcode": zipcode,
+        #         "cartobj": cartobj,
+        #         "total_price": total_price,
+        #         "quantsum": quantsum,
+        #     }
+        #     return render(request, "myapp/checkout.html", data)
 
         if "couponbutton" in request.POST:
             error_message = {}
@@ -809,6 +771,7 @@ def usercheckout(request):
             username = request.session.get("username")
             user = customer.objects.get(username=username)
             cartobj = Cart.objects.filter(user=user)
+            address = request.POST.get("address")
             date_ordered = date.today()
 
             orderobj = Order(customer=user, date_ordered=date_ordered, total=0 )
@@ -822,7 +785,7 @@ def usercheckout(request):
                 quantity=item.quantity
                 itemtotal = quantity*price
 
-                orderitemobj = OrderItem(product=product, order = orderobj,quantity=quantity, price=price, total=itemtotal )
+                orderitemobj = OrderItem(product=product, order = orderobj,quantity=quantity, price=price, total=itemtotal,address = address)
                 orderitemobj.save()
 
                 orderobj.total += item.total

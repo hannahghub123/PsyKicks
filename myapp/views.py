@@ -796,7 +796,16 @@ def remove_coupon(request, coupon_id):
     return redirect('usercheckout')
   
 def ordercomplete(request):
-    return render(request,"myapp/ordercomplete.html") 
+    if "username" in request.session:
+        username = request.session["username"]
+        user = customer.objects.get(username=username)
+        wishlist_items = Wishlist.objects.filter(customer=user)
+        count = wishlist_items.count()
+        
+        context={
+            "count":count
+        }
+    return render(request,"myapp/ordercomplete.html",context) 
 
 def orderdetails(request,item_id):
     if "username" in request.session:

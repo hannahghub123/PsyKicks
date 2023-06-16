@@ -6,25 +6,19 @@ from myapp.models import *
 import os
 from django.http import HttpResponse
 
-from django.db import models
-from django.shortcuts import render, redirect
 from django.http import FileResponse
-from django.utils.html import format_html
-from django.contrib import messages
-from django.utils import timezone
-from datetime import datetime
-from io import BytesIO
+import io
 from reportlab.pdfgen import canvas
+from reportlab.lib.units import inch
+from reportlab.platypus import Table, TableStyle
+from reportlab.lib.pagesizes import letter
+from datetime import datetime
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
 import xlsxwriter
-
-
-import io
-from datetime import datetime
-from django.http import FileResponse
-
 
 
 
@@ -865,225 +859,118 @@ def addnew_categoryoffer(request):
     error_message = {}
     return render(request, "psyadmin/add_categoryoffer.html", {"datas": datas, "error_message": error_message,"catobj":catobj})
 
-# from django.http import FileResponse
-# import io
-# from reportlab.pdfgen import canvas
-# from reportlab.lib.units import inch
-# from reportlab.platypus import Table, TableStyle
-# from reportlab.lib.pagesizes import letter
-# from datetime import datetime
-# from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
-# from reportlab.lib.pagesizes import letter
-# from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
-# from reportlab.lib.styles import getSampleStyleSheet
-# from reportlab.lib import colors
-# import xlsxwriter
 
-
-# def sales_report(request):
-#     if request.method=="POST":
-#         if "show" in request.POST:
-#             start_date=request.POST.get("start_date")
-#             end_date=request.POST.get("end_date")
-#             orderobjs = Order.objects.filter(orderdate__range=[start_date, end_date])
-#             if orderobjs.count()==0:
-#                 message="Sorry! No orders in this particular date range"
-#                 context={"orderobjs":orderobjs,"message":message}
-#             else:
-
-#                 context={"orderobjs":orderobjs}
-#             return render(request,"storeadmin/salesreport.html",context)
-#         elif "download" in request.POST:
-#             start_date_str = request.POST.get('start_date')
-#             end_date_str = request.POST.get('end_date')
-
-#             start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
-#             end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
-
-#             buf = io.BytesIO()
-#             doc = SimpleDocTemplate(buf, pagesize=letter)
-#             elements = []
-
-#             # Add heading
-#             styles = getSampleStyleSheet()
-#             heading_style = styles['Heading1']
-#             heading = "Sales Report"
-#             heading_paragraph = Paragraph(heading, heading_style)
-#             elements.append(heading_paragraph)
-#             elements.append(Spacer(1, 12))  # Add space after heading
-
-#             ords = Orders.objects.filter(orderdate__range=[start_date, end_date])
-            
-
-#             if ords:
-#                 data = [['Sl.No.', 'Name', 'Product', 'House', 'Order Date', 'Order Status', 'Quantity']]
-#                 slno = 0
-#                 for ord in ords:
-#                     slno += 1
-#                     row = [slno, ord.user.name, ord.product.name, ord.address.house, ord.orderdate, ord.orderstatus, ord.quantity]
-#                     data.append(row)
-
-#                 table = Table(data)
-#                 table.setStyle(TableStyle([
-#                     ('BACKGROUND', (0, 0), (-1, 0), colors.gray),
-#                     ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-#                     ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-#                     ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-#                     ('FONTSIZE', (0, 0), (-1, 0), 12),
-#                     ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-#                     ('BACKGROUND', (0, 1), (-1, -1), colors.lightgrey),
-#                     ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
-#                     ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
-#                     ('FONTSIZE', (0, 1), (-1, -1), 10),
-#                     ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-#                 ]))
-
-#                 elements.append(table)
-#             else:
-#                 elements.append(Paragraph("No orders", styles['Normal']))
-#             if elements:
-
-#                 doc.build(elements)
-#                 buf.seek(0)
-#                 return FileResponse(buf, as_attachment=True, filename='Orders.pdf')
-        
-#         elif "downloadinexcel" in request.POST:
-
-#             start_date_str = request.POST.get('start_date')
-#             end_date_str = request.POST.get('end_date')
-
-#             start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
-#             end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
-
-
-
-#             ords = Orders.objects.filter(orderdate__range=[start_date, end_date])
-
-#             # Create Excel workbook and worksheet
-#             workbook = xlsxwriter.Workbook("Sales_Report.xlsx")
-#             worksheet = workbook.add_worksheet('Sales Report')
-
-#             # Write the table headers
-#             headers = ['Sl.No.', 'Name', 'Product', 'House', 'Order Date', 'Order Status', 'Quantity']
-#             for col, header in enumerate(headers):
-#                 worksheet.write(0, col, header)
-
-#             # Write the data rows
-#             row = 1
-#             for slno, ord in enumerate(ords, start=1):
-#                 worksheet.write(row, 0, slno)
-#                 worksheet.write(row, 1, ord.user.name)
-#                 worksheet.write(row, 2, ord.product.name)
-#                 worksheet.write(row, 3, ord.address.house)
-#                 worksheet.write(row, 4, str(ord.orderdate))
-#                 worksheet.write(row, 5, ord.orderstatus)
-#                 worksheet.write(row, 6, ord.quantity)
-#                 row += 1
-
-#             workbook.close()
-
-#             # Create a file-like buffer to receive the workbook data
-#             buf = io.BytesIO()
-            
-#             buf.seek(0)
-            
-
-#             # Return the Excel file as a FileResponse
-#             return FileResponse(buf, as_attachment=True, filename='Sales_Report.xlsx', content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-
-
-#     return render(request,"storeadmin/sales-report.html")
 
 
 def sales_report(request):
-    if 'adminuser' in request.session:
-        if request.method == 'POST':
-            if "show" in request.POST:
-                start_date = request.POST.get("start_date")
-                end_date = request.POST.get("end_date")
-                orderobjs = Order.objects.filter(date_ordered__range=[start_date, end_date])[:1]
-                itemobj = OrderItem.objects.filter(order=orderobjs).first()
-                if orderobjs.count() == 0:
-                    message = "Sorry! No orders in this particular date range"
-                    context = {"orderobjs": orderobjs, "itemobj": itemobj, "message": message}
-                else:
-                    context = {"orderobjs": orderobjs,"itemobj":itemobj}
-                return render(request, "psyadmin/sales-report.html", context)
+    if request.method=="POST":
+        if "show" in request.POST:
+            start_date=request.POST.get("start_date")
+            end_date=request.POST.get("end_date")
+            orderobjs = Order.objects.filter(orderdate__range=[start_date, end_date])
+            if orderobjs.count()==0:
+                message="Sorry! No orders in this particular date range"
+                context={"orderobjs":orderobjs,"message":message}
+            else:
+
+                context={"orderobjs":orderobjs}
+            return render(request,"psyadmin/sales-report.html",context)
+        elif "download" in request.POST:
+            start_date_str = request.POST.get('start_date')
+            end_date_str = request.POST.get('end_date')
+
+            start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
+            end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
+
+            buf = io.BytesIO()
+            doc = SimpleDocTemplate(buf, pagesize=letter)
+            elements = []
+
+            # Add heading
+            styles = getSampleStyleSheet()
+            heading_style = styles['Heading1']
+            heading = "Sales Report"
+            heading_paragraph = Paragraph(heading, heading_style)
+            elements.append(heading_paragraph)
+            elements.append(Spacer(1, 12))  # Add space after heading
+
+            ords = Order.objects.filter(orderdate__range=[start_date, end_date])
             
-            elif "download" in request.POST:
-                start_date_str = request.POST.get('start_date')
-                end_date_str = request.POST.get('end_date')
-                start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
-                end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
-                orders = Order.objects.filter(date_ordered__range=[start_date, end_date])
-                orderitem = OrderItem.objects.filter(order=orders).first()
-                if orders:
-                    response = HttpResponse(content_type='application/pdf')
-                    response['Content-Disposition'] = 'attachment; filename="Sales_Report.pdf"'
-                    p = canvas.Canvas(response, pagesize=letter)
-                    p.setFont("Helvetica-Bold", 14)
-                    p.drawCentredString(300, 750, "Sales Report")
-                    p.setFont("Helvetica-Bold", 12)
-                    p.drawString(50, 700, "Sl.No.")
-                    p.drawString(100, 700, "Name")
-                    p.drawString(200, 700, "Product")
-                    p.drawString(300, 700, "House")
-                    p.drawString(400, 700, "Order Date")
-                    p.drawString(500, 700, "Order Status")
-                    p.drawString(600, 700, "Quantity")
-                    p.setFont("Helvetica", 12)
-                    y = 680
-                    slno = 0
-                    for order in orders:
-                        slno += 1
-                        p.drawString(50, y, str(slno))
-                        p.drawString(100, y, order.customer.name)
-                        p.drawString(200, y, orderitem.variant.product.name)
-                        p.drawString(300, y, order.address)
-                        p.drawString(400, y, str(order.date_ordered))
-                        p.drawString(500, y, order.order_status)
-                        p.drawString(600, y, str(order.get_cart_items))
-                        y -= 20
-                    p.showPage()
-                    p.save()
-                    return response
-                else:
-                    messages.error(request, "No orders found in the specified date range.")
-                    return redirect('sales_report')
-                
-            elif "downloadinexcel" in request.POST:
-                start_date_str = request.POST.get('start_date')
-                end_date_str = request.POST.get('end_date')
-                start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
-                end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
-                orders = Order.objects.filter(date_ordered__range=[start_date, end_date])
-                orderitems = OrderItem.objects.filter(order=orders).first()
-                if orders:
-                    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-                    response['Content-Disposition'] = 'attachment; filename="Sales_Report.xlsx"'
-                    workbook = xlsxwriter.Workbook(response, {'in_memory': True})
-                    worksheet = workbook.add_worksheet('Sales Report')
-                    bold = workbook.add_format({'bold': True})
-                    headers = ['Sl.No.', 'Name', 'Product', 'House', 'Order Date', 'Order Status', 'Quantity']
-                    for col, header in enumerate(headers):
-                        worksheet.write(0, col, header, bold)
-                    row = 1
-                    slno = 0
-                    for order in orders:
-                        slno += 1
-                        worksheet.write(row, 0, slno)
-                        worksheet.write(row, 1, order.customer.name)
-                        worksheet.write(row, 2, orderitems.variant.product.name)
-                        worksheet.write(row, 3, order.address)
-                        worksheet.write(row, 4, str(order.date_ordered))
-                        worksheet.write(row, 5, order.order_status)
-                        worksheet.write(row, 6, order.get_cart_items)
-                        row += 1
-                    workbook.close()
-                    return response
-                else:
-                    messages.error(request, "No orders found in the specified date range.")
-                    return redirect('sales_report')
-        return render(request, "psyadmin/sales-report.html")
-    else:
-        return redirect('admin_login')
+
+            if ords:
+                data = [['Sl.No.', 'Name', 'Product', 'House', 'Order Date', 'Order Status', 'Quantity']]
+                slno = 0
+                for ord in ords:
+                    slno += 1
+                    row = [slno, ord.customer.name, ord.product.name, ord.address, ord.date_ordered, ord.order_status, ord.quantity]
+                    data.append(row)
+
+                table = Table(data)
+                table.setStyle(TableStyle([
+                    ('BACKGROUND', (0, 0), (-1, 0), colors.gray),
+                    ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+                    ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                    ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                    ('FONTSIZE', (0, 0), (-1, 0), 12),
+                    ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                    ('BACKGROUND', (0, 1), (-1, -1), colors.lightgrey),
+                    ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
+                    ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+                    ('FONTSIZE', (0, 1), (-1, -1), 10),
+                    ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                ]))
+
+                elements.append(table)
+            else:
+                elements.append(Paragraph("No orders", styles['Normal']))
+            if elements:
+
+                doc.build(elements)
+                buf.seek(0)
+                return FileResponse(buf, as_attachment=True, filename='Orders.pdf')
+        
+        elif "downloadinexcel" in request.POST:
+
+            start_date_str = request.POST.get('start_date')
+            end_date_str = request.POST.get('end_date')
+
+            start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
+            end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
+
+
+
+            ords = Order.objects.filter(orderdate__range=[start_date, end_date])
+
+            # Create Excel workbook and worksheet
+            workbook = xlsxwriter.Workbook("Sales_Report.xlsx")
+            worksheet = workbook.add_worksheet('Sales Report')
+
+            # Write the table headers
+            headers = ['Sl.No.', 'Name', 'Product', 'House', 'Order Date', 'Order Status', 'Quantity']
+            for col, header in enumerate(headers):
+                worksheet.write(0, col, header)
+
+            # Write the data rows
+            row = 1
+            for slno, ord in enumerate(ords, start=1):
+                worksheet.write(row, 0, slno)
+                worksheet.write(row, 1, ord.user.name)
+                worksheet.write(row, 2, ord.product.name)
+                worksheet.write(row, 3, ord.address.house)
+                worksheet.write(row, 4, str(ord.orderdate))
+                worksheet.write(row, 5, ord.orderstatus)
+                worksheet.write(row, 6, ord.quantity)
+                row += 1
+
+            workbook.close()
+
+            # Create a file-like buffer to receive the workbook data
+            buf = io.BytesIO()
+            
+            buf.seek(0)
+            
+
+            # Return the Excel file as a FileResponse
+            return FileResponse(buf, as_attachment=True, filename='Sales_Report.xlsx', content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+
+    return render(request,"psyadmin/sales-report.html")

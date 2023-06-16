@@ -30,8 +30,8 @@
   
           <div class="row mb-5">
             <button name="show" type="submit" class="btn add-product-btn btn-primary mt-2">Show Report</button>
-            <button name="download"  type="submit" class="btn add-product-btn btn-primary mt-2 ml-4 ">Download</button>
-            <button name="downloadinexcel"  type="submit" class="btn add-product-btn btn-primary mt-2 ml-4 ">Download In Excel</button>
+            <button name="download"  type="submit" class="btn add-product-btn btn-primary mt-2 ml-4 ">Download Report</button>
+            {% comment %} <button name="downloadinexcel"  type="submit" class="btn add-product-btn btn-primary mt-2 ml-4 ">Download In Excel</button> {% endcomment %}
               
   
           </div>
@@ -52,29 +52,31 @@
             <thead>
               <tr>
                 <th>Product</th>
+                <th>Price</th>
                 <th>Ordered By</th>
                 <th>Payment Type</th>
                 <th>Quantity</th>
                 <th>Date</th>
-                <th>Status</th>
+                {% comment %} <th>Status</th> {% endcomment %}
                 <th>Address</th>
                 
             
               </tr>
             </thead>
             <tbody>
-            {% for orderobj in orderobjs %}
-                {% for orderitem in orderobj.orderitem_set.all %}
+            {% for item in orderobjs %}
+              
                     <tr>
-                        <td>{{ orderitem.variant.product.name }}</td>
-                        <td>{{ orderobj.customer.name }}</td>
-                        <td>{{ orderitem.payment_type }}</td>
-                        <td>{{ orderitem.quantity }}</td>
-                        <td>{{ orderobj.date_ordered }}</td>
-                        <td>{{ orderobj.order_status }}</td>
-                        <td>{{ orderobj.address }}</td>
+                        <td>{{ item.variant.product.name }}</td>
+                        <td>{{ item.order.total }}</td>
+                       <td>{{ item.order.customer.name }}</td> 
+                        <td>{{ item.order.payment_type }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ item.date_added }}</td>
+                        {% comment %} <td>{{ item.order.order_status }}</td> {% endcomment %}
+                        <td>{{ item.order.address }}</td>
                     </tr>
-                {% endfor %}
+               
             {% endfor %}
             </tbody>
           </table>

@@ -867,7 +867,8 @@ def sales_report(request):
         if "show" in request.POST:
             start_date=request.POST.get("start_date")
             end_date=request.POST.get("end_date")
-            orderobjs = Order.objects.filter(orderdate__range=[start_date, end_date])
+            orderobjs = OrderItem.objects.filter(date_added__range=[start_date, end_date])
+            # itemobjs=OrderItem.objects.filter(order=orderobjs)
             if orderobjs.count()==0:
                 message="Sorry! No orders in this particular date range"
                 context={"orderobjs":orderobjs,"message":message}
@@ -875,6 +876,9 @@ def sales_report(request):
 
                 context={"orderobjs":orderobjs}
             return render(request,"psyadmin/sales-report.html",context)
+        
+
+
         elif "download" in request.POST:
             start_date_str = request.POST.get('start_date')
             end_date_str = request.POST.get('end_date')
@@ -894,15 +898,15 @@ def sales_report(request):
             elements.append(heading_paragraph)
             elements.append(Spacer(1, 12))  # Add space after heading
 
-            ords = Order.objects.filter(orderdate__range=[start_date, end_date])
+            ords = OrderItem.objects.filter(date_added__range=[start_date, end_date])
             
 
             if ords:
-                data = [['Sl.No.', 'Name', 'Product', 'House', 'Order Date', 'Order Status', 'Quantity']]
+                data = [['Sl.No.', 'Name', 'Product', 'House', 'Order Date', 'Quantity','Price']]
                 slno = 0
                 for ord in ords:
                     slno += 1
-                    row = [slno, ord.customer.name, ord.product.name, ord.address, ord.date_ordered, ord.order_status, ord.quantity]
+                    row = [slno, ord.order.customer.name, ord.variant.product.name, ord.order.address, ord.date_added, ord.quantity,ord.order.total]
                     data.append(row)
 
                 table = Table(data)
@@ -916,7 +920,7 @@ def sales_report(request):
                     ('BACKGROUND', (0, 1), (-1, -1), colors.lightgrey),
                     ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
                     ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
-                    ('FONTSIZE', (0, 1), (-1, -1), 10),
+                    ('FONTSIZE', (0, 1), (-1, -1), 8),
                     ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
                 ]))
 
@@ -929,48 +933,4 @@ def sales_report(request):
                 buf.seek(0)
                 return FileResponse(buf, as_attachment=True, filename='Orders.pdf')
         
-        elif "downloadinexcel" in request.POST:
-
-            start_date_str = request.POST.get('start_date')
-            end_date_str = request.POST.get('end_date')
-
-            start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
-            end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
-
-
-
-            ords = Order.objects.filter(orderdate__range=[start_date, end_date])
-
-            # Create Excel workbook and worksheet
-            workbook = xlsxwriter.Workbook("Sales_Report.xlsx")
-            worksheet = workbook.add_worksheet('Sales Report')
-
-            # Write the table headers
-            headers = ['Sl.No.', 'Name', 'Product', 'House', 'Order Date', 'Order Status', 'Quantity']
-            for col, header in enumerate(headers):
-                worksheet.write(0, col, header)
-
-            # Write the data rows
-            row = 1
-            for slno, ord in enumerate(ords, start=1):
-                worksheet.write(row, 0, slno)
-                worksheet.write(row, 1, ord.user.name)
-                worksheet.write(row, 2, ord.product.name)
-                worksheet.write(row, 3, ord.address.house)
-                worksheet.write(row, 4, str(ord.orderdate))
-                worksheet.write(row, 5, ord.orderstatus)
-                worksheet.write(row, 6, ord.quantity)
-                row += 1
-
-            workbook.close()
-
-            # Create a file-like buffer to receive the workbook data
-            buf = io.BytesIO()
-            
-            buf.seek(0)
-            
-
-            # Return the Excel file as a FileResponse
-            return FileResponse(buf, as_attachment=True, filename='Sales_Report.xlsx', content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-
     return render(request,"psyadmin/sales-report.html")

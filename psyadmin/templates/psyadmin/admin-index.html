@@ -109,12 +109,7 @@
             <i class="mdi mdi-table-large menu-icon"></i>
           </a>
         </li>
-        <li class="nav-item">
-           <a class="nav-link" href={% url 'sales_report' %}>
-            <span class="menu-title">Sales Report</span>
-            <i class="mdi mdi-table-large menu-icon"></i>
-          </a>
-        </li>
+        
         <li class="nav-item">
           <a class="nav-link" data-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
             <span class="menu-title">Offers</span>
@@ -140,7 +135,11 @@
         </li>
       </ul>
       <div class="sidebar-progress">
-        <p>Total Sales</p>
+        <a href="{% url 'sales_report' %}">
+          <p>Total Sales</p>
+        </a>
+        
+        
         <div class="progress progress-sm">
           <div class="progress-bar bg-gradient-success" role="progressbar" style="width: 72%" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100"></div>
         </div>
@@ -588,19 +587,19 @@
   <!-- content-wrapper ends -->
 
        
-  <div class="container-fluid">
+  {% comment %} <div class="container-fluid">
     <div class="row justify-content-center mt-4">
         <h4>
             Sales Report
         </h4>
-    </div>
+    </div> {% endcomment %}
     {% comment %} <div class="row  justify-content-center mt-5">
       <h4>
           Download Sales Report
       </h4>
   </div> {% endcomment %}
 
-  <div class="row justify-content-center border mt-2  ">
+  {% comment %} <div class="row justify-content-center border mt-2  ">
       <form action="" method="POST">
         {% csrf_token %}
           <label class="mt-5" for="start_date">Start Date:</label>
@@ -677,7 +676,7 @@
 
     
     <br><br><br><br>
-</div>
+</div> {% endcomment %}
         
 
 
@@ -686,7 +685,8 @@
         {% endblock content %}
 
 
-      
+      <div class="row mt-5"></div>
+      <div class="row mt-5"></div>
 
         
         <!-- partial:partials/_footer.html -->

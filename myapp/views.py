@@ -1088,46 +1088,46 @@ def razorupdateorder(request):
 
 
 
-# from django.template.loader import render_to_string
-# import io
+from django.template.loader import render_to_string
+import io
 
 
-# def generateinvoice(request):
-#     user = customer.objects.get(username = request.session['username'])
+def generateinvoice(request):
+    user = customer.objects.get(username = request.session['username'])
 
-#     ordered_product = Order.objects.get(Q(id=request.GET.get('ord_id')) & Q(user=user)) 
-#     ordered_item = OrderItem.objects.get(order=ordered_product) 
-#     data = {
-#         # 'date' : datetime.date.today(),
-#         'orderid': ordered_product.id,
-#         'ordered_date': ordered_product.date_ordered,
-#         'name': ordered_product.address.customer.name,
-#         'housename': ordered_product.address.address,
-#         'country' : ordered_product.address.country,
-#         'city' : ordered_product.address.city, 
-#         'state' : ordered_product.address.state, 
-#         'zipcode': ordered_product.address.zipcode,
-#         'phone' : ordered_product.address.customer.phonenumber,
-#         'product': ordered_item.product.name,
-#         'amount' : ordered_product.total,
-#         'ordertype': ordered_product.payment_type,
-#     } 
-#     template_path = 'invoicepdf.html'
-#     context = {
-#         # 'date': data['date'],
-#         'orderid': data['orderid'],
-#         'name': data['name'],
-#     }
-#     html = render_to_string(template_path, data)
-#     # Create a Django response object, and specify content_type as pdf
-#     response = HttpResponse(content_type='application/pdf')
-#     response['Content-Disposition'] = f'attachment; filename="Invoice_{data["orderid"]}.pdf"'
+    ordered_product = Order.objects.get(Q(id=request.GET.get('ord_id')) & Q(user=user)) 
+    ordered_item = OrderItem.objects.get(order=ordered_product) 
+    data = {
+        # 'date' : datetime.date.today(),
+        'orderid': ordered_product.id,
+        'ordered_date': ordered_product.date_ordered,
+        'name': ordered_product.address.customer.name,
+        'housename': ordered_product.address.address,
+        'country' : ordered_product.address.country,
+        'city' : ordered_product.address.city, 
+        'state' : ordered_product.address.state, 
+        'zipcode': ordered_product.address.zipcode,
+        'phone' : ordered_product.address.customer.phonenumber,
+        'product': ordered_item.product.name,
+        'amount' : ordered_product.total,
+        'ordertype': ordered_product.payment_type,
+    } 
+    template_path = 'invoicepdf.html'
+    context = {
+        # 'date': data['date'],
+        'orderid': data['orderid'],
+        'name': data['name'],
+    }
+    html = render_to_string(template_path, data)
+    # Create a Django response object, and specify content_type as pdf
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="Invoice_{data["orderid"]}.pdf"'
   
 
-#     # create a pdf
-#     pisa_status = pisa.CreatePDF(
-#        html, dest=response)
-#     # if error then show some funny view
-#     if pisa_status.err:
-#        return HttpResponse('We had some errors <pre>' + html + '</pre>')
-#     return response
+    # create a pdf
+    pisa_status = pisa.CreatePDF(
+       html, dest=response)
+    # if error then show some funny view
+    if pisa_status.err:
+       return HttpResponse('We had some errors <pre>' + html + '</pre>')
+    return response

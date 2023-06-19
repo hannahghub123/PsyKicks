@@ -10,7 +10,7 @@
  <div class="mt-5"></div>
 
 
-<div class="container"  style="margin-right:100px">
+<div class="container"  style="margin-right:50px; ">
 	
     <div class="mt-5"></div>
  <div class="mt-5"></div>
@@ -27,10 +27,11 @@
 
         <thead>
           <tr>
-            <th>Customer</th>
+            <th style="width: 150px;">Customer</th>
+            <th>Address</th>
             <th scope="col">OrderId</th>
-            <th scope="col">Total Price</th>
-            <th scope="col">Date Ordered</th>
+            <th style="width: 100px;">Total Price</th>
+            <th style="width: 150px;">Date Ordered</th>
             <th scope="col">Order Status</th>
             <th scope="col">Payment Type </th>
             <th>Cancel Order</th>
@@ -41,6 +42,7 @@
             
           <tr>
             <td>{{ item.customer }}</td>
+            <td>{{ item.address.address}}, {{item.address.city}},{{item.address.state}},{{item.address.country}},{{item.address.zipcode}}</td>
             <td><a href="{% url 'orderitems' item.id %}">{{ item.id }}</a></td>
             <td>{{ item.total }}</td>
             <td>{{ item.date_ordered }}</td>

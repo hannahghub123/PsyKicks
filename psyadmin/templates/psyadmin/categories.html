@@ -33,9 +33,9 @@
           </td>
           <td>
             {% if item.isblocked %}
-            <a href="{% url 'unblockcategory' item.id %}" class="btn btn-success btn-sm">Unblock</a>
+            <a href="{% url 'unblockcategory' item.id %}" class="btn btn-success btn-sm unblock-btn">Unblock</a>
             {% else %}
-            <a href="{% url 'blockcategory' item.id %}" class="btn btn-warning btn-sm">Block</a>
+            <a href="{% url 'blockcategory' item.id %}" class="btn btn-warning btn-sm block-btn">Block</a>
             {% endif %}
           </td>
           {% comment %} <td class="py-1">
@@ -106,4 +106,32 @@
     </nav>
   </div>
 </div>
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const blockButtons = document.querySelectorAll(".block-btn");
+    const unblockButtons = document.querySelectorAll(".unblock-btn");
+  
+    blockButtons.forEach(function(button) {
+      button.addEventListener("click", function(event) {
+        event.preventDefault();
+        const confirmation = confirm("Are you sure you want to block this category?");
+        if (confirmation) {
+          window.location.href = button.getAttribute("href");
+        }
+      });
+    });
+  
+    unblockButtons.forEach(function(button) {
+      button.addEventListener("click", function(event) {
+        event.preventDefault();
+        const confirmation = confirm("Are you sure you want to unblock this category?");
+        if (confirmation) {
+          window.location.href = button.getAttribute("href");
+        }
+      });
+    });
+  });
+  </script>
 {% endblock content %}

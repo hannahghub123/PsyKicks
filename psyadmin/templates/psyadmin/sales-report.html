@@ -4,11 +4,43 @@
 	
  {% block content %}
  <div class="row mt-5"></div>
+    <div style="margin-left: 250px; margin-right: 30px;">
+      <div class="row">
+        <div class="col-md-4 stretch-card grid-margin">
+          <div class="card bg-gradient-warning text-white">
+            <div class="card-body">
+              <h4 class="font-weight-normal mb-3">Total Sales</h4>
+              <h2 class="font-weight-normal mb-5">$ {{total_sales}}</h2>
+              <p class="card-text">Incresed by 60%</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 stretch-card grid-margin">
+          <div class="card bg-gradient-info text-white">
+            <div class="card-body">
+              <h4 class="font-weight-normal mb-3">Total Orders</h4>
+              <h2 class="font-weight-normal mb-5">{{total_orders}}</h2>
+              <p class="card-text">Decreased by 10%</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 stretch-card grid-margin">
+          <div class="card bg-gradient-success text-white">
+            <div class="card-body">
+              <h4 class="font-weight-normal mb-3">Visitors Online</h4>
+              <h2 class="font-weight-normal mb-5">{{total_users}}</h2>
+              <p class="card-text">Increased by 5%</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </div>
 
 <div class="container-fluid">
     <div class="row justify-content-center mt-4">
         <h4>
-            Sales Report
+            Sales Overview
         </h4>
     </div>
     {% comment %} <div class="row  justify-content-center mt-5">

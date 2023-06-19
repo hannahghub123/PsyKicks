@@ -949,6 +949,21 @@ def addnew_categoryoffer(request):
 
 
 def sales_report(request):
+    total_sales=0
+    total_orders=0
+    total_users=0
+    orderobj = Order.objects.all()
+    cusobj = customer.objects.all()
+
+    for i in cusobj:
+        total_users+=1
+
+    for i in orderobj:
+        total_sales += i.total
+        total_orders+=1
+
+    print(total_sales,">>>>>>>>>>>>>>>>>>>>>>?????????????????????????>>>>>>>>>>>>>>>>>>>>>>>>>??????????????")
+
     if request.method=="POST":
         if "show" in request.POST:
             start_date=request.POST.get("start_date")
@@ -970,10 +985,13 @@ def sales_report(request):
                 # except EmptyPage:
                 #     orderobjs = paginator.page(paginator.num_pages)
 
-
+                
                 context={"orderobjs":orderobjs,
                          "start_date":start_date,
-                         "end_date":end_date
+                         "end_date":end_date,
+                         "total_sales":total_sales,
+                        "total_orders":total_orders,
+                        "total_users":total_users
                          }
             return render(request,"psyadmin/sales-report.html",context)
         
@@ -1033,4 +1051,4 @@ def sales_report(request):
                 buf.seek(0)
                 return FileResponse(buf, as_attachment=True, filename='Orders.pdf')
         
-    return render(request,"psyadmin/sales-report.html")
+    return render(request,"psyadmin/sales-report.html",{"total_sales":total_sales,"total_orders":total_orders,"total_users":total_users})

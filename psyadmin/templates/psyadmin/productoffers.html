@@ -29,9 +29,9 @@
           
           <td>
             {% if item.is_expired %}
-            <a href="{% url 'productoffer_available' item.id %}" class="btn btn-success btn-sm">Expired</a>
+            <a href="{% url 'productoffer_available' item.id %}" class="btn btn-success btn-sm" onclick="return confirm('Are you sure you want to mark this offer-status as available?')">Expired</a>
             {% else %}
-            <a href="{% url 'productoffer_is_expired' item.id %}" class="btn btn-warning btn-sm">Available</a>
+            <a href="{% url 'productoffer_is_expired' item.id %}" class="btn btn-warning btn-sm" onclick="return confirm('Are you sure you want to mark this offer-status as expired?')">Available</a>
             {% endif %}
           </td>
         </tr>

@@ -5,7 +5,7 @@ from django.contrib.auth import authenticate, login
 from myapp.models import *
 import os
 from django.http import HttpResponse
-
+from django.core.paginator import Paginator,PageNotAnInteger,EmptyPage
 from django.http import FileResponse
 import io
 from reportlab.pdfgen import canvas
@@ -99,6 +99,16 @@ def products(request):
     if "adminuser" in request.session:
         datas=Products.objects.all()
 
+        page = request.GET.get('page',1)
+        paginator = Paginator(datas,10)
+        try:
+            datas = paginator.page(page)
+        except PageNotAnInteger: 
+            datas = paginator.page(1)
+        except EmptyPage:
+            datas = paginator.page(paginator.num_pages)
+
+
         if request.method == "POST":
             entered_product = request.POST.get("searchitem")
             datas = Products.objects.filter(name__icontains=entered_product)
@@ -115,6 +125,15 @@ def productvariant(request,item_id):
 
         pobj = Products.objects.get(id=item_id)
         variant = Productvariant.objects.filter(product=pobj)
+        page = request.GET.get('page',1)
+        paginator = Paginator(variant,10)
+        try:
+            variant = paginator.page(page)
+        except PageNotAnInteger: 
+            variant = paginator.page(1)
+        except EmptyPage:
+            variant = paginator.page(paginator.num_pages)
+
    
 
         context={
@@ -476,6 +495,15 @@ def deletevariants(request, someid):
 def categories(request):
     if "adminuser" in request.session:
         datas=Category.objects.all()
+        page = request.GET.get('page',1)
+        paginator = Paginator(datas,10)
+        try:
+            datas = paginator.page(page)
+        except PageNotAnInteger: 
+            datas = paginator.page(1)
+        except EmptyPage:
+            datas = paginator.page(paginator.num_pages)
+
         return render(request,"psyadmin/categories.html",{"datas":datas})
     else:
         return redirect(admin_login)
@@ -549,6 +577,17 @@ def editcategories(request,someid):
 def users(request):
     if "adminuser" in request.session:
         datas=customer.objects.all()
+
+        page = request.GET.get('page',1)
+        paginator = Paginator(datas,10)
+        try:
+            datas = paginator.page(page)
+        except PageNotAnInteger: 
+            datas = paginator.page(1)
+        except EmptyPage:
+            datas = paginator.page(paginator.num_pages)
+
+
         if request.method == "POST":
             entered_user = request.POST.get("searchitem")
             datas = customer.objects.filter(name__icontains=entered_user)
@@ -588,6 +627,14 @@ def orders(request):
         orderobj = Order.objects.all()
         itemobj = OrderItem.objects.all()
 
+        page = request.GET.get('page',1)
+        paginator = Paginator(orderobj,10)
+        try:
+            orderobj = paginator.page(page)
+        except PageNotAnInteger: 
+            orderobj = paginator.page(1)
+        except EmptyPage:
+            orderobj = paginator.page(paginator.num_pages)
 
         
 
@@ -598,6 +645,15 @@ def orders(request):
 def orderitems(request,item_id):
     orderobj = Order.objects.all()
     orderitemobj = OrderItem.objects.filter(order__id=item_id)
+    page = request.GET.get('page',1)
+    paginator = Paginator(orderitemobj,5)
+    try:
+        orderitemobj = paginator.page(page)
+    except PageNotAnInteger: 
+        orderitemobj = paginator.page(1)
+    except EmptyPage:
+        orderitemobj = paginator.page(paginator.num_pages)
+
 
     context = {
         'orderobj':orderobj, 
@@ -630,6 +686,16 @@ def update_orderstatus(request, item_id):
 def coupon_management(request):
     if 'adminuser' in request.session:
         datas = Coupon.objects.all()
+
+        page = request.GET.get('page',1)
+        paginator = Paginator(datas,10)
+        try:
+            datas = paginator.page(page)
+        except PageNotAnInteger: 
+            datas = paginator.page(1)
+        except EmptyPage:
+            datas = paginator.page(paginator.num_pages)
+
         return render(request, "psyadmin/coupon-management.html", {"datas": datas})
     else:
         # Handle the case where the user is not authenticated as an admin
@@ -702,6 +768,16 @@ def available(request, someid):
 
 def productoffer(request):
     offerobj = ProductOffer.objects.all()
+
+    page = request.GET.get('page',1)
+    paginator = Paginator(offerobj,10)
+    try:
+        offerobj = paginator.page(page)
+    except PageNotAnInteger: 
+        offerobj = paginator.page(1)
+    except EmptyPage:
+        offerobj = paginator.page(paginator.num_pages)
+
 
     context={
         'offerobj':offerobj,
@@ -783,6 +859,16 @@ def addnew_productoffer(request):
 
 def categoryoffer(request):
     offerobj = CategoryOffer.objects.all()
+
+    page = request.GET.get('page',1)
+    paginator = Paginator(offerobj,10)
+    try:
+        offerobj = paginator.page(page)
+    except PageNotAnInteger: 
+        offerobj = paginator.page(1)
+    except EmptyPage:
+        offerobj = paginator.page(paginator.num_pages)
+
 
     context={
         'offerobj':offerobj,
@@ -869,12 +955,26 @@ def sales_report(request):
             end_date=request.POST.get("end_date")
             orderobjs = OrderItem.objects.filter(date_added__range=[start_date, end_date])
             # itemobjs=OrderItem.objects.filter(order=orderobjs)
+            
             if orderobjs.count()==0:
                 message="Sorry! No orders in this particular date range"
                 context={"orderobjs":orderobjs,"message":message}
             else:
+                # paginator = Paginator(orderobjs, 5)
+                # page = request.GET.get('page', 1)
 
-                context={"orderobjs":orderobjs}
+                # try:
+                #     orderobjs = paginator.page(page)
+                # except PageNotAnInteger: 
+                #     orderobjs = paginator.page(1)
+                # except EmptyPage:
+                #     orderobjs = paginator.page(paginator.num_pages)
+
+
+                context={"orderobjs":orderobjs,
+                         "start_date":start_date,
+                         "end_date":end_date
+                         }
             return render(request,"psyadmin/sales-report.html",context)
         
 

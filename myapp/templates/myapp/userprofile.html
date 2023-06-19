@@ -282,6 +282,7 @@
         <th scope="col">Order Status</th>
         <th scope="col">Payment Type </th>
         <th>Actions</th>
+        <th>...</th>
       </tr>
     </thead>
     <tbody>
@@ -305,6 +306,7 @@
             <p style="color:blue">Order Returned</p>
             {% endif %}      
         </td>
+        {% comment %} <td> <a href="{% url 'generate_invoice' %}"> Download Invoice</a></td> {% endcomment %}
       </tr>
       {% endfor %}
       <tr>

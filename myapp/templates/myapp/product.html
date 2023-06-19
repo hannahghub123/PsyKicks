@@ -10,17 +10,20 @@
 	<div class="container">
 		<div class="flex-w flex-sb-m p-b-52">
 			<div class="flex-w flex-l-m filter-tope-group m-tb-10">
-				<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 how-active1" data-filter="*">
-					All Products
-				</button>
+				<a href="{% url 'product' %}">
+					<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 how-active1" data-filter="*">
+						All Products
+					</button>
+				</a>
+				
 
-				<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter=".women">
+				{% comment %} <button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter=".women">
 					Women
 				</button>
 
 				<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter=".men">
 					Men
-				</button>
+				</button> {% endcomment %}
 
 				{% comment %} <button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter=".bag">
 					Bag
@@ -273,7 +276,7 @@
 								${{i.price}}
 							</span>
 							<br><br>
-							<button data-product={{i.id}} data-action="add" class="btn btn-outline-primary add-btn update-cart" href="#">Add to cart</button>
+							{% comment %} <button data-product={{i.id}} data-action="add" class="btn btn-outline-primary add-btn update-cart" href="#">Add to cart</button> {% endcomment %}
 							<a class="btn btn-outline-primary" href={% url 'pdetails' i.id %} style="display:inline-block; ">View</a>
 
 							
@@ -299,20 +302,9 @@
 			{% endfor %}
 
 			
-
-		<!-- Load more -->
-		{% comment %} <div class="flex-c-m flex-w w-full p-t-45">
-			<a href="#" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
-				Load More
-			</a>
-		</div> {% endcomment %}
 	</div>
 </div>
 
 
 
 {% endblock content %}
-
-
-
-

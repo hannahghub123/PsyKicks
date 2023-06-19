@@ -591,7 +591,6 @@ def list_addtocart(request,product_id):
 
 
 def cart(request):
-    if "username" in request.session:
         cartobj = Cart.objects.all()
 
         datas = {
@@ -813,9 +812,14 @@ def orderdetails(request,item_id):
         orderobj = Order.objects.filter(customer__username=username)
         orderitemobj = OrderItem.objects.filter(order__id=item_id)
 
+        user = customer.objects.get(username=username)
+        listobj = Wishlist.objects.filter(customer=user)
+        count = listobj.count()
+
         context = {
             'orderobj':orderobj, 
-            'orderitemobj':orderitemobj
+            'orderitemobj':orderitemobj,
+            "count":count
         }
 
     return render(request, "myapp/orderdetails.html",context)
@@ -1088,46 +1092,47 @@ def razorupdateorder(request):
 
 
 
-from django.template.loader import render_to_string
-import io
+# from django.template.loader import render_to_string
+# from django.http import HttpResponse
+# from xhtml2pdf import pisa
+# import datetime
 
+# def generate_invoice(request):
+#     if "username" in request.session:
+#         try:
+#             user = customer.objects.get(username=request.session['username'])
+#             ord_id = request.GET.get('ord_id')
+#             ordered_product = Order.objects.get(id=ord_id, customer=user)
+#             ordered_item = OrderItem.objects.get(order=ordered_product)
 
-def generateinvoice(request):
-    user = customer.objects.get(username = request.session['username'])
+#             data = {
+#                 'date': datetime.date.today(),
+#                 'orderid': ordered_product.id,
+#                 'ordered_date': ordered_product.date_ordered,
+#                 'name': ordered_product.address.customer.name,
+#                 'housename': ordered_product.address.address,
+#                 'country': ordered_product.address.country,
+#                 'city': ordered_product.address.city,
+#                 'state': ordered_product.address.state,
+#                 'zipcode': ordered_product.address.zipcode,
+#                 'phone': ordered_product.address.customer.phonenumber,
+#                 'product': ordered_item.product.name,
+#                 'amount': ordered_product.total,
+#                 'ordertype': ordered_product.payment_type,
+#             }
 
-    ordered_product = Order.objects.get(Q(id=request.GET.get('ord_id')) & Q(user=user)) 
-    ordered_item = OrderItem.objects.get(order=ordered_product) 
-    data = {
-        # 'date' : datetime.date.today(),
-        'orderid': ordered_product.id,
-        'ordered_date': ordered_product.date_ordered,
-        'name': ordered_product.address.customer.name,
-        'housename': ordered_product.address.address,
-        'country' : ordered_product.address.country,
-        'city' : ordered_product.address.city, 
-        'state' : ordered_product.address.state, 
-        'zipcode': ordered_product.address.zipcode,
-        'phone' : ordered_product.address.customer.phonenumber,
-        'product': ordered_item.product.name,
-        'amount' : ordered_product.total,
-        'ordertype': ordered_product.payment_type,
-    } 
-    template_path = 'invoicepdf.html'
-    context = {
-        # 'date': data['date'],
-        'orderid': data['orderid'],
-        'name': data['name'],
-    }
-    html = render_to_string(template_path, data)
-    # Create a Django response object, and specify content_type as pdf
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="Invoice_{data["orderid"]}.pdf"'
-  
+#             template_path = 'invoicepdf.html'
+#             html = render_to_string(template_path, data)
 
-    # create a pdf
-    pisa_status = pisa.CreatePDF(
-       html, dest=response)
-    # if error then show some funny view
-    if pisa_status.err:
-       return HttpResponse('We had some errors <pre>' + html + '</pre>')
-    return response
+#             # Create a Django response object with PDF content type
+#             response = HttpResponse(content_type='application/pdf')
+#             response['Content-Disposition'] = f'attachment; filename="Invoice_{data["orderid"]}.pdf"'
+
+#             # Create PDF
+#             pisa_status = pisa.CreatePDF(html, dest=response)
+#             if pisa_status.err:
+#                 return HttpResponse('We had some errors <pre>' + html + '</pre>')
+#             return response
+
+#         except (customer.DoesNotExist, Order.DoesNotExist, OrderItem.DoesNotExist):
+#             return HttpResponse('Error: Order not found')

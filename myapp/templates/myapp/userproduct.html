@@ -15,7 +15,7 @@
 
 
 
-<div class="bg0 m-t-23 p-b-140">
+<div class="bg0 m-t-23 ">
 	<div class="container">
 		<div class="flex-w flex-sb-m p-b-52">
 			<div class="flex-w flex-l-m filter-tope-group m-tb-10">
@@ -44,16 +44,36 @@
 			</div>
 			
 			<!-- Search product -->
+			<style>
+				form {
+				  display: flex;
+				  align-items: center;
+				}
+			  
+				form input[type="text"],
+				form button {
+				  margin-right: 900px;
+				  {% comment %} margin-bottom: 40px; {% endcomment %}
+				}
+			  
+				form button {
+				  padding: 6px 15px;
+				  height: 38px;
+				}
+			  </style>
+
 			<div class="dis-none panel-search w-full p-t-10 p-b-15">
 				<div class="bor8 dis-flex p-l-15">
-					<button class="size-113 flex-c-m fs-16 cl2 hov-cl1 trans-04">
-						<i class="zmdi zmdi-search"></i>
-					</button>
+					
 
 					<form action="" method="POST">
 						{% csrf_token %}
-						<input type="text" name="searchitem" id="navbar-search-input" placeholder="Search user" aria-label="search" style=" font-size:15px; border-radius:2" >
-						<button type="submit" class="btn btn-primary mt-5" style="padding: 6px 15px; height:28px " >Search</button>
+						<div class="d-flex mt-3 mb-3">
+							<input type="text" name="searchitem" id="navbar-search-input" placeholder="Search product?" aria-label="search" style="font-size: 15px; border-radius: 2px;">
+							<button type="submit" class="btn ">
+							<i class="zmdi zmdi-search"></i>
+							</button>
+						</div>
 					</form>
 				</div>	
 			</div>
@@ -248,78 +268,128 @@
 		{% endfor %}
 	{% endif %}
 	
-
-		<div class="row isotope-grid">
-			{% for i in datas %}
-			<div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item women">
-				<!-- Block2 -->
-				<div class="block2">
-					<div class="block2-pic hov-img0">
-						{% if i.images.all %}
-								{% with i.images.all|first as img %}
-								<a href={% url 'user_pdetails' i.id %}>
-							<img src="{{ img.image.url }}" alt="IMG-PRODUCT">
-								</a>
-								{% endwith %}
-							{% endif %}
-
-						
-					</div>
-
-					<div class="block2-txt flex-w flex-t p-t-14">
-						<div class="block2-txt-child1 flex-col-l ">
-							<a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-								{{i.name}}
-							</a>
-
-							<span class="stext-105 cl3">
-								{{i.price}}
-							</span>
-
-							{% comment %} <a href={% url 'pdetails' i.id %}>Quick view</a> {% endcomment %}
-							
-							<br><br>
-							<span class="error-message">{{error_message.product}}</span>
-
-
-							 <form method="POST" action="{% url 'addtocart' i.id %}"> 
-								{% csrf_token %}
-								
-								<a class="btn btn-outline-primary" href={% url 'user_pdetails' i.id %} style="display:inline-block; ">View Product</a>
-							</form>
-							
-						</div>
-
-						<div class="block2-txt-child2 flex-r p-t-3">
-							{% comment %} js-addwish-b2 {% endcomment %}
-							<a href="{% url 'addtolist' i.id %}" class="btn-addwish-b2 dis-block pos-relative">
-								<img class="icon-heart1 dis-block trans-04" src="{% static 'myapp/images/icons/icon-heart-01.png'%}" alt="ICON">
-								<img class="icon-heart2 dis-block trans-04 ab-t-l" src="{% static 'myapp/images/icons/icon-heart-02.png'%}" alt="ICON">
-							</a>
-							
-						</div>
-						
-					</div>
-				</div>
+	
+	<style>
+		.block2-pic img {
+		  width: 300px; /* Adjust the width to your desired size */
+		  height: 300px; /* Adjust the height to your desired size */
+		  object-fit: cover; /* Preserve the aspect ratio and crop if necessary */
+		}
+	  </style>
+	  
+	  <div class="row isotope-grid">
+		{% for i in datas %}
+		<div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item">
+		  <!-- Block2 -->
+		  <div class="block2">
+			<div class="block2-pic hov-img0">
+			  {% if i.images.all %}
+			  {% with i.images.all|first as img %}
+			  <a href={% url 'user_pdetails' i.id %}>
+				<img src="{{ img.image.url }}" alt="IMG-PRODUCT">
+			  </a>
+			  {% endwith %}
+			  {% endif %}
 			</div>
-
-			{% endfor %}
-
-			
-
-		<!-- Load more -->
-		{% comment %} <div class="flex-c-m flex-w w-full p-t-45">
-			<a href="#" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
-				Load More
-			</a>
-		</div> {% endcomment %}
+	  
+			<div class="block2-txt flex-w flex-t p-t-14">
+			  <div class="block2-txt-child1 flex-col-l">
+				{% comment %} <a href="#" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6"> {% endcomment %}
+				  {{i.name}}
+				{% comment %} </a> {% endcomment %}
+	  
+				<span class="stext-105 cl3">
+				  {{i.brand}}
+				</span>
+	  
+				{% comment %} <a href={% url 'pdetails' i.id %}>Quick view</a> {% endcomment %}
+	  
+				<br><br>
+				<span class="error-message">{{error_message.product}}</span>
+	  
+	  
+				<form method="POST" action="{% url 'addtocart' i.id %}">
+				  {% csrf_token %}
+	  
+				  <a class="btn btn-outline-primary" href={% url 'user_pdetails' i.id %} style="display:inline-block; ">View Product</a>
+				</form>
+	  
+			  </div>
+	  
+			  <div class="block2-txt-child2 flex-r p-t-3">
+				{% comment %} js-addwish-b2 {% endcomment %}
+				<a href="{% url 'addtolist' i.id %}" class="btn-addwish-b2 dis-block pos-relative">
+				  <img class="icon-heart1 dis-block trans-04" src="{% static 'myapp/images/icons/icon-heart-01.png'%}" alt="ICON">
+				  <img class="icon-heart2 dis-block trans-04 ab-t-l" src="{% static 'myapp/images/icons/icon-heart-02.png'%}" alt="ICON">
+				</a>
+	  
+			  </div>
+	  
+			</div>
+		  </div>
+		</div>
+	  
+		{% endfor %}
+	  </div>
+	  
 	</div>
-</div>
+
 
 <div class="row mt-5"></div>
 <div class="row mt-5"></div>
 <div class="row mt-5"></div>
+
+<div class="d-flex justify-content-center">
+  <nav aria-label="Page navigation">
+    <ul class="pagination">
+
+      {% if datas.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?page=1" aria-label="First">
+          <span aria-hidden="true">&laquo;</span>
+          <span class="sr-only">First</span>
+        </a>
+      </li>
+      <li class="page-item">
+        <a class="page-link" href="?page={{ datas.previous_page_number }}" aria-label="Previous">
+          <span aria-hidden="true">&lt;</span>
+          <span class="sr-only">Previous</span>
+        </a>
+      </li>
+      {% endif %}
+
+      {% for i in datas.paginator.page_range %}
+        {% if i == datas.number %}
+          <li class="page-item active" aria-current="page">
+            <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+          </li>
+        {% else %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+          </li>
+        {% endif %}
+      {% endfor %}
+
+      {% if datas.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ datas.next_page_number }}" aria-label="Next">
+          <span aria-hidden="true">&gt;</span>
+          <span class="sr-only">Next</span>
+        </a>
+      </li>
+      <li class="page-item">
+        <a class="page-link" href="?page={{ datas.paginator.num_pages }}" aria-label="Last">
+          <span aria-hidden="true">&raquo;</span>
+          <span class="sr-only">Last</span>
+        </a>
+      </li>
+      {% endif %}
+
+    </ul>
+  </nav>
+</div>
 <div class="row mt-5"></div>
+
 {% endblock content %}
 
 

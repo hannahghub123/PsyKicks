@@ -13,8 +13,8 @@ import random
 from . models import *
 from .forms import *
 from django.http import HttpResponse, JsonResponse
+from django.core.paginator import Paginator,PageNotAnInteger,EmptyPage
 
-# from xhtml2pdf import pisa
 
 
 # Create your views here.
@@ -28,7 +28,7 @@ def index(request):
     return render(request,"myapp/index.html",context)
      
 def userindex(request):
-    if request.user.is_authenticated:
+    if "username" in request.session:
         username = request.session["username"]
         user = customer.objects.get(username=username)
 
@@ -40,10 +40,10 @@ def userindex(request):
 
         items = order.orderitem_set.all()
         cartItems = order.get_cart_items
-    else:
-        items = []
-        order = {'get_cart_total': 0, 'get_cart_items': 0, 'shipping': False}
-        cartItems = order['get_cart_items']
+    # else:
+    #     items = []
+    #     order = {'get_cart_total': 0, 'get_cart_items': 0, 'shipping': False}
+    #     cartItems = order['get_cart_items']
 
     datas = Products.objects.all()
     # variants = {} 
@@ -297,6 +297,16 @@ def userproduct(request):
     user = customer.objects.get(username=username)
     wishlist_items = Wishlist.objects.filter(customer=user)
     count = wishlist_items.count()
+
+    page = request.GET.get('page',1)
+    paginator = Paginator(datas,10)
+    try:
+        datas = paginator.page(page)
+    except PageNotAnInteger: 
+        datas = paginator.page(1)
+    except EmptyPage:
+        datas = paginator.page(paginator.num_pages)
+
 
  
     if selected_category:

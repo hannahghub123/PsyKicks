@@ -493,19 +493,40 @@ var csrftoken = getToken('csrftoken');
 				</div>
 				
 				<!-- Search product -->
+				<style>
+					form {
+					  display: flex;
+					  align-items: center;
+					}
+				  
+					form input[type="text"],
+					form button {
+					  margin-right: 900px;
+					  {% comment %} margin-bottom: 40px; {% endcomment %}
+					}
+				  
+					form button {
+					  padding: 6px 15px;
+					  height: 38px;
+					}
+				  </style>
+	
 				<div class="dis-none panel-search w-full p-t-10 p-b-15">
 					<div class="bor8 dis-flex p-l-15">
-						<button class="size-113 flex-c-m fs-16 cl2 hov-cl1 trans-04">
-							<i class="zmdi zmdi-search"></i>
-						</button>
+						
+	
 						<form action="" method="POST">
 							{% csrf_token %}
-							<input type="text" name="searchitem" id="navbar-search-input" placeholder="Search user" aria-label="search" style=" font-size:15px; border-radius:2" >
-							<button type="submit" class="btn btn-primary mt-5" style="padding: 6px 15px; height:28px " >Search</button>
+							<div class="d-flex mt-3 mb-3">
+								<input type="text" name="searchitem" id="navbar-search-input" placeholder="Search product?" aria-label="search" style="font-size: 15px; border-radius: 2px;">
+								<button type="submit" class="btn ">
+								<i class="zmdi zmdi-search"></i>
+								</button>
+							</div>
 						</form>
 					</div>	
 				</div>
-
+	
 				<!-- Filter -->
 				<div class="dis-none panel-filter w-full p-t-10">
 					<div class="wrap-filter flex-w bg6 w-full p-lr-40 p-t-27 p-lr-15-sm">
@@ -684,9 +705,18 @@ var csrftoken = getToken('csrftoken');
 				</div>
 			</div>
 
+
+			<style>
+				.block2-pic img {
+				  width: 300px; /* Adjust the width to your desired size */
+				  height: 300px; /* Adjust the height to your desired size */
+				  object-fit: cover; /* Preserve the aspect ratio and crop if necessary */
+				}
+			  </style>
 			<div class="row isotope-grid">
 
 				{% for item in datas %}
+				{% if forloop.counter <= 8 %}
 				<div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item women">
 					<!-- Block2 -->
 					<div class="block2">
@@ -766,15 +796,17 @@ var csrftoken = getToken('csrftoken');
 					</div>
 				</div>
 
+				
+				{% endif %}
 			{% endfor %}
-
+		</div>
 			<!-- Load more -->
-			{% comment %} <div class="flex-c-m flex-w w-full p-t-45">
-				<a href="#" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
+			<div class="flex-c-m flex-w w-full p-t-45">
+				<a href="{% url 'userproduct' %}" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
 					Load More
 				</a>
-			</div> {% endcomment %}
-		</div>
+			</div>
+		
 	</section>
 
 	{% endblock content %}

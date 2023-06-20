@@ -1,0 +1,50 @@
+{% extends 'myapp/index.html' %}
+{% load static %}
+{% block title %}Wishlist{% endblock title %}
+<style>
+    {% block style %}
+    .empty-wishlist {
+        text-align: center;
+        margin-top: 50px;
+    }
+    
+    .empty-wishlist img {
+        width: 470px;
+        height: 400px;
+    }
+    
+    .empty-wishlist p {
+        font-size: 18px;
+        margin: 10px 0;
+    }
+    
+    .empty-wishlist .add-items,
+    .empty-wishlist .login-message {
+        font-size: 16px;
+    }
+    
+    .empty-wishlist .login-message a {
+        color: blue;
+    }
+    
+    
+    {% endblock style %}
+</style>
+
+{% block content %}
+
+<div class="row mt-5"></div>
+
+    <div class="empty-wishlist">
+        <img src="{% static 'myapp/images/wishlist-empty.webp' %}" alt="Empty Wishlist">
+        
+        {% if user.is_authenticated %}
+            <p class="add-items">Add items to your wishlist by exploring our products.</p>
+        {% else %}
+            <p class="login-message">Please <a href="{% url 'login' %}">login</a> to our website and add items to your wishlist.</p>
+        {% endif %}
+    </div>
+
+    <div class="row mt-5"></div>
+
+{% endblock content %}

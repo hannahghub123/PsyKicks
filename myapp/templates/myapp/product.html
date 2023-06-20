@@ -1,5 +1,33 @@
 {% extends 'myapp/index.html' %}
 {% load static %}
+<style>
+
+	{% block style %}
+	form {
+		display: flex;
+		align-items: center;
+	  }
+	
+	  form input[type="text"],
+	  form button {
+		margin-right: 900px;
+		{% comment %} margin-bottom: 40px; {% endcomment %}
+	  }
+	
+	  form button {
+		padding: 6px 15px;
+		height: 38px;
+	  }
+	  .block2-pic img {
+		width: 300px; /* Adjust the width to your desired size */
+		height: 300px; /* Adjust the height to your desired size */
+		object-fit: cover; /* Preserve the aspect ratio and crop if necessary */
+	  }
+
+	  {% endblock style %}
+	
+</style>
+
 {% block content %}
 <div class="row mt-5"></div>
 {% comment %} <div class="row mt-5"></div> {% endcomment %}
@@ -53,13 +81,21 @@
 			</div>
 			
 			<!-- Search product -->
+			
+
 			<div class="dis-none panel-search w-full p-t-10 p-b-15">
 				<div class="bor8 dis-flex p-l-15">
-					<button class="size-113 flex-c-m fs-16 cl2 hov-cl1 trans-04">
-						<i class="zmdi zmdi-search"></i>
-					</button>
+					
 
-					<input class="mtext-107 cl2 size-114 plh2 p-r-15" type="text" name="search-product" placeholder="Search">
+					<form action="" method="POST">
+						{% csrf_token %}
+						<div class="d-flex mt-3 mb-3">
+							<input type="text" name="searchitem" id="navbar-search-input" placeholder="Search product?" aria-label="search" style="font-size: 15px; border-radius: 2px;">
+							<button type="submit" class="btn ">
+							<i class="zmdi zmdi-search"></i>
+							</button>
+						</div>
+					</form>
 				</div>	
 			</div>
 
@@ -261,7 +297,9 @@
 					<div class="block2-pic hov-img0">
 						{% if i.images.all %}
 								{% with i.images.all|first as img %}
-							<img src="{{ img.image.url }}" alt="IMG-PRODUCT">
+								<a href={% url 'pdetails' i.id %}>
+									<img src="{{ img.image.url }}" alt="IMG-PRODUCT">
+								  </a>
 								{% endwith %}
 							{% endif %}
 					</div>
@@ -273,11 +311,11 @@
 							</a>
 							<br>
 							<span class="stext-105 cl3" style="display:inline-block">
-								${{i.price}}
+								{{i.brand}}
 							</span>
 							<br><br>
 							{% comment %} <button data-product={{i.id}} data-action="add" class="btn btn-outline-primary add-btn update-cart" href="#">Add to cart</button> {% endcomment %}
-							<a class="btn btn-outline-primary" href={% url 'pdetails' i.id %} style="display:inline-block; ">View</a>
+							{% comment %} <a class="btn btn-outline-primary" href={% url 'pdetails' i.id %} style="display:inline-block; ">View</a> {% endcomment %}
 
 							
 
@@ -290,10 +328,12 @@
 						</div>
 
 						<div class="block2-txt-child2 flex-r p-t-3">
-							<a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
-								<img class="icon-heart1 dis-block trans-04" src="{% static 'myapp/images/icons/icon-heart-01.png'%}" alt="ICON">
-								<img class="icon-heart2 dis-block trans-04 ab-t-l" src="{% static 'myapp/images/icons/icon-heart-02.png'%}" alt="ICON">
+						
+							<a href="{% url 'before_addtolist' i.id %}" class="btn-addwish-b2 dis-block pos-relative">
+							<img class="icon-heart1 dis-block trans-04" src="{% static 'myapp/images/icons/icon-heart-01.png'%}" alt="ICON">
+							<img class="icon-heart2 dis-block trans-04 ab-t-l" src="{% static 'myapp/images/icons/icon-heart-02.png'%}" alt="ICON">
 							</a>
+				
 						</div>
 					</div>
 				</div>
@@ -305,6 +345,61 @@
 	</div>
 </div>
 
+
+<div class="row mt-5"></div>
+<div class="row mt-5"></div>
+<div class="row mt-5"></div>
+
+<div class="d-flex justify-content-center">
+  <nav aria-label="Page navigation">
+    <ul class="pagination">
+
+      {% if datas.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?page=1" aria-label="First">
+          <span aria-hidden="true">&laquo;</span>
+          <span class="sr-only">First</span>
+        </a>
+      </li>
+      <li class="page-item">
+        <a class="page-link" href="?page={{ datas.previous_page_number }}" aria-label="Previous">
+          <span aria-hidden="true">&lt;</span>
+          <span class="sr-only">Previous</span>
+        </a>
+      </li>
+      {% endif %}
+
+      {% for i in datas.paginator.page_range %}
+        {% if i == datas.number %}
+          <li class="page-item active" aria-current="page">
+            <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+          </li>
+        {% else %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+          </li>
+        {% endif %}
+      {% endfor %}
+
+      {% if datas.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ datas.next_page_number }}" aria-label="Next">
+          <span aria-hidden="true">&gt;</span>
+          <span class="sr-only">Next</span>
+        </a>
+      </li>
+      <li class="page-item">
+        <a class="page-link" href="?page={{ datas.paginator.num_pages }}" aria-label="Last">
+          <span aria-hidden="true">&raquo;</span>
+          <span class="sr-only">Last</span>
+        </a>
+      </li>
+      {% endif %}
+
+    </ul>
+  </nav>
+</div>
+<div class="row mt-5"></div>
 
 
 {% endblock content %}

@@ -21,6 +21,11 @@ from django.core.paginator import Paginator,PageNotAnInteger,EmptyPage
 def index(request):
      
     datas = Products.objects.all()
+
+    if request.method == "POST":
+        entered_product = request.POST.get("searchitem")
+        datas = Products.objects.filter(name__icontains=entered_product)
+        return render(request, "myapp/index.html", {"datas": datas})
     
     context={
         'datas':datas,
@@ -40,13 +45,12 @@ def userindex(request):
 
         items = order.orderitem_set.all()
         cartItems = order.get_cart_items
-    # else:
-    #     items = []
-    #     order = {'get_cart_total': 0, 'get_cart_items': 0, 'shipping': False}
-    #     cartItems = order['get_cart_items']
+    else:
+        items = []
+        order = {'get_cart_total': 0, 'get_cart_items': 0, 'shipping': False}
+        cartItems = order['get_cart_items']
 
     datas = Products.objects.all()
-    # variants = {} 
     colors = Color.objects.all()
     category = Category.objects.all()
     brand = Brand.objects.all()
@@ -282,11 +286,6 @@ def userproduct(request):
         colors = Color.objects.all()
         brand = Brand.objects.all()
         size = Size.objects.all()
-
-        # if request.method=="POST":
-        #     enteredproduct=request.POST.get("searchitem")
-        #     datas=Products.objects.filter(name=enteredproduct)
-        #     return render(request,"myapp/userproduct.html",{"datas":datas})
         
     selected_category = request.GET.get('category')  # Get the selected category from the query parameters
     selected_brand = request.GET.get('brand')
@@ -299,7 +298,7 @@ def userproduct(request):
     count = wishlist_items.count()
 
     page = request.GET.get('page',1)
-    paginator = Paginator(datas,10)
+    paginator = Paginator(datas,12)
     try:
         datas = paginator.page(page)
     except PageNotAnInteger: 
@@ -307,8 +306,6 @@ def userproduct(request):
     except EmptyPage:
         datas = paginator.page(paginator.num_pages)
 
-
- 
     if selected_category:
         datas = datas.filter(category__name=selected_category)
     if selected_brand:
@@ -342,17 +339,25 @@ def userproduct(request):
     
 def product(request):
   
-        datas=Products.objects.all()
+    datas=Products.objects.all()
+    page = request.GET.get('page',1)
+    paginator = Paginator(datas,12)
+    try:
+        datas = paginator.page(page)
+    except PageNotAnInteger: 
+        datas = paginator.page(1)
+    except EmptyPage:
+        datas = paginator.page(paginator.num_pages)
 
-        # if request.method=="POST":
-            # enteredproduct=request.POST.get("searchitem")
-            # datas=Products.objects.filter(name=enteredproduct)
-            # return render(request,"myapp/userproduct.html",{"datas":datas})
-        
-        return render(request,"myapp/product.html",{"datas":datas})
-        # else:
-        #     return redirect(userindex)
+
+    if request.method == "POST":
+        entered_product = request.POST.get("searchitem")
+        datas = Products.objects.filter(name__icontains=entered_product)
+        return render(request, "myapp/product.html", {"datas": datas})
     
+    return render(request,"myapp/product.html",{"datas":datas})
+        
+
 def blog(request):
 
     if "username" in request.session:
@@ -866,11 +871,21 @@ def return_order(request,order_id):
         return redirect(userprofile)
 
 def wallet(request):
-    datas = Wallet.objects.all()
-    context={
-        "datas":datas
-    }
-    return render(request,"myapp/wallet.html",context)
+    if "username" in request.session:
+        username = request.session["username"]
+        customerobj = customer.objects.get(username=username)
+
+    
+        wishlist_items = Wishlist.objects.filter(customer=customerobj)
+        count = wishlist_items.count()
+        datas = Wallet.objects.all()
+
+        context={
+            "datas":datas,
+            "count":count
+        }
+
+        return render(request,"myapp/wallet.html",context)
 
 
 def userprofile(request):
@@ -894,6 +909,25 @@ def userprofile(request):
     }
 
     return render(request, "myapp/userprofile.html", context)
+
+def user_orders(request):
+    username = request.session["username"]
+    customerobj = customer.objects.get(username=username)
+
+ 
+    wishlist_items = Wishlist.objects.filter(customer=customerobj)
+    count = wishlist_items.count()
+
+    orderobjs = Order.objects.filter(customer=customerobj)
+
+    context = {
+        "orderobjs": orderobjs,
+        "username": username,
+        "customerobj": customerobj,
+        'count':count,
+    }
+
+    return render(request, "myapp/orders.html", context)
 
 
 def updateuser(request):
@@ -999,6 +1033,23 @@ def wishlist(request):
         }
     return render(request,"myapp/wishlist.html",context)
 
+def before_wishlist(request):
+    # if "username" in request.session:
+    #     username = request.session["username"]
+    #     user = customer.objects.get(username=username)
+    #     listobj = Wishlist.objects.filter(customer=user)
+    #     count = listobj.count()
+
+    # else:
+    #     listobj=[]
+    #     count=0
+
+    # context = {
+    #         'listobj':listobj,
+    #         'count':count 
+    #     }
+    return render(request,"myapp/before-wishlist.html")
+
 
 
 
@@ -1025,27 +1076,50 @@ def wishlist(request):
 
 
 def addtolist(request, product_id):
+    if "username" in request.session:
  
-    username = request.session.get("username")
-    if not username:
-        return redirect('login')  # Redirect to the login page if the username is not stored in the session
+        username = request.session.get("username")
+        if not username:
+            return redirect('login')  # Redirect to the login page if the username is not stored in the session
 
-    user = get_object_or_404(customer, username=username)
-    product = get_object_or_404(Products, id=product_id)
-    print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",product)
-    variant = Productvariant.objects.filter(product=product).first()
-    print("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<",variant)
+        user = get_object_or_404(customer, username=username)
+        product = get_object_or_404(Products, id=product_id)
+        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",product)
+        variant = Productvariant.objects.filter(product=product).first()
+        print("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<",variant)
 
-    if Wishlist.objects.filter(customer=user, product=product).exists():
-        messages.warning(request, "Product already added to wishlist") 
+        if Wishlist.objects.filter(customer=user, product=product).exists():
+            messages.warning(request, "Product already added to wishlist") 
+            
+            return redirect('userproduct') 
         
-        return redirect('userproduct') 
-    
-    wishlist_item = Wishlist(customer=user, product=product,variant=variant)
-    wishlist_item.save()
-    return redirect('wishlist')  # Replace 'wishlist' with the actual URL name or path for the wishlist page
+        wishlist_item = Wishlist(customer=user, product=product,variant=variant)
+        wishlist_item.save()
+        return redirect('wishlist')  # Replace 'wishlist' with the actual URL name or path for the wishlist page
 
+def before_addtolist(request, product_id):
+    if not "username" in request.session:
+ 
+        username = request.session.get("username")
+        if not username:
+            return redirect('login')  # Redirect to the login page if the username is not stored in the session
+
+        user = get_object_or_404(customer, username=username)
+        product = get_object_or_404(Products, id=product_id)
+        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",product)
+        variant = Productvariant.objects.filter(product=product).first()
+        print("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<",variant)
+
+        if Wishlist.objects.filter(customer=user, product=product).exists():
+            messages.warning(request, "Product already added to wishlist") 
+            
+            return redirect('product') 
         
+        wishlist_item = Wishlist(customer=user, product=product,variant=variant)
+        wishlist_item.save()
+        return redirect('wishlist')  # Replace 'wishlist' with the actual URL name or path for the wishlist page
+
+     
 
 def removeitem(request,item_id):
     item = get_object_or_404(Wishlist, id=item_id)

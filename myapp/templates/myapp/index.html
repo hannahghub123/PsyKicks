@@ -67,6 +67,68 @@ var csrftoken = getToken('csrftoken');
 
 </script>
 
+<style>
+
+    {% block style%}
+
+	/* Styles for the dropdown */
+.dropdown-menu {
+    background-color: #fff;  /* Set the background color */
+    border: none;  /* Remove the default border */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);  /* Add a box shadow */
+    padding: 10px 0;  /* Add some padding */
+}
+
+.dropdown-menu li {
+    padding: 5px 20px;  /* Add padding to the dropdown items */
+}
+
+.dropdown-menu li a {
+    color: #333;  /* Set the text color */
+    text-decoration: none;  /* Remove the default underline */
+}
+
+.dropdown-menu li a:hover {
+    background-color: #f5f5f5;  /* Add a hover background color */
+}
+
+.dropdown-toggle {
+    color: #333;  /* Set the text color of the dropdown toggle */
+    text-decoration: none;  /* Remove the default underline */
+}
+
+.dropdown-toggle:hover {
+    text-decoration: underline;  /* Add underline on hover */
+}
+
+
+	.block2-pic img {
+	  width: 300px; /* Adjust the width to your desired size */
+	  height: 300px; /* Adjust the height to your desired size */
+	  object-fit: cover; /* Preserve the aspect ratio and crop if necessary */
+	}
+
+	form {
+		display: flex;
+		align-items: center;
+	  }
+	
+	  form input[type="text"],
+	  form button {
+		margin-right: 900px;
+		{% comment %} margin-bottom: 40px; {% endcomment %}
+	  }
+	
+	  form button {
+		padding: 6px 15px;
+		height: 38px;
+	  }
+ 
+
+    {% endblock style %}
+
+  </style>
+
 </head>
 <body class="animsition">
 	
@@ -124,9 +186,9 @@ var csrftoken = getToken('csrftoken');
 								<a href={% url 'product' %} >Shop</a>
 							</li>
 
-							<li class="label1" data-label1="hot">
+							{% comment %} <li class="label1" data-label1="hot">
 								<a href="shoping-cart.html">Features</a>
-							</li>
+							</li> {% endcomment %}
 
 							<li>
 								<a href={% url 'blog' %}>Blog</a>
@@ -152,19 +214,19 @@ var csrftoken = getToken('csrftoken');
 
 					<!-- Icon header -->
 					<div class="wrap-icon-header flex-w flex-r-m">
-						<div class="icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 js-show-modal-search">
+						{% comment %} <div class="icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 js-show-modal-search">
 							<i class="zmdi zmdi-search"></i>
-						</div>
+						</div> {% endcomment %}
 
 						{% comment %} <div class="icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 icon-header-noti js-show-cart" data-notify="2">
 							<i class="zmdi zmdi-shopping-cart"></i>
 						</div> {% endcomment %}
 
-						<a href={% url 'cart' %} class="icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11  " >
+						<a href={% url 'cart' %} class="icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11  icon-header-noti" data-notify="0">
 							<i class="zmdi zmdi-shopping-cart"></i>
 						</a>
 
-						<a href="#" class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 " >
+						<a href="{% url 'before_wishlist' %}" class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 icon-header-noti" data-notify="0">
 							<i class="zmdi zmdi-favorite-outline"></i>
 						</a>
 
@@ -186,21 +248,21 @@ var csrftoken = getToken('csrftoken');
 
 			<!-- Icon header -->
 			<div class="wrap-icon-header flex-w flex-r-m m-r-15">
-				<div class="icon-header-item cl2 hov-cl1 trans-04 p-r-11 js-show-modal-search">
+				{% comment %} <div class="icon-header-item cl2 hov-cl1 trans-04 p-r-11 js-show-modal-search">
 					<i class="zmdi zmdi-search"></i>
-				</div>
+				</div> {% endcomment %}
 
-				<div class="icon-header-item cl2 hov-cl1 trans-04 p-r-11 p-l-10 icon-header-noti " >
+				<div class="icon-header-item cl2 hov-cl1 trans-04 p-r-11 p-l-10 icon-header-noti icon-header-noti" data-notify="0">
 					<i class="zmdi zmdi-shopping-cart"></i>
 				</div>
 
-				<a href="#" class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-r-11 p-l-10 " >
+				<a href="{% url 'before_wishlist' %}" class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-r-11 p-l-10 icon-header-noti" data-notify="0">
 					<i class="zmdi zmdi-favorite-outline"></i>
 				</a>
-{% comment %} 
+
 				<a href="#" class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 " >
 					<i class="fa fa-user" aria-hidden="true"></i>
-				</a> {% endcomment %}
+				</a> 
 			</div>
 
 			<!-- Button show menu -->
@@ -258,10 +320,10 @@ var csrftoken = getToken('csrftoken');
 				<li>
 					<a href={% url 'product' %}>Shop</a>
 				</li>
-
+{% comment %} 
 				<li>
 					<a href="shoping-cart.html" class="label1 rs1" data-label1="hot">Features</a>
-				</li>
+				</li> {% endcomment %}
 
 				<li>
 					<a href={% url 'blog' %}>Blog</a>
@@ -288,7 +350,7 @@ var csrftoken = getToken('csrftoken');
 		</div>
 
 		<!-- Modal Search -->
-		<div class="modal-search-header flex-c-m trans-04 js-hide-modal-search">
+		{% comment %} <div class="modal-search-header flex-c-m trans-04 js-hide-modal-search">
 			<div class="container-search-header">
 				<button class="flex-c-m btn-hide-modal-search trans-04 js-hide-modal-search">
 					<img src="{% static 'myapp/images/icons/icon-close2.png' %}" alt="CLOSE">
@@ -301,7 +363,7 @@ var csrftoken = getToken('csrftoken');
 					<input class="plh3" type="text" name="search" placeholder="Search...">
 				</form>
 			</div>
-		</div>
+		</div> {% endcomment %}
 	</header>
 {% comment %} 
 	<!-- Cart -->
@@ -602,13 +664,37 @@ var csrftoken = getToken('csrftoken');
 				</div>
 				
 				<!-- Search product -->
+				<style>
+					form {
+					  display: flex;
+					  align-items: center;
+					}
+				  
+					form input[type="text"],
+					form button {
+					  margin-right: 900px;
+					  {% comment %} margin-bottom: 40px; {% endcomment %}
+					}
+				  
+					form button {
+					  padding: 6px 15px;
+					  height: 38px;
+					}
+				  </style>
+	
 				<div class="dis-none panel-search w-full p-t-10 p-b-15">
 					<div class="bor8 dis-flex p-l-15">
-						<button class="size-113 flex-c-m fs-16 cl2 hov-cl1 trans-04">
-							<i class="zmdi zmdi-search"></i>
-						</button>
-
-						<input class="mtext-107 cl2 size-114 plh2 p-r-15" type="text" name="search-product" placeholder="Search">
+						
+	
+						<form action="" method="POST">
+							{% csrf_token %}
+							<div class="d-flex mt-3 mb-3">
+								<input type="text" name="searchitem" id="navbar-search-input" placeholder="Search product?" aria-label="search" style="font-size: 15px; border-radius: 2px;">
+								<button type="submit" class="btn ">
+								<i class="zmdi zmdi-search"></i>
+								</button>
+							</div>
+						</form>
 					</div>	
 				</div>
 
@@ -793,13 +879,14 @@ var csrftoken = getToken('csrftoken');
 			<div class="row isotope-grid">
 
 				{% for item in datas %}
+				{% if forloop.counter <= 8 %}
 				<div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item women">
 					<!-- Block2 -->
 					<div class="block2">
 						<div class="block2-pic hov-img0">
 							{% if item.images.all %}
 								{% with item.images.all|first as img %}
-								<a href={% url 'user_pdetails' item.id %}>
+								<a href={% url 'pdetails' item.id %}>
 							<img src="{{ img.image.url }}" alt="IMG-PRODUCT"></a>
 								{% endwith %}
 							{% endif %}
@@ -871,19 +958,23 @@ var csrftoken = getToken('csrftoken');
 						</div>
 					</div>
 				</div>
+				{% endif %}
 
 			{% endfor %}
+		</div>
 
 			<!-- Load more -->
-			{% comment %} <div class="flex-c-m flex-w w-full p-t-45">
-				<a href="#" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
+			<div class="flex-c-m flex-w w-full p-t-45">
+				<a href="{% url 'product' %}" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
 					Load More
 				</a>
-			</div> {% endcomment %}
-		</div>
+			</div>
+		
 	</section>
 
 	{% endblock content %}
+
+	<div class="row mt-5"></div>
 
 	<!-- Footer -->
 	<footer class="bg3 p-t-75 p-b-32">

@@ -269,7 +269,7 @@
     </div>
 </div> {% endcomment %}
 
-<table class="table">
+{% comment %} <table class="table">
     <span class="block1-name ltext-102 trans-04">
         Your Orders
     </span>
@@ -277,18 +277,22 @@
     <thead class="thead-dark">
       <tr>
         <th scope="col">OrderId</th>
+        <th scope="col">Address</th>
         <th scope="col">Total Price</th>
         <th scope="col">Date Ordered</th>
         <th scope="col">Order Status</th>
         <th scope="col">Payment Type </th>
         <th>Actions</th>
-        <th>...</th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
         {% for item in orderobjs %}
       <tr>
         <th scope="row"><a href={% url 'orderdetails' item.id %}>{{ item.id }}</a></th>
+        <th scope="row">{{item.address}} <br>
+            {{item.address.city}},{{item.address.state}} <br>
+            {{item.address.country}},{{item.address.zipcode}}</th>
         <td>{{ item.total }}</td>
         <td>{{ item.date_ordered }}</td>
         <td>{{ item.order_status }}</td>
@@ -305,8 +309,9 @@
             {% elif item.order_status == "returned" %} 
             <p style="color:blue">Order Returned</p>
             {% endif %}      
-        </td>
+        </td> {% endcomment %}
         {% comment %} <td> <a href="{% url 'generate_invoice' %}"> Download Invoice</a></td> {% endcomment %}
+        {% comment %} <td>Download Invoice</td>
       </tr>
       {% endfor %}
       <tr>
@@ -317,7 +322,7 @@
         <th><a href="{% url 'wallet'  %}">Show Wallet</a></th> 
       </tr>
     </tbody>
-  </table>
+  </table> {% endcomment %}
   
  
   

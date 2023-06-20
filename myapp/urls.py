@@ -40,12 +40,15 @@ urlpatterns = [
     path("removeaddress/<int:id>/",views.removeaddress,name="removeaddress"),
     path('add_address/', views.add_address, name='add_address'),
     path("deliveredproducts/",views.deliveredproducts,name="deliveredproducts"),
+    path("user_orders/",views.user_orders,name="user_orders"),
     path("orderdetails/<int:item_id>/",views.orderdetails,name="orderdetails"),
     path("cancel_order/<int:order_id>/",views.cancel_order,name="cancel_order"),
     path("return_order/<int:order_id>/",views.return_order,name="return_order"),
 
     path("wishlist/",views.wishlist,name="wishlist"),
+    path("before_wishlist/",views.before_wishlist,name="before_wishlist"),
     path("addtolist/<int:product_id>/",views.addtolist,name="addtolist"),
+    path("before_addtolist/<int:product_id>/",views.before_addtolist,name="before_addtolist"),
     path('list_addtocart/<int:product_id>/', views.list_addtocart, name='list_addtocart'),
     path('removeitem/<int:item_id>/', views.removeitem, name='removeitem'),
     

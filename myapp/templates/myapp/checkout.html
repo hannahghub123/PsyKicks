@@ -6,16 +6,21 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
 <style>
+    {% block style %}
+    
     .error-message {
         color: red;
         font-size:12px;
       }
+    {% endblock style %}
+    
 </style>
 
 <div class="row mt-5"></div>
 <div class="row mt-5"></div>
 <div class="row mt-3"></div>
-
+<a class="btn btn-outline-dark ml-3" href="{% url 'usercart' %}">&#x2190; Back to Cart</a>
+<div class="row mt-5"></div>
 
 <div class="row">
     <div class="col-lg-6">
@@ -73,7 +78,7 @@
         </div>
         <br>
 
-        <div class="box-element" style="display:flex; flex-direction:row" >
+        <div class="box-element" style="display:flex; flex-direction:row; margin-left:10px">
             <label style="margin-top:10px">Have coupon? <label>
                     <div class="form-field" style="display:flex; flex-direction:row">
                         <input type="text" class="form-control" name="coupon" placeholder="Coupon code" aria-label="Coupon code">
@@ -132,8 +137,8 @@
 
     <div class="col-lg-6">
         <div class="box-element" >
-            <a class="btn btn-outline-dark" href="{% url 'usercart' %}">&#x2190; Back to Cart</a>
-            <hr>
+            
+            
             <h3>Order Summary</h3>
             <hr>
             {% for item in cartobj %}
@@ -152,27 +157,16 @@
 
             <br>
             
-                    <div>
-                        
-                        <button name="placeorder" class="btn btn-outline-primary" type="submit" id="button-addon2" style="margin-left:5px">Place Order</button> 
-                        
-
-                            
-
-
-                        
-                        
-
-                        {% comment %} <a class="btn btn-outline-dark" href="#">&#x2192;
-                             {% comment %} Payment </a> {% endcomment %}
-                    </div> 
+            <div>
+                <button name="placeorder" class="btn btn-outline-primary" type="submit" id="button-addon2" style="margin-right: 5px;">Cash on Delivery</button>
+                <button name="razorpaybutton" type="submit" class="btn btn-outline-success" id="rzp-button1">Pay with Razorpay</button>
+            </div>
+            
                 </form>
         </div>
     </div>
 </div>
-<div class="col-md-6">
-    <button name="razorpaybutton" type="submit"   class="btn btn-success" id="rzp-button1">Pay with Razorpay</button>
-</div> 
+
 
 <div class="row mt-5"></div>
 <div class="row mt-5"></div>

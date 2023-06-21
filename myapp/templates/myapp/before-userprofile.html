@@ -1,0 +1,38 @@
+{% extends 'myapp/index.html' %}
+{% load static %}
+{% block title %}User Profile{% endblock title %}
+<style>
+    {% block style %}
+    
+    .user-profile {
+        text-align: center;
+    }
+    
+    .user-profile img {
+        width: 400px;
+        height: auto;
+    }
+    
+    .user-profile h1 {
+        font-size: 24px;
+        margin-top: 20px;
+    }
+        
+    {% endblock style %}
+</style>
+{% block content %}
+
+<div class="row mt-5"></div>
+<div class="row mt-5"></div>
+<div class="row mt-5"></div>
+
+<div class="user-profile">
+    <img src="{% static 'myapp/images/user-no.jpg' %}" alt="No User">
+    <p>Please <a href="{% url 'login' %}">login</a> to know more.</p>
+</div>
+
+<div class="row mt-5"></div>
+<div class="row mt-5"></div>
+<div class="row mt-5"></div>
+
+{% endblock content %}

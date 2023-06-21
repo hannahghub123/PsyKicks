@@ -83,7 +83,7 @@ class Cart(models.Model):
     user = models.ForeignKey(customer, on_delete=models.CASCADE)
     product = models.ForeignKey(Products, on_delete=models.CASCADE)
     variant= models.ForeignKey(Productvariant,on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField()
+    quantity = models.PositiveIntegerField(default=0)
     total = models.DecimalField(max_digits=10, decimal_places=2)
     coupon = models.ForeignKey(Coupon,on_delete=models.SET_NULL,null=True, blank=True)
 

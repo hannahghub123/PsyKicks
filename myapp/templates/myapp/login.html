@@ -83,11 +83,44 @@
     color: red;
     font-size:12px;
   }
+
+  .alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+.alert-success {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+}
+
+.alert-danger {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+}
+
+/* Add more styles for different types of alerts if needed */
+
   {% endblock style %}
 </style>
 
 
 <div class="row mt-5"></div>
+<div class="row mt-5"></div>
+
+{% if alert_message %}
+    <div class="alert alert-danger">
+        {{ alert_message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+{% endif %}
+
 
 
 <div class="center mt-5">

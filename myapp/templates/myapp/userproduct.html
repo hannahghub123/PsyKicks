@@ -4,14 +4,16 @@
 <div class="row mt-5"></div>
 {% comment %} <div class="row mt-5"></div> {% endcomment %}
 
-{% block style %}
+
 <style>
-.error-message{
-	color:red;
-	fon-szie:12px;
-}
+	{% block style %}
+		.error-message{
+			color:red;
+			fon-szie:12px;
+		}
+	{% endblock style %}
 </style>
-{% endblock style %}
+
 
 
 
@@ -125,7 +127,7 @@
 						</ul>
 					</div>
 
-					<div class="filter-col2 p-r-15 p-b-27">
+					{% comment %} <div class="filter-col2 p-r-15 p-b-27">
 						<div class="mtext-102 cl2 p-b-15">
 							Price
 						</div>
@@ -167,10 +169,10 @@
 								</a>
 							</li>
 						</ul>
-					</div>
+					</div> {% endcomment %}
 
 					
-					<div class="filter-col3 p-r-15 p-b-27">
+					{% comment %} <div class="filter-col3 p-r-15 p-b-27">
 						<div class="mtext-102 cl2 p-b-15">
 							Size
 						</div>
@@ -185,9 +187,9 @@
 							{% endfor %}
 						
 						</ul>
-					</div>
+					</div> {% endcomment %}
 
-					<div class="filter-col3 p-r-10 p-b-27">
+					{% comment %} <div class="filter-col3 p-r-10 p-b-27">
 						<div class="mtext-102 cl2 p-b-15">
 							Color
 						</div>
@@ -205,7 +207,7 @@
 							</li>
 							{% endfor %}
 						</ul>
-					</div>
+					</div> {% endcomment %}
 
 					<div class="filter-col3 p-r-10 p-b-27">
 						<div class="mtext-102 cl2 p-b-15">

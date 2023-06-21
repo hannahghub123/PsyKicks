@@ -1,11 +1,43 @@
 {% extends 'myapp/index.html' %}
 {% load static %}
+<style>
+	{% block style %}
+	
+	.alert {
+		padding: 15px;
+		margin-bottom: 20px;
+		border: 1px solid transparent;
+		border-radius: 4px;
+	}
+	
+	.alert-success {
+		color: #155724;
+		background-color: #d4edda;
+		border-color: #c3e6cb;
+	}
+	
+	.alert-danger {
+		color: #721c24;
+		background-color: #f8d7da;
+		border-color: #f5c6cb;
+	}
+	
+	{% endblock style %}
+</style>
 {% block content %}
 
 <div class="row mt-5"></div>
 <div class="row mt-5"></div>
 <div class="row mt-5"></div>
 
+{% if error_message %}
+    <div class="alert alert-danger">
+        {{ error_message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+{% endif %}
 
 		{% comment %} <!-- Modal Search -->
 		<div class="modal-search-header flex-c-m trans-04 js-hide-modal-search">
@@ -162,15 +194,15 @@
 				<div class="col-md-6 col-lg-5 p-b-30">
 					<div class="p-r-50 p-t-5 p-lr-0-lg">
 						<h4 class="mtext-105 cl2 js-name-detail p-b-14">
-							{{product.name}}
+							{{pdtobj1.product.name}}
 						</h4>
 					
 						<span class="mtext-106 cl2">
-							{{product.price}}
+							{{pdtobj1.price}}
 						</span>
 
 						<p class="stext-102 cl3 p-t-23">
-							{{product.description}}
+							{{pdtobj1.description}}
 						</p>
 				
 						<!--  -->
@@ -182,7 +214,7 @@
 
 								<div class="size-204 respon6-next">
 									<div class="rs1-select2 bor8 bg0">
-										<select class="js-select2" name="time">
+										<select class="js-select2" name="size">
 											<option>Choose an option</option>
 											<option>Size S</option>
 											<option>Size M</option>
@@ -201,7 +233,7 @@
 
 								<div class="size-204 respon6-next">
 									<div class="rs1-select2 bor8 bg0">
-										<select class="js-select2" name="time">
+										<select class="js-select2" name="color">
 											<option>Choose an option</option>
 											<option>Red</option>
 											<option>Blue</option>
@@ -228,8 +260,8 @@
 										</div>
 									</div>
 
-									<button class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04 js-addcart-detail" 
-											type="submit" >
+									<button class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 ">
+										{% comment %} <a href="{% url 'login' %}" style="color: white;">Add to Cart</a> {% endcomment %}
 										Add to cart
 									</button>
 

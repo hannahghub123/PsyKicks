@@ -41,18 +41,18 @@
                 <div style="flex:1">{{ item.variant.product.name }}</div>
                 <div style="flex:1">${{ item.variant.price }}</div>
                 <div style="flex:1; display: flex;">
-                    <form action="" method="POST">
-                        {% csrf_token %}
+                    {% comment %} <form action="" method="POST">
+                        {% csrf_token %} {% endcomment %}
                         <span class="quantity" style="margin-top: 7px;">{{ item.quantity }}</span>
-                        {% comment %} <div class="quantity-control" style="display: flex; flex-direction: column;">
+                        <div class="quantity-control" style="display: flex; flex-direction: column;">
                             <button class="btn-quantity" data-id="{{ item.id }}" name="action">
                                 <a href="{% url 'quantity_inc' item.id %}"><i class="fa fa-caret-up" aria-hidden="true"></i></a>
                             </button>
                             <button class="btn-quantity" data-id="{{ item.id }}" name="action">
                                 <a href="{% url 'quantity_dec' item.id %}"><i class="fa fa-caret-down" aria-hidden="true"></i></a>  
                             </button>
-                        </div> {% endcomment %}
-                    </form>
+                        </div>
+                    {% comment %} </form> {% endcomment %}
                 </div>
                 <div style="flex:1">${{ item.total }}</div>
                 <div style="flex:1">

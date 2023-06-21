@@ -3,6 +3,7 @@ from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
 import re
 from django.shortcuts import get_object_or_404, render,redirect
+from django.db.models import Q
 import razorpay
 from psykicks.settings import RAZORPAY_API_SECRET_KEY,RAZORPAY_API_KEY
 from django.contrib import messages
@@ -21,6 +22,7 @@ from django.core.paginator import Paginator,PageNotAnInteger,EmptyPage
 def index(request):
      
     datas = Products.objects.all()
+    
 
     if request.method == "POST":
         entered_product = request.POST.get("searchitem")
@@ -78,6 +80,8 @@ def userindex(request):
     wishlist_items = Wishlist.objects.filter(customer=user)
     count = wishlist_items.count()
 
+    cart_count = Cart.objects.filter(user=user).count()
+
     # for product in datas:
     #     product_variants = Productvariant.objects.filter(product=product)
     #     variants[product.id] = product_variants
@@ -97,6 +101,7 @@ def userindex(request):
         'category_offerobj':category_offerobj,
         'product_offerobj':product_offerobj,
         'count':count,
+        'cart_count':cart_count
     }
 
     if request.method == "POST":
@@ -120,6 +125,8 @@ def signout(request):
 def login(request):
 
     error_message = {}
+    alert_message = request.GET.get('alert')
+    context = {'alert_message': alert_message}
     
     
     if request.method =='POST':
@@ -150,7 +157,7 @@ def login(request):
             return render(request,"myapp/login.html",{'error_message': error_message,"username":username,"password":password})
 
             
-    return render(request,"myapp/login.html")
+    return render(request,"myapp/login.html",context)
 
 
 def signup(request):
@@ -286,16 +293,34 @@ def userproduct(request):
         colors = Color.objects.all()
         brand = Brand.objects.all()
         size = Size.objects.all()
+        variant=Productvariant.objects.all()
         
     selected_category = request.GET.get('category')  # Get the selected category from the query parameters
     selected_brand = request.GET.get('brand')
     selected_color = request.GET.get('color')
     selected_size = request.GET.get('size')
+    min_price = request.GET.get('min_price')
+    max_price = request.GET.get('max_price')
 
     username = request.session["username"]
     user = customer.objects.get(username=username)
     wishlist_items = Wishlist.objects.filter(customer=user)
     count = wishlist_items.count()
+
+    cart_count = Cart.objects.filter(user=user).count()
+
+    if selected_category:
+        datas = datas.filter(category__name=selected_category)
+    if selected_brand:
+        datas = datas.filter(brand__name=selected_brand)
+    if selected_color:
+        variant = variant.filter(Q(color__name=selected_color))
+
+    if selected_size:
+        variant = variant.filter(Q(size__name=selected_size))
+    if min_price and max_price:
+        datas = datas.filter(price__range=(min_price, max_price))
+
 
     page = request.GET.get('page',1)
     paginator = Paginator(datas,12)
@@ -306,18 +331,12 @@ def userproduct(request):
     except EmptyPage:
         datas = paginator.page(paginator.num_pages)
 
-    if selected_category:
-        datas = datas.filter(category__name=selected_category)
-    if selected_brand:
-        datas = datas.filter(brand__name=selected_brand)
-    if selected_color:
-        datas = datas.filter(color__name=selected_color)
-    if selected_size:
-        datas = datas.filter(size__name=selected_size)
     
+
 
     context = {
         'datas': datas,
+        "variant":variant,
         'category':category,
         'colors':colors,
         'brand':brand,
@@ -326,6 +345,9 @@ def userproduct(request):
         'selected_brand':selected_brand,
         'selected_color':selected_color,
        'count':count,
+        'cart_count':cart_count,
+       'min_price': min_price,
+        'max_price': max_price,
     }
 
     if request.method == "POST":
@@ -365,8 +387,10 @@ def blog(request):
         user = customer.objects.get(username=username)
         wishlist_items = Wishlist.objects.filter(customer=user)
         count = wishlist_items.count()
+        cart_count = Cart.objects.filter(user=user).count()
         context={
-            'count':count
+            'count':count,
+            'cart_count':cart_count
         }
     return render(request,"myapp/blog.html",context)
 
@@ -376,8 +400,10 @@ def contact(request):
         user = customer.objects.get(username=username)
         wishlist_items = Wishlist.objects.filter(customer=user)
         count = wishlist_items.count()
+        cart_count = Cart.objects.filter(user=user).count()
         context={
-            'count':count
+            'count':count,
+            'cart_count':cart_count
         }
     return render(request,"myapp/contact.html",context)
 
@@ -387,34 +413,43 @@ def about(request):
         user = customer.objects.get(username=username)
         wishlist_items = Wishlist.objects.filter(customer=user)
         count = wishlist_items.count()
+        cart_count = Cart.objects.filter(user=user).count()
         context={
-            'count':count
+            'count':count,
+            'cart_count':cart_count
         }
     return render(request,"myapp/about.html",context)
 
 
 def pdetails(request, product_id):
     if request.method=="POST":
-        quantity=request.POST.get("quantity")
-        pdtobj=Products.objects.get(id=product_id)
-        # print(quantity,"HHHHHHHHHHHHHHH")
-        username=request.session.get("username")
-        user=customer.objects.get(username=username)
-        total=Decimal(quantity)*pdtobj.price
+        # quantity=request.POST.get("quantity")
+        # pdtobj=Products.objects.get(id=product_id)
+        # # print(quantity,"HHHHHHHHHHHHHHH")
+        # username=request.session.get("username")
+        # user=customer.objects.get(username=username)
+        # total=Decimal(quantity)*pdtobj.price
         
-        if pdtobj in Cart.user:
-            quantity += quantity
-            cartobj=Cart.user(quantity=quantity,total=total)
-            cartobj.save()
-        else:
-            cartobj=Cart(user=user,product=pdtobj,quantity=quantity,total=total)
-            cartobj.save()
+        # if pdtobj in Cart.user:
+        #     quantity += quantity
+        #     cartobj=Cart.user(quantity=quantity,total=total)
+        #     cartobj.save()
+        # else:
+        #     cartobj=Cart(user=user,product=pdtobj,quantity=quantity,total=total)
+        #     cartobj.save()
+        alert_message = "Please Login to add products to your cart."
+        return redirect(f"/login/?alert={alert_message}")
 
     product = Products.objects.prefetch_related('images').filter(id=product_id).first()
+    pdtobj=Products.objects.get(id=product_id)
+    variant=Productvariant.objects.filter(product=pdtobj)
+    pdtobj1 = variant.first()
+    # print(">>>>>>>>>>>>>>>?????????????????>>>>>>>>>>>>>>>>>>?????????????????>>>>>>>>>>>??????????>>>>>>>>",pdtobj1)
     images = product.images.all() if product else []
     products_in_same_category = Products.objects.filter(category=product.category)
     
     return render(request, 'myapp/product-detail.html', {
+        'pdtobj1':pdtobj1,
         'product': product,
         'images': images,
         'products_in_same_category': products_in_same_category
@@ -434,6 +469,7 @@ def user_pdetails(request, product_id):
     user = customer.objects.get(username=username)
     wishlist_items = Wishlist.objects.filter(customer=user)
     count = wishlist_items.count()
+    cart_count = Cart.objects.filter(user=user).count()
     error_message = {}
 
     if request.method == "POST":
@@ -484,6 +520,7 @@ def user_pdetails(request, product_id):
                              'images': images,
                              'products_in_same_category': products_in_same_category,
                              'count':count,
+                             'cart_count':cart_count,
                             'sizes':sizes,
                             'colors':colors,
                            
@@ -534,6 +571,7 @@ def user_pdetails(request, product_id):
         'images': images,
         'products_in_same_category': products_in_same_category,
         'count':count,
+        'cart_count':cart_count,
         'sizes':sizes,
         'colors':colors,
        
@@ -581,14 +619,6 @@ def updatevariant(request,item_id):
 
     return redirect(usercart)
 
-
-
-def quantity_inc(request,item_id):
-    pass
-def quantity_dec(request,item_id):
-    pass
-
-
 def list_addtocart(request,product_id):
     username = request.session["username"]
     user = customer.objects.get(username=username)
@@ -624,6 +654,7 @@ def usercart(request):
 
         wishlist_items = Wishlist.objects.filter(customer=user)
         count = wishlist_items.count()
+        cart_count = Cart.objects.filter(user=user).count()
        
         quantsum=0
         total_price=0
@@ -636,12 +667,108 @@ def usercart(request):
             'cartobj': cartobj,
              "total_price":total_price,
             "quantsum":quantsum,
-            'count':count
+            'count':count,
+            'cart_count':cart_count
         }
         return render(request, "myapp/usercart.html", datas)
     else:
         return render(request, "myapp/userindex.html")
+
+
+
+def quantity_inc(request, item_id):
+    obj = Cart.objects.get(id=item_id)
+    product = obj.product
+    variant = obj.variant
+    user = obj.user
+
+    # Check if the product is already in the cart
+    existing_cart_item = Cart.objects.filter(user=user, product=product, variant=variant).first()
+
+    if existing_cart_item:
+        # Product already exists in the cart, update its quantity and total
+        existing_cart_item.quantity += 1
+        existing_cart_item.total += variant.price
+        existing_cart_item.save()
+    else:
+        # Product does not exist in the cart, create a new entry
+        quantity = obj.quantity + 1
+        total = obj.total + variant.price
+        new_cart_item = Cart(user=user, product=product, variant=variant, quantity=quantity, total=total)
+        new_cart_item.save()
+
+    # Rest of the code...
+    wishlist_items = Wishlist.objects.filter(customer=user)
+    count = wishlist_items.count()
+    cart_count = Cart.objects.filter(user=user).count()
+
+    quantsum=0
+    total_price=0
+
+    cartobj = Cart.objects.all()
+
+    for item in cartobj:
+        quantsum+=item.quantity
+        total_price += item.total
+
+
+    datas = {
+            'cartobj': cartobj,
+             "total_price":total_price,
+            "quantsum":quantsum,
+            'count':count,
+            'cart_count':cart_count
+        }
+    return render(request, "myapp/usercart.html", datas)
+
     
+
+def quantity_dec(request,item_id):
+    obj = Cart.objects.get(id=item_id)
+    product = obj.product
+    variant = obj.variant
+    user = obj.user
+
+    # Check if the product is already in the cart
+    existing_cart_item = Cart.objects.filter(user=user, product=product, variant=variant).first()
+
+    if existing_cart_item:
+        # Product already exists in the cart, update its quantity and total
+        existing_cart_item.quantity -= 1
+        existing_cart_item.total -= variant.price
+        existing_cart_item.save()
+    else:
+        # Product does not exist in the cart, create a new entry
+        quantity = obj.quantity - 1
+        total = obj.total - variant.price
+        new_cart_item = Cart(user=user, product=product, variant=variant, quantity=quantity, total=total)
+        new_cart_item.save()
+
+    # Rest of the code...
+    wishlist_items = Wishlist.objects.filter(customer=user)
+    count = wishlist_items.count()
+    cart_count = Cart.objects.filter(user=user).count()
+
+    quantsum=0
+    total_price=0
+
+    cartobj = Cart.objects.all()
+
+    for item in cartobj:
+        quantsum+=item.quantity
+        total_price += item.total
+
+
+    datas = {
+            'cartobj': cartobj,
+             "total_price":total_price,
+            "quantsum":quantsum,
+            'count':count,
+            'cart_count':cart_count
+        }
+    return render(request, "myapp/usercart.html", datas)
+
+
     
 def removecartitem(request,item_id):
     item = get_object_or_404(Cart, id=item_id)
@@ -721,12 +848,15 @@ def usercheckout(request):
         wishlist_items = Wishlist.objects.filter(customer=user)
         count = wishlist_items.count()
 
+        cart_count = Cart.objects.filter(user=user).count()
+
         context = {
             "cartobj": cartobj,
             "quantsum": quantsum,
             "coupon_discount":coupon_discount,
             "total_price": total_price,
             'count':count,
+            'cart_count':cart_count,
             "order_id":payment_order_id,
             "api_key":RAZORPAY_API_KEY ,
             "addressobj":addressobj
@@ -781,12 +911,17 @@ def usercheckout(request):
             for item in cartobj:
 
                 pdtvariant=item.variant
+                product = item.product
                 price = item.variant.price
                 quantity=item.quantity
                 itemtotal = quantity*price
 
                 orderitemobj = OrderItem(variant=pdtvariant, order = orderobj,quantity=quantity, price=price, total=itemtotal)
                 orderitemobj.save()
+
+                pdtvariant.stock -= quantity
+                pdtvariant.save()
+                
 
                 orderobj.total += item.total
 
@@ -815,9 +950,12 @@ def ordercomplete(request):
         user = customer.objects.get(username=username)
         wishlist_items = Wishlist.objects.filter(customer=user)
         count = wishlist_items.count()
+
+        cart_count = Cart.objects.filter(user=user).count()
         
         context={
-            "count":count
+            "count":count,
+            'cart_count':cart_count
         }
     return render(request,"myapp/ordercomplete.html",context) 
 
@@ -830,11 +968,13 @@ def orderdetails(request,item_id):
         user = customer.objects.get(username=username)
         listobj = Wishlist.objects.filter(customer=user)
         count = listobj.count()
+        cart_count = Cart.objects.filter(user=user).count()
 
         context = {
             'orderobj':orderobj, 
             'orderitemobj':orderitemobj,
-            "count":count
+            "count":count,
+            'cart_count':cart_count
         }
 
     return render(request, "myapp/orderdetails.html",context)
@@ -849,11 +989,19 @@ def cancel_order(request,order_id):
         order.order_status = 'cancelled'
         order.save()
 
+        order_items = order.orderitem_set.all()
+        for order_item in order_items:
+            variant = order_item.variant
+            quantity = order_item.quantity
+            variant.stock += quantity
+            variant.save()
+
+
         amount=order.total
         data = Wallet(user=userobj, amount=amount,transaction_type="cancelled_and_refund")
         data.save()
 
-        return redirect(userprofile)
+        return redirect(user_orders)
 
 def return_order(request,order_id):
     if "username" in request.session:
@@ -864,11 +1012,18 @@ def return_order(request,order_id):
         order.order_status = 'returned'
         order.save()
 
+        order_items = order.orderitem_set.all()
+        for order_item in order_items:
+            variant = order_item.variant
+            quantity = order_item.quantity
+            variant.stock += quantity
+            variant.save()
+
         amount=order.total
         data = Wallet(user=userobj, amount=amount,transaction_type="returned_and_refund")
         data.save()
 
-        return redirect(userprofile)
+        return redirect(user_orders)
 
 def wallet(request):
     if "username" in request.session:
@@ -878,14 +1033,20 @@ def wallet(request):
     
         wishlist_items = Wishlist.objects.filter(customer=customerobj)
         count = wishlist_items.count()
+        user = customer.objects.get(username=username)
+        cart_count = Cart.objects.filter(user=user).count()
         datas = Wallet.objects.all()
 
         context={
             "datas":datas,
-            "count":count
+            "count":count,
+            'cart_count':cart_count
         }
 
         return render(request,"myapp/wallet.html",context)
+
+def before_userprofile(request):
+    return render(request,"myapp/before-userprofile.html")
 
 
 def userprofile(request):
@@ -895,6 +1056,8 @@ def userprofile(request):
  
     wishlist_items = Wishlist.objects.filter(customer=customerobj)
     count = wishlist_items.count()
+    user = customer.objects.get(username=username)
+    cart_count = Cart.objects.filter(user=user).count()
 
     orderobjs = Order.objects.filter(customer=customerobj)
     
@@ -906,6 +1069,7 @@ def userprofile(request):
         "addressobjs": addressobjs,
         "customerobj": customerobj,
         'count':count,
+        'cart_count':cart_count
     }
 
     return render(request, "myapp/userprofile.html", context)
@@ -917,6 +1081,8 @@ def user_orders(request):
  
     wishlist_items = Wishlist.objects.filter(customer=customerobj)
     count = wishlist_items.count()
+    
+    cart_count = Cart.objects.filter(user=customerobj).count()
 
     orderobjs = Order.objects.filter(customer=customerobj)
 
@@ -925,6 +1091,7 @@ def user_orders(request):
         "username": username,
         "customerobj": customerobj,
         'count':count,
+        'cart_count':cart_count
     }
 
     return render(request, "myapp/orders.html", context)
@@ -1001,11 +1168,13 @@ def deliveredproducts(request):
         customerobj = customer.objects.get(username=username)
         wishlist_items = Wishlist.objects.filter(customer=customerobj)
         count = wishlist_items.count()
+        cart_count = Cart.objects.filter(user=customerobj).count()
 
         context = {
             'orderobj': orderobj,
             'orderitemobj': orderitemobj,
-            'count':count
+            'count':count,
+            'cart_count':cart_count
         }
 
         return render(request, "myapp/delivered-products.html", context)
@@ -1022,6 +1191,7 @@ def wishlist(request):
         user = customer.objects.get(username=username)
         listobj = Wishlist.objects.filter(customer=user)
         count = listobj.count()
+        cart_count = Cart.objects.filter(user=user).count()
 
     else:
         listobj=[]
@@ -1029,7 +1199,8 @@ def wishlist(request):
 
     context = {
             'listobj':listobj,
-            'count':count 
+            'count':count ,
+            'cart_count':cart_count
         }
     return render(request,"myapp/wishlist.html",context)
 

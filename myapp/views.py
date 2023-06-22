@@ -458,7 +458,11 @@ def pdetails(request, product_id):
 def user_pdetails(request, product_id):
     sizes = Size.objects.all()
     colors = Color.objects.all()
- 
+    
+
+    pdt=Products.objects.get(id=product_id)
+
+
     product = get_object_or_404(Products, id=product_id)
     user=customer.objects.get(username=request.session["username"])
     pdtvariant = Productvariant.objects.filter(product=product)
@@ -533,12 +537,42 @@ def user_pdetails(request, product_id):
             pdtobj = Products.objects.get(id=product_id)
             size=request.POST["size"]
             color=request.POST["color"]
-            pdtvariant=Productvariant.objects.filter(product=pdtobj,size=size,color=color).first()
+            print("#############",size,color)
+            if size=="Choose an option" and color =="Choose an option":
+                error="Please select valid size and color"
+                return render(request, 'myapp/user-pdetails.html', {
+                "error":error,
+                'pdt':pdt,
+                'pdtobj1': pdtobj1,
+                'images': images,
+                'products_in_same_category': products_in_same_category,
+                'count':count,
+                'cart_count':cart_count,
+                'sizes':sizes,
+                'colors':colors,
             
+            }) 
+            try:  
+                pdtvariant=Productvariant.objects.get(product=pdtobj,size=size,color=color)
+            except:
+                error="Out of stock"
+                return render(request, 'myapp/user-pdetails.html', {
+                "error":error,
+                'pdt':pdt,
+                'pdtobj1': pdtobj1,
+                'images': images,
+                'products_in_same_category': products_in_same_category,
+                'count':count,
+                'cart_count':cart_count,
+                'sizes':sizes,
+                'colors':colors,
+            
+            })
+                    
             username = request.session.get("username")
             user = customer.objects.get(username=username)
 
-
+            
             total = Decimal(quantity) * pdtvariant.price 
             # try:
 
@@ -567,6 +601,7 @@ def user_pdetails(request, product_id):
             
                 
     return render(request, 'myapp/user-pdetails.html', {
+        'pdt':pdt,
         'pdtobj1': pdtobj1,
         'images': images,
         'products_in_same_category': products_in_same_category,
@@ -610,14 +645,39 @@ def addtocart(request, product_id):
 
     return redirect('userproduct')
 
-def updatevariant(request,item_id):
-    if request.method=="POST":
-        size=request.POST["size"]
-        color=request.POST["color"]
-        product=Products.objects.get(id=item_id)
-        variant=Productvariant.objects.get(product=product,size=size,color=color)
+def updatevariant(request):
+    colorid=request.GET["colorId"]
+    sizeid=request.GET["sizeId"]
+    productid=request.GET["productId"]
+    color=Color.objects.get(id=colorid)
+    size=Size.objects.get(id=sizeid)
+    print("###########",size.name,color.name,productid)
 
-    return redirect(usercart)
+
+
+
+    product=Products.objects.get(id=productid)
+    try:
+        variant=Productvariant.objects.get(product=product,size=size,color=color)
+    except: 
+        varianterror="Out Of Stock"
+        return JsonResponse({"varianterror":varianterror})
+
+    variantprice=variant.price
+
+
+    return JsonResponse({"variantprice":variantprice})
+
+  
+
+
+    # if request.method=="POST":
+    #     size=request.POST["size"]
+    #     color=request.POST["color"]
+    #     product=Products.objects.get(id=item_id)
+    #     variant=Productvariant.objects.get(product=product,size=size,color=color)
+
+    # return redirect(usercart)
 
 def list_addtocart(request,product_id):
     username = request.session["username"]

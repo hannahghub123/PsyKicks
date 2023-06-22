@@ -174,10 +174,10 @@
 							{{pdtobj1.product.name}}
 							
 						</h4>
-						<span class="error-message">{{error_message.name}}</span>
+						<span id="outofstockerror" class="error-message">{{error}}</span>
 						<br>
 						<br>
-						<span class="mtext-106 cl2">
+						<span id="variantprice" class="mtext-106 cl2">
 							{{pdtobj1.price}}
 						</span>
 
@@ -197,7 +197,7 @@
 	
 									<div class="size-204 respon6-next">
 										<div class="rs1-select2 bor8 bg0">
-											<select name="size" class="js-select2">
+											<select id="sizename" name="size" class="js-select2">
 												<option>Choose an option</option>
 												{% for item in sizes %}
 												
@@ -219,7 +219,7 @@
 	
 									<div class="size-204 respon6-next">
 										<div class="rs1-select2 bor8 bg0">
-											<select name="color" class="js-select2"  value="">
+											<select id="colorname" name="color" class="js-select2"  value="">
 												<option>Choose an option</option>
 												{% for item in colors %}
 												<option value="{{ item.id }}">{{item.name}}</option>
@@ -253,10 +253,14 @@
 										</div>
 										
 
-										<button name="addtocart" class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04 " 
+										<button id="addtocartbutton" name="addtocart" class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04 " 
 												type="submit" >
 											Add to cart
 										</button>
+										<input value="{{pdt.id}}" type="hidden" id="productid">
+										
+											
+									</input>
 
 									</div>
 								</div>	
@@ -771,7 +775,7 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 
 									<div class="size-204 respon6-next">
 										<div class="rs1-select2 bor8 bg0">
-											<select class="js-select2" name="time">
+											<select  class="js-select2" name="time">
 												<option>Choose an option</option>
 												<option>Red</option>
 												<option>Blue</option>
@@ -939,4 +943,60 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 <!--===============================================================================================-->
 	<script src="js/main.js"></script>
 
+
+	<script>
+		$(document).ready(function() {
+			// Add change event listener to select element
+			$('#colorname').change(function() {
+				// Get the selected option value
+
+				var selectedOption = $(this).val();
+				var sizeoption = $("#sizename").val();
+				var productid = $("#productid").val();
+				$("#outofstockerror").remove();
+	
+				// Make an Ajax request to update the variant
+				$.ajax({
+					url: '/updatevariant/',
+					method: 'GET',
+					data: {
+						colorId: selectedOption,
+						sizeId: sizeoption,
+						productId:productid,
+						// Add any other relevant data
+					},
+					success: function(response) {
+						if (response.varianterror){
+							alert(response.varianterror)
+							
+
+						}
+						else{
+						var variantprice=response.variantprice;
+						$("#variantprice").html(variantprice);
+
+							
+						}
+
+
+
+						
+
+						// Handle the success response
+						console.log(response);
+					},
+					error: function(xhr, status, error) {
+						// Handle the error response
+						console.log(error);
+					}
+				});
+			});
+		});
+	</script>
+	<script>
+		$("#click").click(function(){
+			alert("clicked")
+
+		})
+	</script>
 {% endblock %}

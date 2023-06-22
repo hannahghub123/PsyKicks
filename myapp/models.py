@@ -44,10 +44,13 @@ class Brand(models.Model):
         return self.name
 
 class Products(models.Model):
+  
+    CONDITION = ('Old','Old'),('New','New')
     name = models.CharField(max_length=200, unique=True)    
     category = models.ForeignKey(Category, on_delete=models.CASCADE)   
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE, default=None, null=True)
     digital = models.BooleanField(default=False)
+    condition = models.CharField(choices=CONDITION,max_length=50, default="New")
 
     def __str__(self):
         return self.name

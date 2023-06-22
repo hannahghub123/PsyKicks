@@ -65,6 +65,11 @@ def userindex(request):
     selected_color = request.GET.get('color')
     selected_size = request.GET.get('size')
 
+    atoz_id = request.GET.get('ATOZ')
+    ztoa_id = request.GET.get('ZTOA')
+    new_productid = request.GET.get('NEWPRODUCT')
+    old_productid = request.GET.get('OLDPRODUCT')
+
     if selected_category:
         datas = datas.filter(category__name=selected_category)
     if selected_brand:
@@ -73,6 +78,15 @@ def userindex(request):
         datas = datas.filter(color__name=selected_color)
     if selected_size:
         datas = datas.filter(size__name=selected_size)
+    if atoz_id:
+        datas = datas.extra(select={'lower_name': "LOWER(name)"}).order_by('lower_name')
+    if ztoa_id:
+        datas = datas.extra(select={'lower_name': "LOWER(name)"}).order_by('-lower_name')
+    if new_productid:
+        datas = datas.filter(condition="New")
+    if old_productid:
+        datas = datas.filter(condition="Old")
+
 
 
     username = request.session["username"]
@@ -297,10 +311,11 @@ def userproduct(request):
         
     selected_category = request.GET.get('category')  # Get the selected category from the query parameters
     selected_brand = request.GET.get('brand')
-    selected_color = request.GET.get('color')
-    selected_size = request.GET.get('size')
-    min_price = request.GET.get('min_price')
-    max_price = request.GET.get('max_price')
+
+    atoz_id = request.GET.get('ATOZ')
+    ztoa_id = request.GET.get('ZTOA')
+    new_productid = request.GET.get('NEWPRODUCT')
+    old_productid = request.GET.get('OLDPRODUCT') 
 
     username = request.session["username"]
     user = customer.objects.get(username=username)
@@ -313,13 +328,16 @@ def userproduct(request):
         datas = datas.filter(category__name=selected_category)
     if selected_brand:
         datas = datas.filter(brand__name=selected_brand)
-    if selected_color:
-        variant = variant.filter(Q(color__name=selected_color))
 
-    if selected_size:
-        variant = variant.filter(Q(size__name=selected_size))
-    if min_price and max_price:
-        datas = datas.filter(price__range=(min_price, max_price))
+    if atoz_id:
+        datas = datas.extra(select={'lower_name': "LOWER(name)"}).order_by('lower_name')
+    if ztoa_id:
+        datas = datas.extra(select={'lower_name': "LOWER(name)"}).order_by('-lower_name')
+    if new_productid:
+        datas = datas.filter(condition="New")
+    if old_productid:
+        datas = datas.filter(condition="Old")
+   
 
 
     page = request.GET.get('page',1)
@@ -343,11 +361,9 @@ def userproduct(request):
         'size':size,
         'selected_category': selected_category,
         'selected_brand':selected_brand,
-        'selected_color':selected_color,
        'count':count,
         'cart_count':cart_count,
-       'min_price': min_price,
-        'max_price': max_price,
+     
     }
 
     if request.method == "POST":

@@ -31,7 +31,7 @@
           <tr>
             <th>variantId</th>
             <th>Product</th>
-            <th>Gender</th>
+            {% comment %} <th>Gender</th> {% endcomment %}
             <th>Color</th>
             <th>Size</th>
             <th>Price</th>
@@ -50,7 +50,7 @@
           <tr>
             <td>{{item.id}}</td>
             <td>{{ item.product.name }}</td>
-            <td>{{ item.gender.name }}</td>
+            {% comment %} <td>{{ item.gender.name }}</td> {% endcomment %}
             <td>
               {% for color in item.color.all %}
                 {{ color.name }}

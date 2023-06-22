@@ -428,7 +428,7 @@ def editproducts(request, someid):
         # price = request.POST.get("price")
         # quantity = request.POST.get("quantity")
         category_name = request.POST.get("category")
-        # description = request.POST.get("description")
+        condition = request.POST.get("condition")
 
         # if 'delete_selected' in request.POST:
         #     selected_images = request.POST.getlist('delete_images')
@@ -448,10 +448,11 @@ def editproducts(request, someid):
         # if len(description) < 4:
         #     error_message["description"]  = "Description should contain a minimum of four characters"
         # if  error_message:
-            return render(request, "psyadmin/edit-products.html",{ 'content': content,'categoryobjs': categoryobjs,'brands': brands,'error_message':error_message} )
+            return render(request, "psyadmin/edit-products.html",{ 'content': content,'categoryobjs': categoryobjs,'brands': brands,'condition':condition,'error_message':error_message} )
 
         else:
             content.name = name
+            content.condition= condition
 
             # Retrieve the category if it exists, otherwise assign a default category
             categoryobject = Category.objects.get(name=category_name)

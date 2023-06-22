@@ -11,6 +11,29 @@
 			color:red;
 			fon-szie:12px;
 		}
+
+		.block2-pic img {
+			width: 300px; /* Adjust the width to your desired size */
+			height: 300px; /* Adjust the height to your desired size */
+			object-fit: cover; /* Preserve the aspect ratio and crop if necessary */
+		  }
+
+		.product-tag {
+			position: absolute;
+			top: 10px;
+			left: 10px;
+			width: 50px;
+			height: 20px;
+			background-color: pink;
+			color: white;
+			text-align: center;
+			line-height: 20px;
+			border-radius: 50%;
+		}
+		
+		.new-tag {
+			background-color: pink;
+		}
 	{% endblock style %}
 </style>
 
@@ -95,35 +118,35 @@
 								</a>
 							</li>
 
-							{% comment %} <li class="p-b-6">
-								<a href="#" class="filter-link stext-106 trans-04">
-									Popularity
+							<li class="p-b-6">
+								<a href="/userproduct/{% for i in datas %}?ATOZ= {{i.id}} {% endfor%}" class="filter-link stext-106 trans-04">
+									Name, A to Z
 								</a>
 							</li>
 
 							<li class="p-b-6">
-								<a href="#" class="filter-link stext-106 trans-04">
-									Average rating
+								<a href="/userproduct/{% for i in datas %}?ZTOA= {{i.id}} {% endfor%}" class="filter-link stext-106 trans-04">
+									Name, Z to A
 								</a>
-							</li> {% endcomment %}
+							</li>
 
 							<li class="p-b-6">
-								<a href="#" class="filter-link stext-106 trans-04 filter-link-active">
+								<a href="/userproduct/{% for i in datas %}?NEWPRODUCT={{i.id}} {% endfor %}" class="filter-link stext-106 trans-04 ">
 									Newness
 								</a>
 							</li>
 
 							<li class="p-b-6">
-								<a href="#" class="filter-link stext-106 trans-04">
-									Price: Low to High
+								<a href="/userproduct/{% for i in datas %}?OLDPRODUCT={{i.id}} {% endfor %}" class="filter-link stext-106 trans-04">
+									Oldness
 								</a>
 							</li>
-
+{% comment %} 
 							<li class="p-b-6">
 								<a href="#" class="filter-link stext-106 trans-04">
 									Price: High to Low
 								</a>
-							</li>
+							</li> {% endcomment %}
 						</ul>
 					</div>
 
@@ -271,13 +294,7 @@
 	{% endif %}
 	
 	
-	<style>
-		.block2-pic img {
-		  width: 300px; /* Adjust the width to your desired size */
-		  height: 300px; /* Adjust the height to your desired size */
-		  object-fit: cover; /* Preserve the aspect ratio and crop if necessary */
-		}
-	  </style>
+
 	  
 	  <div class="row isotope-grid">
 		{% for i in datas %}
@@ -289,6 +306,11 @@
 			  {% with i.images.all|first as img %}
 			  <a href={% url 'user_pdetails' i.id %}>
 				<img src="{{ img.image.url }}" alt="IMG-PRODUCT">
+				{% if i.condition == "New" %}
+							<div class="product-tag new-tag">New</div>
+						{% comment %} {% else %}
+							<div class="product-tag old-tag">Old</div> {% endcomment %}
+				{% endif %}
 			  </a>
 			  {% endwith %}
 			  {% endif %}

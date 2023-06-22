@@ -85,6 +85,15 @@
     {% endfor %}
   </div>
   <br>
+  <div class="form-group">
+    <label for="condition">Condition</label>
+    <select name="condition">
+      <option value="Old" {% if content.condition == 'Old' %}selected{% endif %}>Old</option>
+      <option value="New" {% if content.condition == 'New' %}selected{% endif %}>New</option>
+    </select>
+  </div>
+<br>  
+  
   <div class="form-group mt-2">
       <label for="newImages">Add New Images</label>
       <input type="file" name="image" multiple>

@@ -34,7 +34,7 @@
             {% comment %} <th>Size</th> {% endcomment %}
          
             <th>Category</th>
-            {% comment %} <th>Description</th> {% endcomment %}
+            <th>Status</th>
             <th>Image</th>
             <th>Edit</th>
             <th>Delete</th>
@@ -62,7 +62,7 @@
             </td> {% endcomment %}
             
             <td>{{ item.category.name }}</td>
-            {% comment %} <td>{{ item.description }}</td> {% endcomment %}
+            <td>{{ item.condition }}</td>
             <td>
               {% if item.images.all %}
                 <img src="{{ item.images.first.image.url }}" alt="{{ item.name }}" width="100" height="100">

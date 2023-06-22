@@ -126,6 +126,24 @@ var csrftoken = getToken('csrftoken');
 		height: 38px;
 	  }
  
+	  .product-tag {
+		position: absolute;
+		top: 10px;
+		left: 10px;
+		width: 50px;
+		height: 20px;
+		background-color: pink;
+		color: black;
+		text-align: center;
+		line-height: 20px;
+		border-radius: 50%;
+	}
+	
+	.new-tag {
+		background-color: pink;
+	}
+	
+
 
     {% endblock style %}
 
@@ -606,25 +624,26 @@ var csrftoken = getToken('csrftoken');
 								</li>
 
 								<li class="p-b-6">
-									<a href="#" class="filter-link stext-106 trans-04">
+									<a href="/userindex/{% for i in datas %}?ATOZ= {{i.id}} {% endfor%}" class="filter-link stext-106 trans-04">
 										Name, A to Z
 									</a>
+									
 								</li>
 
 								<li class="p-b-6">
-									<a href="#" class="filter-link stext-106 trans-04">
+									<a href="/userindex/{% for i in datas %}?ZTOA= {{i.id}} {% endfor%}" class="filter-link stext-106 trans-04">
 										Name, Z to A
 									</a>
 								</li>
 
 								<li class="p-b-6">
-									<a href="#" class="filter-link stext-106 trans-04 filter-link-active">
+									<a href="/userindex/{% for i in datas %}?NEWPRODUCT= {{i.id}} {% endfor%}" class="filter-link stext-106 trans-04 ">
 										Newness
 									</a>
 								</li>
 
 								<li class="p-b-6">
-									<a href="#" class="filter-link stext-106 trans-04">
+									<a href="/userindex/{% for i in datas %}?OLDPRODUCT= {{i.id}} {% endfor%}" class="filter-link stext-106 trans-04">
 										Oldness
 									</a>
 								</li>
@@ -781,7 +800,13 @@ var csrftoken = getToken('csrftoken');
 							{% if item.images.all %}
 								{% with item.images.all|first as img %}
 								<a href={% url 'user_pdetails' item.id %}>
-							<img src="{{ img.image.url }}" alt="IMG-PRODUCT"></a>
+							<img src="{{ img.image.url }}" alt="IMG-PRODUCT">
+							{% if item.condition == "New" %}
+							<div class="product-tag new-tag">New</div>
+						{% comment %} {% else %}
+							<div class="product-tag old-tag">Old</div> {% endcomment %}
+						{% endif %}
+						</a>
 								{% endwith %}
 							{% endif %}
 						</div>

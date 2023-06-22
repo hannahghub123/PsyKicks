@@ -53,8 +53,8 @@
             <p style="color:blue">Order Returned</p>
             {% endif %}      
         </td>
-        {% comment %} <td> <a href="{% url 'generate_invoice' %}"> Download Invoice</a></td> {% endcomment %}
-        <td>Download Invoice</td>
+        <td> <a href="{% url 'generate_invoice' order_id=item.id %}"> Download Invoice</a></td>
+        {% comment %} <td>Download Invoice</td> {% endcomment %}
       </tr>
       {% endfor %}
       {% comment %} <tr>

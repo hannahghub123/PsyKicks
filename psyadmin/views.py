@@ -439,15 +439,7 @@ def editproducts(request, someid):
             error_message["name"]  = "Product name can only have up to 20 characters"
         if not name.isalpha():
             error_message["name"]  = "Product name can't contain numbers"
-        # if Products.objects.filter(name__iexact=name.replace(" ", "")).exists():
-        #     error_message["name"]  = "A product with a similar name already exists"
-        # if not price.isnumeric():
-        #     error_message["price"]  = "Price should be a valid number"
-        # if not quantity.isnumeric():
-        #     error_message["quantity"]  = "Quantity should be a valid number"
-        # if len(description) < 4:
-        #     error_message["description"]  = "Description should contain a minimum of four characters"
-        # if  error_message:
+       
             return render(request, "psyadmin/edit-products.html",{ 'content': content,'categoryobjs': categoryobjs,'brands': brands,'condition':condition,'error_message':error_message} )
 
         else:

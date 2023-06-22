@@ -1,0 +1,48 @@
+<hr>
+<h6 style="text-align: center;">PsyKicks - Invoice</h6>
+<hr>
+<div class="container text-center">
+  <div class=" offset-sm-1 pt-5">
+      <div class="row text-center align-items-center justify-content-center text-black">
+          <h4 class="pb-3"></h4>
+          
+              <div class="col-sm-4 ">
+                
+                  <div class="card mb-3">
+                    
+                      <div class="card-body ">
+                        
+                          <strong>Bill-date :</strong>{{date}}
+                          <strong>order id :</strong> {{ orderid }}
+                          <strong>ordered date : </strong>{{ ordered_date }}
+                          <hr>
+                          <strong style="text-align: center;">Delivered to</strong>
+                          <hr>
+                          <p><strong>Name : </strong>{{name}}</p>
+                          <p><strong>Address : </strong>{{address}},{{city}}, <br>{{state}}, {{country}} - {{zipcode}}</p>
+                          <p><strong>Phone : </strong>{{phone}}</p>
+
+                          {% for item in ordered_item %}
+                              <p><strong>Product : </strong>{{ item.variant.product.name }}</p>
+                              {% for color in item.colors %}
+                                  <p><strong>Color : </strong>{{ color.name }}</p>
+                              {% endfor %}
+                              {% for size in item.sizes %}
+                                  <p><strong>Size : </strong>{{ size.name }}</p>
+                              {% endfor %}
+                              <p><strong>Price : </strong>{{ item.price }}</p>
+                              <p><strong>Quantity : </strong>{{ item.quantity }}</p>
+                          {% endfor %}
+
+                          
+                          <p><strong>Amount : </strong>{{amount}}</p>
+                          <p><strong>Order Type : </strong>{{ordertype}}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <br>

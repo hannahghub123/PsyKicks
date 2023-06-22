@@ -55,7 +55,7 @@ urlpatterns = [
     
     
     path("updatevariant/",views.updatevariant,name="updatevariant"),
-    # path("generate_invoice/",views.generate_invoice,name="generate_invoice"),
+    path("generate_invoice/<int:order_id>/",views.generate_invoice,name="generate_invoice"),
     path("razorupdateorder/",views.razorupdateorder,name="razorupdateorder"),
 
 ]

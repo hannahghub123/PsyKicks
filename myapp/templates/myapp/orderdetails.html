@@ -20,6 +20,8 @@
         <th scope="col">OrderId</th>
         <th scope="col">Image</th>
         <th scope="col">Product</th>
+        <th scope="col">Color</th>
+        <th scope="col">Size</th>
         <th scope="col">Quantity</th>
         <th scope="col">Price</th>
         <th scope="col">Date Ordered</th>
@@ -36,6 +38,17 @@
                     height="50">
                 </th>
                 <td>{{item.variant.product.name}}</td>
+                <td>
+                  {% for color in item.colors %}
+                      {{ color.name }}
+                  {% endfor %}
+              </td>
+
+              <td>
+                  {% for size in item.sizes %}
+                      {{ size.name }}
+                  {% endfor %}
+              </td>
                 <td>{{item.quantity}}</td>
                 <td>{{item.price}}</td>
                 <td>{{item.date_added}}</td>

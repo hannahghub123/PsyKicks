@@ -1046,11 +1046,20 @@ def orderdetails(request,item_id):
         count = listobj.count()
         cart_count = Cart.objects.filter(user=user).count()
 
+        for item in orderitemobj:
+            variant = item.variant
+            colors = variant.color.all()
+            sizes = variant.size.all()
+            item.colors = colors
+            item.sizes = sizes
+
         context = {
             'orderobj':orderobj, 
             'orderitemobj':orderitemobj,
             "count":count,
-            'cart_count':cart_count
+            'cart_count':cart_count,
+            'item.colors':item.colors,
+            'item.sizes':item.sizes
         }
 
     return render(request, "myapp/orderdetails.html",context)
@@ -1424,47 +1433,73 @@ def razorupdateorder(request):
 
 
 
-# from django.template.loader import render_to_string
-# from django.http import HttpResponse
-# from xhtml2pdf import pisa
-# import datetime
+from django.template.loader import render_to_string
+from django.http import HttpResponse
+from xhtml2pdf import pisa
+import datetime
 
-# def generate_invoice(request):
-#     if "username" in request.session:
-#         try:
-#             user = customer.objects.get(username=request.session['username'])
-#             ord_id = request.GET.get('ord_id')
-#             ordered_product = Order.objects.get(id=ord_id, customer=user)
-#             ordered_item = OrderItem.objects.get(order=ordered_product)
+def generate_invoice(request,order_id):
+    if "username" in request.session:
+        # try:
+            user = customer.objects.get(username=request.session['username'])
+            # ord_id = request.GET.get('order_id')
+            ord_id = order_id
+            print(ord_id,"????????????????????????????????????????????????????????????")
+            ordered_product = Order.objects.get(id=ord_id, customer=user)
+            ordered_item = OrderItem.objects.filter(order=ordered_product)
+            print(ordered_item,"heyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy")
 
-#             data = {
-#                 'date': datetime.date.today(),
-#                 'orderid': ordered_product.id,
-#                 'ordered_date': ordered_product.date_ordered,
-#                 'name': ordered_product.address.customer.name,
-#                 'housename': ordered_product.address.address,
-#                 'country': ordered_product.address.country,
-#                 'city': ordered_product.address.city,
-#                 'state': ordered_product.address.state,
-#                 'zipcode': ordered_product.address.zipcode,
-#                 'phone': ordered_product.address.customer.phonenumber,
-#                 'product': ordered_item.product.name,
-#                 'amount': ordered_product.total,
-#                 'ordertype': ordered_product.payment_type,
-#             }
+            for item in ordered_item:
+                # Access the colors and sizes of each product variant
+                variant = item.variant
+                colors = variant.color.all()
+                sizes = variant.size.all()
+                
+                item.colors = colors  # Store colors in the item object
+                item.sizes = sizes
 
-#             template_path = 'invoicepdf.html'
-#             html = render_to_string(template_path, data)
+                for color in colors:
+                    colorobj = color.name
+                    print(color.name)
 
-#             # Create a Django response object with PDF content type
-#             response = HttpResponse(content_type='application/pdf')
-#             response['Content-Disposition'] = f'attachment; filename="Invoice_{data["orderid"]}.pdf"'
+                for size in sizes:
+                    sizeobj = size.name
+                    print(size.name)
 
-#             # Create PDF
-#             pisa_status = pisa.CreatePDF(html, dest=response)
-#             if pisa_status.err:
-#                 return HttpResponse('We had some errors <pre>' + html + '</pre>')
-#             return response
+            
 
-#         except (customer.DoesNotExist, Order.DoesNotExist, OrderItem.DoesNotExist):
-#             return HttpResponse('Error: Order not found')
+            data = {
+                'date': datetime.date.today(),
+                'orderid': ordered_product.id,
+                'ordered_date': ordered_product.date_ordered,
+                'name': ordered_product.address.customer.name,
+                'address': ordered_product.address.address,
+                'country': ordered_product.address.country,
+                'city': ordered_product.address.city,
+                'state': ordered_product.address.state,
+                'zipcode': ordered_product.address.zipcode,
+                'phone': ordered_product.address.customer.phonenumber,
+                # 'product': ordered_item.product.name,
+                'amount': ordered_product.total,
+                'ordertype': ordered_product.payment_type,
+                # 'quantity':ordered_item.quantity,
+                'ordered_item':ordered_item,
+                "item.colors":item.colors, # Store colors in the item object
+                 "item.sizes" :item.sizes,
+            }
+
+            template_path = 'invoicepdf.html'
+            html = render_to_string(template_path, data)
+
+            # Create a Django response object with PDF content type
+            response = HttpResponse(content_type='application/pdf')
+            response['Content-Disposition'] = f'attachment; filename="Invoice_{data["orderid"]}.pdf"'
+
+            # Create PDF
+            pisa_status = pisa.CreatePDF(html, dest=response)
+            if pisa_status.err:
+                return HttpResponse('We had some errors <pre>' + html + '</pre>')
+            return response
+
+        # except (customer.DoesNotExist, Order.DoesNotExist, OrderItem.DoesNotExist):
+        #     return HttpResponse('Error: Order not found')

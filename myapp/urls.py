@@ -53,9 +53,10 @@ urlpatterns = [
     path('list_addtocart/<int:product_id>/', views.list_addtocart, name='list_addtocart'),
     path('removeitem/<int:item_id>/', views.removeitem, name='removeitem'),
     
-    path("razorupdateorder/",views.razorupdateorder,name="razorupdateorder"),
+    
     path("updatevariant/",views.updatevariant,name="updatevariant"),
     # path("generate_invoice/",views.generate_invoice,name="generate_invoice"),
+    path("razorupdateorder/",views.razorupdateorder,name="razorupdateorder"),
 
 ]
 

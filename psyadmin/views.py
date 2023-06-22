@@ -19,31 +19,57 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, Tabl
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
 import xlsxwriter
-
+from datetime import date
 
 
 @never_cache
 def admin_index(request):
     if 'adminuser' in request.session:
-        orderobjs=OrderItem.objects.all()
-        top_returned_product=None
-        top_product=None
+        if request.method=="POST":
+            startdate=request.POST.get("startdate")
+            enddate=request.POST.get("enddate")
+            orderobjs=OrderItem.objects.filter(date_added__range=(startdate,enddate))
+            top_returned_product=None
+            top_product=None
 
-        orderdict={}
-        for item in orderobjs:
-            if item.variant.product.name not in orderdict:
-                orderdict[item.variant.product.name]=item.quantity
-            else:
-                orderdict[item.variant.product.name]+=item.quantity
-        try:
-            top_count = max(orderdict.values())
-        except:
-            pass
-        for key,value in orderdict.items():
-            if value==top_count:
-                top_product=key
-                break
-        
+            orderdict={}
+            for item in orderobjs:
+                if item.variant.product.name not in orderdict:
+                    orderdict[item.variant.product.name]=item.quantity
+                else:
+                    orderdict[item.variant.product.name]+=item.quantity
+            try:
+                top_count = max(orderdict.values())
+            except:
+                pass
+            for key,value in orderdict.items():
+                if value==top_count:
+                    top_product=key
+                    break
+            
+
+        else:
+            startdate = date(2023, 6, 1)
+            enddate = date(2023, 6, 30)
+            orderobjs=OrderItem.objects.filter(date_added__range=(startdate,enddate))
+            top_returned_product=None
+            top_product=None
+
+            orderdict={}
+            for item in orderobjs:
+                if item.variant.product.name not in orderdict:
+                    orderdict[item.variant.product.name]=item.quantity
+                else:
+                    orderdict[item.variant.product.name]+=item.quantity
+            try:
+                top_count = max(orderdict.values())
+            except:
+                pass
+            for key,value in orderdict.items():
+                if value==top_count:
+                    top_product=key
+                    break
+            
         #Most Returned Products Graph logic
         returninitiatedobjs = OrderItem.objects.filter(order__order_status='returned')
 
@@ -62,7 +88,7 @@ def admin_index(request):
             if value==top_returned_count:
                 top_returned_product=key
 
-        return render(request, "psyadmin/admin-index.html",{"orderdict":orderdict,"returndict":returndict,"top_product":top_product,"top_count":top_count,"top_returned_product":top_returned_product})
+        return render(request, "psyadmin/admin-index.html",{"orderdict":orderdict,"returndict":returndict,"top_product":top_product,"top_returned_product":top_returned_product,"startdate":startdate,"enddate":enddate})
     else:
         return redirect('admin_login')
 

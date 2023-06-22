@@ -1366,18 +1366,19 @@ def razorupdateorder(request):
     username = request.session.get("username")
     user = customer.objects.get(username=username)
     cartobj = Cart.objects.filter(user = user)
-    addressid = request.POST.get("address")
+    addressid = request.GET.get("addressval")
     address = ShippingAddress.objects.get(id=addressid)
+    totalamount=request.GET.get("finalprice")
     
-    totalamount=0
-    for item in cartobj:
-        totalamount+=item.total
+    # totalamount=0
+    # for item in cartobj:
+    #     totalamount+=item.total
 
     
            
     date_ordered = date.today()
 
-    orderobj = Order(customer=user,address=address, date_ordered=date_ordered, total=0 )
+    orderobj = Order(customer=user,address=address, date_ordered=date_ordered,payment_type="online_payment", total=Decimal(totalamount) )
     orderobj.save()
     
 
@@ -1385,14 +1386,14 @@ def razorupdateorder(request):
 
         product=item.product
         variant=item.variant
-        price = item.product.price
+        price = item.variant.price
         quantity=item.quantity
         itemtotal = quantity*price
 
         orderitemobj = OrderItem(product=product,variant=variant, order = orderobj,quantity=quantity, price=price, total=itemtotal )
         orderitemobj.save()
 
-        orderobj.total += item.total
+        # orderobj.total += Decimal(item.total)
 
         item.delete()
 

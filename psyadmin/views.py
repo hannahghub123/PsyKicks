@@ -425,13 +425,9 @@ def editproducts(request, someid):
     if request.method == 'POST':
         # Validate form inputs
         name = request.POST.get("name")
-        # price = request.POST.get("price")
-        # quantity = request.POST.get("quantity")
         category_name = request.POST.get("category")
         condition = request.POST.get("condition")
-
-        # if 'delete_selected' in request.POST:
-        #     selected_images = request.POST.getlist('delete_images')
+        delete_image_ids = request.POST.getlist("delete_images")
 
         if len(name) < 4:
             error_message["name"] = "Product name should contain a minimum of four characters"
@@ -453,25 +449,13 @@ def editproducts(request, someid):
             brand_id = request.POST.get("brand")
             content.brand = Brand.objects.get(id=brand_id) if brand_id else None
 
-            # # Check if new images are provided
-            # if 'image' in request.FILES:
-            #     # Delete the existing images
-            #     for image in images:
-            #         os.remove(image.image.path)
-            #         image.delete()
-
-            #     # Save new images
-            #     for image_file in request.FILES.getlist('image'):
-            #         ProductImage.objects.create(product=content, image=image_file)
 
             if 'image' in request.FILES:
                 # Save new images
                 for image_file in request.FILES.getlist('image'):
                     ProductImage.objects.create(product=content, image=image_file)
 
-                # for image_id in selected_images:
-                #     image = ProductImage.objects.get(id=image_id)
-                #     image.delete()
+            ProductImage.objects.filter(id__in=delete_image_ids).delete()
                     
 
             content.save()

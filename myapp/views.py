@@ -563,6 +563,15 @@ def user_pdetails(request, product_id):
     unique_colors = set()
     unique_sizes = set()
 
+    offerprice=None
+    try:
+        pdtofferobj=ProductOffer.objects.get(product=product)
+        discountprice=(pdtobj1.price)*Decimal(pdtofferobj.discount/100)
+        offerprice=pdtobj1.price-(discountprice)
+        print("##########",offerprice)
+    except:
+        pass
+
     for variant in pdtvariant:
         colorobj = variant.color.all()
         sizeobj = variant.size.all()
@@ -582,64 +591,6 @@ def user_pdetails(request, product_id):
     distinct_sizes = ", ".join(unique_sizes)
 
     if request.method == "POST":
-
-        # if "updatevariant" in request.POST:
-        #     size=request.POST["size"]
-        #     color=request.POST["color"]
-        #     product=Products.objects.get(id=product_id)
-
-        #     product = Products.objects.prefetch_related('images').filter(id=product_id).first()
-        #     pdtvariant=Productvariant.objects.filter(product=product)
-        #     pdtobj1=Productvariant.objects.get(id=1)
-        #     print("#################",pdtobj1.product.name)
-
-
-        #     images = product.images.all() 
-        #     products_in_same_category = Products.objects.filter(category=product.category)
-
-        #     username = request.session["username"]
-        #     user = customer.objects.get(username=username)
-        #     wishlist_items = Wishlist.objects.filter(customer=user)
-        #     count = wishlist_items.count()
-
-        #     try:
-        #         pdtobj1 = Productvariant.objects.filter(product=product, size=size, color=color).first()
-        #         images = product.images.all()
-        #         products_in_same_category = Products.objects.filter(category=product.category)
-
-        #         username = request.session["username"]
-        #         user = customer.objects.get(username=username)
-        #         wishlist_items = Wishlist.objects.filter(customer=user)
-        #         count = wishlist_items.count()
-
-        #         return render(request, 'myapp/user-pdetails.html', {
-        #             'pdtobj1': pdtobj1,
-        #             'images': images,
-        #             'products_in_same_category': products_in_same_category,
-        #             'count': count,
-        #             'sizes': sizes,
-        #             'colors': colors,
-        #             'distinct_colors':distinct_colors,
-        #             "distinct_sizes":distinct_sizes
-       
-                    
-        #         })
-        #     except Productvariant.DoesNotExist:
-        #         error_message["name"]="Out of stock"
-        #         return render(request, 'myapp/user-pdetails.html', {
-        #             "error_message":error_message,
-        #                     'pdtobj1': pdtobj1,
-        #                      'images': images,
-        #                      'products_in_same_category': products_in_same_category,
-        #                      'count':count,
-        #                      'cart_count':cart_count,
-        #                     'sizes':sizes,
-        #                     'colors':colors,
-        #                     'distinct_colors':distinct_colors,
-        #                     "distinct_sizes":distinct_sizes
-       
-                           
-        #                 })
 
         if "addtocart" in request.POST:
 
@@ -689,8 +640,25 @@ def user_pdetails(request, product_id):
             username = request.session.get("username")
             user = customer.objects.get(username=username)
 
+            offerprice=None
+            try:
+                product=Products.objects.get(id=product_id)
+                newvariant=Productvariant.objects.get(product=product,size=size,color=color)
+                pdtofferobj=ProductOffer.objects.get(product=product)
+                discountprice=(newvariant.price)*Decimal(pdtofferobj.discount/100)
+                offerprice=newvariant.price-(discountprice)
+                print("##########",offerprice)
+            except:
+                pass
+            print("OFFERPRICE",offerprice)
+            if offerprice:
+                price = offerprice
+                discount = offerprice
+            else:
+                price = pdtvariant.price 
+                discount = 0
             
-            total = Decimal(quantity) * pdtvariant.price 
+            total = Decimal(quantity) * price 
             
             
             try:
@@ -698,15 +666,17 @@ def user_pdetails(request, product_id):
                 cartobj = Cart.objects.get(user=user, variant=pdtvariant,product=pdtobj)
                 cartobj.quantity += quantity  # Increase the quantity
                 cartobj.total += total  # Update the total
+                cartobj.discount=discount
                 cartobj.save()
                 return redirect(usercart)
             except Cart.DoesNotExist:
-                cartobj = Cart(user=user,product=pdtobj, variant=pdtvariant, quantity=quantity, total=total)
+                cartobj = Cart(user=user,product=pdtobj, variant=pdtvariant, quantity=quantity, total=total,discount=discount)
                 cartobj.save()
                 return redirect(usercart)
             
                 
     return render(request, 'myapp/user-pdetails.html', {
+        "offerprice":offerprice,
         'pdt':pdt,
         'pdtobj1': pdtobj1,
         'images': images,
@@ -716,42 +686,59 @@ def user_pdetails(request, product_id):
         'sizes':sizes,
         'colors':colors,
       'distinct_colors':distinct_colors,
-      "distinct_sizes":distinct_sizes
+      "distinct_sizes":distinct_sizes,
+      
        
     })
 
 
 
-def addtocart(request, product_id):
-    if request.method == "POST":
-        if "username" in request.session:
+# def addtocart(request, product_id):
+#     if request.method == "POST":
+#         if "username" in request.session:
             
-            username = request.session["username"]
-            user = customer.objects.get(username=username)
+#             username = request.session["username"]
+#             user = customer.objects.get(username=username)
         
-            product = Products.objects.get(id=product_id)
-            # quantity = request.POST.get("quantity")
-            variant = Productvariant.objects.filter(product=product).first()
+#             product = Products.objects.get(id=product_id)
+#             # quantity = request.POST.get("quantity")
+#             variant = Productvariant.objects.filter(product=product).first()
+#             print(variant,"############")
+#             try:
+#                 pdtoffer=ProductOffer.objects.get(product=product)
+#                 discountprice = variant.price*Decimal(pdtoffer.discount/100)
+#                 offeramount = variant.price - discountprice
+#                 print("TRYYYYYYYYYYYYYY",offeramount)
+#             except:
+#                 print("TRYIL KEREELAAAAAAAAAAAAAAAAAa")
+#                 pass
+#             print("HENNAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa")
+
+          
 
 
-            cartobjs=Cart.objects.filter(user=user)
-            # for item in cartobjs:
-            #     if item.product==product:
-            #         item.quantity+=int(quantity)
-            #         item.save()
-            #         return redirect('usercart') 
+#             cartobjs=Cart.objects.filter(user=user)
+#             # for item in cartobjs:
+#             #     if item.product==product:
+#             #         item.quantity+=int(quantity)
+#             #         item.save()
+#             #         return redirect('usercart') 
 
             
-            for item in cartobjs:
-                if item.product==product:
-                    return redirect ('userproduct')
-            cartobj = Cart(user=user, product=product,total=variant.price*variant.stock, quantity=1)
-            cartobj.save()
-            return redirect('usercart') 
-        else:
-            return redirect('login') 
+#             for item in cartobjs:
+#                 if item.product==product:
+#                     return redirect ('userproduct')
+#             if offeramount:
+#                 reqprice=offeramount
+#             else:
+#                 reqprice=variant.price*variant.stock
+#             cartobj = Cart(user=user, product=product,total=reqprice, quantity=1)
+#             cartobj.save()
+#             return redirect('usercart') 
+#         else:
+#             return redirect('login') 
 
-    return redirect('userproduct')
+#     return redirect('userproduct')
 
 def updatevariant(request):
     colorid=request.GET["colorId"]
@@ -765,13 +752,23 @@ def updatevariant(request):
 
 
     product=Products.objects.get(id=productid)
+    
     try:
         variant=Productvariant.objects.get(product=product,size=size,color=color)
+        productofferobj = ProductOffer.objects.get(product=product)
+        discountprice =  variant.price*Decimal(productofferobj.discount/100)
+        offeramount = variant.price-discountprice
     except: 
         varianterror="Out Of Stock"
         return JsonResponse({"varianterror":varianterror})
+    
+    if offeramount:
+        variantprice=round((offeramount), 2)
+    else:
+        variantprice=round((variant.price), 2)
 
-    variantprice=variant.price
+
+    
 
 
     return JsonResponse({"variantprice":variantprice})

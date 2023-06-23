@@ -34,6 +34,7 @@
                 <div style="flex:1"><strong>Color</strong></div>
                 <div style="flex:1"><strong>Size</strong></div>
                 <div style="flex:1"><strong>Price</strong></div>
+                <div style="flex:1"><strong>Discount Price</strong></div>
                 <div style="flex:1"><strong>Quantity</strong></div>
                 <div style="flex:1"><strong>Total</strong></div>
                 <div style="flex:1">Remove Item</div>
@@ -54,6 +55,7 @@
                     {% endfor %}
                 </div>
                 <div style="flex:1">${{ item.variant.price }}</div>
+                <div style="flex:1">${{ item.discount}}</div>
                 <div style="flex:1; display: flex;">
                     {% comment %} <form action="" method="POST">
                         {% csrf_token %} {% endcomment %}

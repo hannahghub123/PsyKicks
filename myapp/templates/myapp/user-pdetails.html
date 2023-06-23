@@ -274,7 +274,14 @@
 						<br>
 						<br>
 						<span id="variantprice" class="mtext-106 cl2">
+							{% if offerprice %}
+
+							{{offerprice|floatformat:2}}
+							{% else %}
 							{{pdtobj1.price}}
+
+							{% endif %}
+							
 						</span>
 
 						

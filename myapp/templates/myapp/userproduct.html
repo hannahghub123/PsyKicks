@@ -313,11 +313,9 @@
 				<span class="error-message">{{error_message.product}}</span>
 	  
 	  
-				<form method="POST" action="{% url 'addtocart' i.id %}">
-				  {% csrf_token %}
-	  
+				
 				  <a class="btn btn-outline-primary" href={% url 'user_pdetails' i.id %} style="display:inline-block; ">View Product</a>
-				</form>
+				
 	  
 			  </div>
 	  

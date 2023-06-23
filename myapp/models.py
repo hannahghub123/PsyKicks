@@ -89,6 +89,7 @@ class Cart(models.Model):
     quantity = models.PositiveIntegerField(default=0)
     total = models.DecimalField(max_digits=10, decimal_places=2)
     coupon = models.ForeignKey(Coupon,on_delete=models.SET_NULL,null=True, blank=True)
+    discount = models.DecimalField(max_digits=10,default=0,decimal_places=2)
 
 class ShippingAddress(models.Model):
     customer = models.ForeignKey(customer, on_delete=models.SET_NULL, null=True, blank=True)

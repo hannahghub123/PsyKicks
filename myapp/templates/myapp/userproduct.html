@@ -1,8 +1,5 @@
 {% extends 'myapp/userindex.html' %}
 {% load static %}
-{% block content %}
-<div class="row mt-5"></div>
-{% comment %} <div class="row mt-5"></div> {% endcomment %}
 
 
 <style>
@@ -34,11 +31,14 @@
 		.new-tag {
 			background-color: pink;
 		}
+
+		
 	{% endblock style %}
 </style>
 
-
-
+{% block content %}
+<div class="row mt-5"></div>
+<div class="row mt-5"></div>
 
 <div class="bg0 m-t-23 ">
 	<div class="container">
@@ -69,23 +69,6 @@
 			</div>
 			
 			<!-- Search product -->
-			<style>
-				form {
-				  display: flex;
-				  align-items: center;
-				}
-			  
-				form input[type="text"],
-				form button {
-				  margin-right: 900px;
-				  {% comment %} margin-bottom: 40px; {% endcomment %}
-				}
-			  
-				form button {
-				  padding: 6px 15px;
-				  height: 38px;
-				}
-			  </style>
 
 			<div class="dis-none panel-search w-full p-t-10 p-b-15">
 				<div class="bor8 dis-flex p-l-15">
@@ -95,9 +78,7 @@
 						{% csrf_token %}
 						<div class="d-flex mt-3 mb-3">
 							<input type="text" name="searchitem" id="navbar-search-input" placeholder="Search product?" aria-label="search" style="font-size: 15px; border-radius: 2px;">
-							<button type="submit" class="btn ">
-							<i class="zmdi zmdi-search"></i>
-							</button>
+							<input type="submit" style="display: none;">
 						</div>
 					</form>
 				</div>	
@@ -113,7 +94,7 @@
 
 						<ul>
 							<li class="p-b-6">
-								<a href="#" class="filter-link stext-106 trans-04">
+								<a href="/userproduct/" class="filter-link stext-106 trans-04">
 									Default
 								</a>
 							</li>

@@ -115,11 +115,11 @@ var csrftoken = getToken('csrftoken');
 		align-items: center;
 	  }
 	
-	  form input[type="text"],
+	  {% comment %} form input[type="text"],
 	  form button {
 		margin-right: 900px;
-		{% comment %} margin-bottom: 40px; {% endcomment %}
-	  }
+		
+	  } {% endcomment %}
 	
 	  form button {
 		padding: 6px 15px;
@@ -406,7 +406,7 @@ var csrftoken = getToken('csrftoken');
 							</div>
 								
 							<div class="layer-slick1 animated visible-false" data-appear="zoomIn" data-delay="1600">
-								<a href="product.html" class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04">
+								<a href="{% url 'userproduct' %}" class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04">
 									Shop Now
 								</a>
 							</div>
@@ -430,7 +430,7 @@ var csrftoken = getToken('csrftoken');
 							</div>
 								
 							<div class="layer-slick1 animated visible-false" data-appear="slideInUp" data-delay="1600">
-								<a href="product.html" class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04">
+								<a href="{% url 'userproduct' %}" class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04">
 									Shop Now
 								</a>
 							</div>
@@ -454,7 +454,7 @@ var csrftoken = getToken('csrftoken');
 							</div>
 								
 							<div class="layer-slick1 animated visible-false" data-appear="rotateIn" data-delay="1600">
-								<a href="product.html" class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04">
+								<a href="{% url 'userproduct' %}" class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04">
 									Shop Now
 								</a>
 							</div>
@@ -600,9 +600,7 @@ var csrftoken = getToken('csrftoken');
 							{% csrf_token %}
 							<div class="d-flex mt-3 mb-3">
 								<input type="text" name="searchitem" id="navbar-search-input" placeholder="Search product?" aria-label="search" style="font-size: 15px; border-radius: 2px;">
-								<button type="submit" class="btn ">
-								<i class="zmdi zmdi-search"></i>
-								</button>
+								<input type="submit" style="display: none;">
 							</div>
 						</form>
 					</div>	
@@ -618,7 +616,7 @@ var csrftoken = getToken('csrftoken');
 
 							<ul>
 								<li class="p-b-6">
-									<a href="#" class="filter-link stext-106 trans-04">
+									<a href="/userindex/" class="filter-link stext-106 trans-04">
 										Default
 									</a>
 								</li>

@@ -113,11 +113,11 @@ var csrftoken = getToken('csrftoken');
 		align-items: center;
 	  }
 	
-	  form input[type="text"],
+	  {% comment %} form input[type="text"],
 	  form button {
 		margin-right: 900px;
-		{% comment %} margin-bottom: 40px; {% endcomment %}
-	  }
+		
+	  } {% endcomment %}
 	
 	  form button {
 		padding: 6px 15px;
@@ -664,23 +664,7 @@ var csrftoken = getToken('csrftoken');
 				</div>
 				
 				<!-- Search product -->
-				<style>
-					form {
-					  display: flex;
-					  align-items: center;
-					}
-				  
-					form input[type="text"],
-					form button {
-					  margin-right: 900px;
-					  {% comment %} margin-bottom: 40px; {% endcomment %}
-					}
-				  
-					form button {
-					  padding: 6px 15px;
-					  height: 38px;
-					}
-				  </style>
+			
 	
 				<div class="dis-none panel-search w-full p-t-10 p-b-15">
 					<div class="bor8 dis-flex p-l-15">
@@ -690,9 +674,7 @@ var csrftoken = getToken('csrftoken');
 							{% csrf_token %}
 							<div class="d-flex mt-3 mb-3">
 								<input type="text" name="searchitem" id="navbar-search-input" placeholder="Search product?" aria-label="search" style="font-size: 15px; border-radius: 2px;">
-								<button type="submit" class="btn ">
-								<i class="zmdi zmdi-search"></i>
-								</button>
+								<input type="submit" style="display: none;">
 							</div>
 						</form>
 					</div>	
@@ -708,44 +690,44 @@ var csrftoken = getToken('csrftoken');
 
 							<ul>
 								<li class="p-b-6">
-									<a href="#" class="filter-link stext-106 trans-04">
+									<a href="" class="filter-link stext-106 trans-04">
 										Default
 									</a>
 								</li>
 
 								<li class="p-b-6">
-									<a href="#" class="filter-link stext-106 trans-04">
-										Popularity
+									<a href="{% for i in datas %}?ATOZ= {{i.id}} {% endfor%}"  class="filter-link stext-106 trans-04">
+										Name, A to Z
 									</a>
 								</li>
 
 								<li class="p-b-6">
-									<a href="#" class="filter-link stext-106 trans-04">
-										Average rating
+									<a href="{% for i in datas %}?ZTOA= {{i.id}} {% endfor%}" class="filter-link stext-106 trans-04">
+										Name, Z to A
 									</a>
 								</li>
 
 								<li class="p-b-6">
-									<a href="#" class="filter-link stext-106 trans-04 filter-link-active">
+									<a href="{% for i in datas %}?NEWPRODUCT={{i.id}} {% endfor %}" class="filter-link stext-106 trans-04 ">
 										Newness
 									</a>
 								</li>
 
 								<li class="p-b-6">
-									<a href="#" class="filter-link stext-106 trans-04">
-										Price: Low to High
+									<a href="{% for i in datas %}?OLDPRODUCT={{i.id}} {% endfor %}" class="filter-link stext-106 trans-04">
+										Oldness
 									</a>
 								</li>
 
-								<li class="p-b-6">
+								{% comment %} <li class="p-b-6">
 									<a href="#" class="filter-link stext-106 trans-04">
 										Price: High to Low
 									</a>
-								</li>
+								</li> {% endcomment %}
 							</ul>
 						</div>
 
-						 <div class="filter-col2 p-r-15 p-b-27">
+						 {% comment %} <div class="filter-col2 p-r-15 p-b-27">
 							<div class="mtext-102 cl2 p-b-15">
 								Price
 							</div>
@@ -823,7 +805,7 @@ var csrftoken = getToken('csrftoken');
 								</li>
 								{% endfor %}
 							</ul>
-						</div>
+						</div> {% endcomment %}
 
 						<div class="filter-col3 p-r-10 p-b-27">
 							<div class="mtext-102 cl2 p-b-15">

@@ -8,12 +8,6 @@
 		align-items: center;
 	  }
 	
-	  form input[type="text"],
-	  form button {
-		margin-right: 900px;
-		{% comment %} margin-bottom: 40px; {% endcomment %}
-	  }
-	
 	  form button {
 		padding: 6px 15px;
 		height: 38px;
@@ -23,6 +17,25 @@
 		height: 300px; /* Adjust the height to your desired size */
 		object-fit: cover; /* Preserve the aspect ratio and crop if necessary */
 	  }
+
+	  
+		.product-tag {
+			position: absolute;
+			top: 10px;
+			left: 10px;
+			width: 50px;
+			height: 20px;
+			background-color: pink;
+			color: white;
+			text-align: center;
+			line-height: 20px;
+			border-radius: 50%;
+		}
+		
+		.new-tag {
+			background-color: pink;
+		}
+
 
 	  {% endblock style %}
 	
@@ -91,9 +104,7 @@
 						{% csrf_token %}
 						<div class="d-flex mt-3 mb-3">
 							<input type="text" name="searchitem" id="navbar-search-input" placeholder="Search product?" aria-label="search" style="font-size: 15px; border-radius: 2px;">
-							<button type="submit" class="btn ">
-							<i class="zmdi zmdi-search"></i>
-							</button>
+							<input type="submit" style="display: none;">
 						</div>
 					</form>
 				</div>	
@@ -109,154 +120,46 @@
 
 						<ul>
 							<li class="p-b-6">
-								<a href="#" class="filter-link stext-106 trans-04">
+								<a href="/product/" class="filter-link stext-106 trans-04">
 									Default
 								</a>
 							</li>
 
 							<li class="p-b-6">
-								<a href="#" class="filter-link stext-106 trans-04">
-									Popularity
+								<a href="/product/{% for i in datas %}?ATOZ= {{i.id}} {% endfor%}" class="filter-link stext-106 trans-04">
+									Name, A to Z
 								</a>
 							</li>
 
 							<li class="p-b-6">
-								<a href="#" class="filter-link stext-106 trans-04">
-									Average rating
+								<a href="/product/{% for i in datas %}?ZTOA= {{i.id}} {% endfor%}" class="filter-link stext-106 trans-04">
+									Name, Z to A
 								</a>
 							</li>
 
 							<li class="p-b-6">
-								<a href="#" class="filter-link stext-106 trans-04 filter-link-active">
+								<a href="/product/{% for i in datas %}?NEWPRODUCT= {{i.id}} {% endfor%}" class="filter-link stext-106 trans-04 ">
 									Newness
 								</a>
 							</li>
 
 							<li class="p-b-6">
-								<a href="#" class="filter-link stext-106 trans-04">
-									Price: Low to High
+								<a href="{% for i in datas %}?OLDPRODUCT= {{i.id}} {% endfor%}" class="filter-link stext-106 trans-04">
+									Oldness
 								</a>
 							</li>
 
-							<li class="p-b-6">
+							{% comment %} <li class="p-b-6">
 								<a href="#" class="filter-link stext-106 trans-04">
 									Price: High to Low
 								</a>
-							</li>
+							</li> {% endcomment %}
 						</ul>
 					</div>
 
-					<div class="filter-col2 p-r-15 p-b-27">
-						<div class="mtext-102 cl2 p-b-15">
-							Price
-						</div>
+					
 
-						<ul>
-							<li class="p-b-6">
-								<a href="#" class="filter-link stext-106 trans-04 filter-link-active">
-									All
-								</a>
-							</li>
-
-							<li class="p-b-6">
-								<a href="#" class="filter-link stext-106 trans-04">
-									$0.00 - $50.00
-								</a>
-							</li>
-
-							<li class="p-b-6">
-								<a href="#" class="filter-link stext-106 trans-04">
-									$50.00 - $100.00
-								</a>
-							</li>
-
-							<li class="p-b-6">
-								<a href="#" class="filter-link stext-106 trans-04">
-									$100.00 - $150.00
-								</a>
-							</li>
-
-							<li class="p-b-6">
-								<a href="#" class="filter-link stext-106 trans-04">
-									$150.00 - $200.00
-								</a>
-							</li>
-
-							<li class="p-b-6">
-								<a href="#" class="filter-link stext-106 trans-04">
-									$200.00+
-								</a>
-							</li>
-						</ul>
-					</div>
-
-					<div class="filter-col3 p-r-15 p-b-27">
-						<div class="mtext-102 cl2 p-b-15">
-							Color
-						</div>
-
-						<ul>
-							<li class="p-b-6">
-								<span class="fs-15 lh-12 m-r-6" style="color: #222;">
-									<i class="zmdi zmdi-circle"></i>
-								</span>
-
-								<a href="#" class="filter-link stext-106 trans-04">
-									Black
-								</a>
-							</li>
-
-							<li class="p-b-6">
-								<span class="fs-15 lh-12 m-r-6" style="color: #4272d7;">
-									<i class="zmdi zmdi-circle"></i>
-								</span>
-
-								<a href="#" class="filter-link stext-106 trans-04 filter-link-active">
-									Blue
-								</a>
-							</li>
-
-							<li class="p-b-6">
-								<span class="fs-15 lh-12 m-r-6" style="color: #b3b3b3;">
-									<i class="zmdi zmdi-circle"></i>
-								</span>
-
-								<a href="#" class="filter-link stext-106 trans-04">
-									Grey
-								</a>
-							</li>
-
-							<li class="p-b-6">
-								<span class="fs-15 lh-12 m-r-6" style="color: #00ad5f;">
-									<i class="zmdi zmdi-circle"></i>
-								</span>
-
-								<a href="#" class="filter-link stext-106 trans-04">
-									Green
-								</a>
-							</li>
-
-							<li class="p-b-6">
-								<span class="fs-15 lh-12 m-r-6" style="color: #fa4251;">
-									<i class="zmdi zmdi-circle"></i>
-								</span>
-
-								<a href="#" class="filter-link stext-106 trans-04">
-									Red
-								</a>
-							</li>
-
-							<li class="p-b-6">
-								<span class="fs-15 lh-12 m-r-6" style="color: #aaa;">
-									<i class="zmdi zmdi-circle-o"></i>
-								</span>
-
-								<a href="#" class="filter-link stext-106 trans-04">
-									White
-								</a>
-							</li>
-						</ul>
-					</div>
+					
 
 					<div class="filter-col4 p-b-27">
 						<div class="mtext-102 cl2 p-b-15">
@@ -299,7 +202,11 @@
 								{% with i.images.all|first as img %}
 								<a href={% url 'pdetails' i.id %}>
 									<img src="{{ img.image.url }}" alt="IMG-PRODUCT">
-								  </a>
+									{% if i.condition == "New" %}
+									<div class="product-tag new-tag">New</div>
+									{% endif %}
+								
+								</a>
 								{% endwith %}
 							{% endif %}
 					</div>

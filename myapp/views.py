@@ -20,8 +20,33 @@ from django.core.paginator import Paginator,PageNotAnInteger,EmptyPage
 
 # Create your views here.
 def index(request):
-     
+    
     datas = Products.objects.all()
+    category = Category.objects.all()
+    brand = Brand.objects.all()
+    product_offerobj = ProductOffer.objects.all()
+    category_offerobj = CategoryOffer.objects.all()
+    
+    selected_category = request.GET.get('category')  # Get the selected category from the query parameters
+    selected_brand = request.GET.get('brand')
+
+    atoz_id = request.GET.get('ATOZ')
+    ztoa_id = request.GET.get('ZTOA')
+    new_productid = request.GET.get('NEWPRODUCT')
+    old_productid = request.GET.get('OLDPRODUCT')
+
+    if selected_category:
+        datas = datas.filter(category__name=selected_category)
+    if selected_brand:
+        datas = datas.filter(brand__name=selected_brand)
+    if atoz_id:
+        datas = datas.extra(select={'lower_name': "LOWER(name)"}).order_by('lower_name')
+    if ztoa_id:
+        datas = datas.extra(select={'lower_name': "LOWER(name)"}).order_by('-lower_name')
+    if new_productid:
+        datas = datas.filter(condition="New")
+    if old_productid:
+        datas = datas.filter(condition="Old")
     
 
     if request.method == "POST":
@@ -31,6 +56,12 @@ def index(request):
     
     context={
         'datas':datas,
+        'category': category,
+        'brand': brand,
+        'selected_category': selected_category,
+        'selected_brand':selected_brand,
+        'category_offerobj':category_offerobj,
+        'product_offerobj':product_offerobj,
     }
     return render(request,"myapp/index.html",context)
      
@@ -378,6 +409,39 @@ def userproduct(request):
 def product(request):
   
     datas=Products.objects.all()
+    category = Category.objects.all()
+    colors = Color.objects.all()
+    brand = Brand.objects.all()
+    size = Size.objects.all()
+    variant=Productvariant.objects.all()
+        
+    selected_category = request.GET.get('category')  # Get the selected category from the query parameters
+    selected_brand = request.GET.get('brand')
+
+    atoz_id = request.GET.get('ATOZ')
+    ztoa_id = request.GET.get('ZTOA')
+    new_productid = request.GET.get('NEWPRODUCT')
+    old_productid = request.GET.get('OLDPRODUCT') 
+
+    if request.method == "POST":
+        entered_product = request.POST.get("searchitem")
+        datas = Products.objects.filter(name__icontains=entered_product)
+        return render(request, "myapp/product.html", {"datas": datas})
+    
+    if selected_category:
+        datas = datas.filter(category__name=selected_category)
+    if selected_brand:
+        datas = datas.filter(brand__name=selected_brand)
+
+    if atoz_id:
+        datas = datas.extra(select={'lower_name': "LOWER(name)"}).order_by('lower_name')
+    if ztoa_id:
+        datas = datas.extra(select={'lower_name': "LOWER(name)"}).order_by('-lower_name')
+    if new_productid:
+        datas = datas.filter(condition="New")
+    if old_productid:
+        datas = datas.filter(condition="Old")
+
     page = request.GET.get('page',1)
     paginator = Paginator(datas,12)
     try:
@@ -387,13 +451,18 @@ def product(request):
     except EmptyPage:
         datas = paginator.page(paginator.num_pages)
 
-
-    if request.method == "POST":
-        entered_product = request.POST.get("searchitem")
-        datas = Products.objects.filter(name__icontains=entered_product)
-        return render(request, "myapp/product.html", {"datas": datas})
+    context = {
+        'datas': datas,
+        "variant":variant,
+        'category':category,
+        'colors':colors,
+        'brand':brand,
+        'size':size,
+        'selected_category': selected_category,
+        'selected_brand':selected_brand,
+    }
     
-    return render(request,"myapp/product.html",{"datas":datas})
+    return render(request,"myapp/product.html",context)
         
 
 def blog(request):
@@ -555,7 +624,7 @@ def user_pdetails(request, product_id):
             color=request.POST["color"]
             print("#############",size,color)
             if size=="Choose an option" and color =="Choose an option":
-                error="Please select valid size and color"
+                error="Please select valid credentials before adding a product to the Cart"
                 return render(request, 'myapp/user-pdetails.html', {
                 "error":error,
                 'pdt':pdt,
@@ -727,6 +796,8 @@ def usercart(request):
         username = request.session["username"]
         user = customer.objects.get(username=username)
         cartobj = Cart.objects.filter(user=user)
+        print(cartobj,"7822222222222222222222222222222222222222222222222222222222222222222222222222222222222222")
+        
 
         wishlist_items = Wishlist.objects.filter(customer=user)
         count = wishlist_items.count()
@@ -736,6 +807,13 @@ def usercart(request):
         total_price=0
 
         for item in cartobj:
+            variant = item.variant
+            colors = variant.color.all()
+            sizes = variant.size.all()
+            item.variant = variant
+            item.colors = colors
+            item.sizes = sizes
+
             quantsum+=item.quantity
             total_price += item.total
 
@@ -744,7 +822,9 @@ def usercart(request):
              "total_price":total_price,
             "quantsum":quantsum,
             'count':count,
-            'cart_count':cart_count
+            'cart_count':cart_count,
+            # 'item.colors':item.colors,
+            # 'item.sizes':item.sizes
         }
         return render(request, "myapp/usercart.html", datas)
     else:
@@ -758,7 +838,7 @@ def quantity_inc(request, item_id):
     variant = obj.variant
     user = obj.user
 
-    # Check if the product is already in the cart
+   
     existing_cart_item = Cart.objects.filter(user=user, product=product, variant=variant).first()
 
     if existing_cart_item:
@@ -773,29 +853,8 @@ def quantity_inc(request, item_id):
         new_cart_item = Cart(user=user, product=product, variant=variant, quantity=quantity, total=total)
         new_cart_item.save()
 
-    # Rest of the code...
-    wishlist_items = Wishlist.objects.filter(customer=user)
-    count = wishlist_items.count()
-    cart_count = Cart.objects.filter(user=user).count()
-
-    quantsum=0
-    total_price=0
-
-    cartobj = Cart.objects.all()
-
-    for item in cartobj:
-        quantsum+=item.quantity
-        total_price += item.total
-
-
-    datas = {
-            'cartobj': cartobj,
-             "total_price":total_price,
-            "quantsum":quantsum,
-            'count':count,
-            'cart_count':cart_count
-        }
-    return render(request, "myapp/usercart.html", datas)
+    
+    return redirect(usercart)
 
     
 
@@ -805,14 +864,16 @@ def quantity_dec(request,item_id):
     variant = obj.variant
     user = obj.user
 
-    # Check if the product is already in the cart
     existing_cart_item = Cart.objects.filter(user=user, product=product, variant=variant).first()
 
     if existing_cart_item:
         # Product already exists in the cart, update its quantity and total
-        existing_cart_item.quantity -= 1
-        existing_cart_item.total -= variant.price
-        existing_cart_item.save()
+        if existing_cart_item.quantity>1:
+            existing_cart_item.quantity -= 1
+            existing_cart_item.total -= variant.price
+            existing_cart_item.save()
+        else:
+            existing_cart_item.delete()
     else:
         # Product does not exist in the cart, create a new entry
         quantity = obj.quantity - 1
@@ -820,29 +881,7 @@ def quantity_dec(request,item_id):
         new_cart_item = Cart(user=user, product=product, variant=variant, quantity=quantity, total=total)
         new_cart_item.save()
 
-    # Rest of the code...
-    wishlist_items = Wishlist.objects.filter(customer=user)
-    count = wishlist_items.count()
-    cart_count = Cart.objects.filter(user=user).count()
-
-    quantsum=0
-    total_price=0
-
-    cartobj = Cart.objects.all()
-
-    for item in cartobj:
-        quantsum+=item.quantity
-        total_price += item.total
-
-
-    datas = {
-            'cartobj': cartobj,
-             "total_price":total_price,
-            "quantsum":quantsum,
-            'count':count,
-            'cart_count':cart_count
-        }
-    return render(request, "myapp/usercart.html", datas)
+    return redirect(usercart)
 
 
     
@@ -895,6 +934,12 @@ def usercheckout(request):
         quantsum = 0
         total_price = 0
         for item in cartobj:
+            variant = item.variant
+            colors = variant.color.all()
+            sizes = variant.size.all()
+            item.variant = variant
+            item.colors = colors
+            item.sizes = sizes
             quantsum += item.quantity
             total_price += item.total
 
@@ -935,7 +980,9 @@ def usercheckout(request):
             'cart_count':cart_count,
             "order_id":payment_order_id,
             "api_key":RAZORPAY_API_KEY ,
-            "addressobj":addressobj
+            "addressobj":addressobj,
+            "item.colors":item.colors,
+            "item.sizes":item.sizes
         }
 
     if request.method == "POST":
@@ -1185,7 +1232,7 @@ def user_orders(request):
 def updateuser(request):
     if request.method=="POST":
         name=request.POST["name"]
-        name=request.POST["name"]
+        # name=request.POST["name"]
         email=request.POST["email"]
         phonenumber=request.POST["phonenumber"]
     
@@ -1206,6 +1253,7 @@ def editaddress(request,id):
 
     
     addressobj=ShippingAddress.objects.get(id=id)
+    print(addressobj,"hiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii")
     addressobj.address=address
     addressobj.city=city
     addressobj.state=state
@@ -1307,26 +1355,6 @@ def before_wishlist(request):
     return render(request,"myapp/before-wishlist.html")
 
 
-
-
-# def addtolist(request, product_id):
-#     if request.method == "POST":
-#         if "username" in request.session:
-#             username = request.session["username"]
-#             user = customer.objects.get(username=username)
-        
-#             product = Products.objects.get(id=product_id)
-          
-#             wishlist_obj, created = Wishlist.objects.get_or_create(customer=user, product=product)
-#             if created:
-#                 return redirect('wishlist')  
-#             else:
-#                 return redirect('userproduct') 
-#         else:
-#             return redirect('login')  
-
-    
-#     return redirect('userproduct')  
 
 
 

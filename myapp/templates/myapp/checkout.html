@@ -145,6 +145,17 @@
             <div class="cart-row">
                 <div style="flex:2"><img class="row-image" src="{{ item.variant.product.images.first.image.url }}"></div>
                 <div style="flex:2"><p>{{item.variant.product.name}}</p></div>
+                <div style="flex:2;">
+                    {% for color in item.colors %}
+                        {{ color.name }}
+                    {% endfor %}
+                </div>
+
+                <div style="flex:2;">
+                    {% for size in item.sizes %}
+                        {{ size.name }}
+                    {% endfor %}
+                </div>
                 <div style="flex:2"><p>${{item.variant.price}}</p></div>
                 <div style="flex:1"><p>x{{item.quantity}}</p></div>
             </div>

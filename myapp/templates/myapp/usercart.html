@@ -1,6 +1,7 @@
 {% extends 'myapp/userindex.html' %}
 {% load static %}
 
+
 {% block content %}
 
 <div class="row mt-5"></div>
@@ -30,6 +31,8 @@
             <div class="cart-row">
                 <div style="flex:1">Image</div>
                 <div style="flex:1"><strong>Item</strong></div>
+                <div style="flex:1"><strong>Color</strong></div>
+                <div style="flex:1"><strong>Size</strong></div>
                 <div style="flex:1"><strong>Price</strong></div>
                 <div style="flex:1"><strong>Quantity</strong></div>
                 <div style="flex:1"><strong>Total</strong></div>
@@ -39,6 +42,17 @@
             <div class="cart-row">
                 <div style="flex:1"><img class="row-image" src="{{ item.variant.product.images.first.image.url }}"></div>
                 <div style="flex:1">{{ item.variant.product.name }}</div>
+                <div style="flex:1">
+                    {% for color in item.colors %}
+                        {{ color.name }}
+                    {% endfor %}
+                </div>
+
+                <div style="flex:1">
+                    {% for size in item.sizes %}
+                        {{ size.name }}
+                    {% endfor %}
+                </div>
                 <div style="flex:1">${{ item.variant.price }}</div>
                 <div style="flex:1; display: flex;">
                     {% comment %} <form action="" method="POST">

@@ -560,60 +560,86 @@ def user_pdetails(request, product_id):
     count = wishlist_items.count()
     cart_count = Cart.objects.filter(user=user).count()
     error_message = {}
+    unique_colors = set()
+    unique_sizes = set()
+
+    for variant in pdtvariant:
+        colorobj = variant.color.all()
+        sizeobj = variant.size.all()
+        
+        # Add each color name to the set
+        for color in colorobj:
+            unique_colors.add(color.name)
+
+        for size in sizeobj:
+            unique_sizes.add(size.name)
+
+    # Print the unique color names
+    for color_name in unique_colors:
+        print(color_name)
+
+    distinct_colors = ", ".join(unique_colors)
+    distinct_sizes = ", ".join(unique_sizes)
 
     if request.method == "POST":
 
-        if "updatevariant" in request.POST:
-            size=request.POST["size"]
-            color=request.POST["color"]
-            product=Products.objects.get(id=product_id)
+        # if "updatevariant" in request.POST:
+        #     size=request.POST["size"]
+        #     color=request.POST["color"]
+        #     product=Products.objects.get(id=product_id)
 
-            product = Products.objects.prefetch_related('images').filter(id=product_id).first()
-            pdtvariant=Productvariant.objects.filter(product=product)
-            pdtobj1=Productvariant.objects.get(id=1)
-            print("#################",pdtobj1.product.name)
+        #     product = Products.objects.prefetch_related('images').filter(id=product_id).first()
+        #     pdtvariant=Productvariant.objects.filter(product=product)
+        #     pdtobj1=Productvariant.objects.get(id=1)
+        #     print("#################",pdtobj1.product.name)
 
 
-            images = product.images.all() 
-            products_in_same_category = Products.objects.filter(category=product.category)
+        #     images = product.images.all() 
+        #     products_in_same_category = Products.objects.filter(category=product.category)
 
-            username = request.session["username"]
-            user = customer.objects.get(username=username)
-            wishlist_items = Wishlist.objects.filter(customer=user)
-            count = wishlist_items.count()
+        #     username = request.session["username"]
+        #     user = customer.objects.get(username=username)
+        #     wishlist_items = Wishlist.objects.filter(customer=user)
+        #     count = wishlist_items.count()
 
-            try:
-                pdtobj1 = Productvariant.objects.filter(product=product, size=size, color=color).first()
-                images = product.images.all()
-                products_in_same_category = Products.objects.filter(category=product.category)
+        #     try:
+        #         pdtobj1 = Productvariant.objects.filter(product=product, size=size, color=color).first()
+        #         images = product.images.all()
+        #         products_in_same_category = Products.objects.filter(category=product.category)
 
-                username = request.session["username"]
-                user = customer.objects.get(username=username)
-                wishlist_items = Wishlist.objects.filter(customer=user)
-                count = wishlist_items.count()
+        #         username = request.session["username"]
+        #         user = customer.objects.get(username=username)
+        #         wishlist_items = Wishlist.objects.filter(customer=user)
+        #         count = wishlist_items.count()
 
-                return render(request, 'myapp/user-pdetails.html', {
-                    'pdtobj1': pdtobj1,
-                    'images': images,
-                    'products_in_same_category': products_in_same_category,
-                    'count': count,
-                    'sizes': sizes,
-                    'colors': colors,
+        #         return render(request, 'myapp/user-pdetails.html', {
+        #             'pdtobj1': pdtobj1,
+        #             'images': images,
+        #             'products_in_same_category': products_in_same_category,
+        #             'count': count,
+        #             'sizes': sizes,
+        #             'colors': colors,
+        #             'distinct_colors':distinct_colors,
+        #             "distinct_sizes":distinct_sizes
+       
                     
-                })
-            except Productvariant.DoesNotExist:
-                error_message["name"]="Out of stock"
-                return render(request, 'myapp/user-pdetails.html', {
-                    "error_message":error_message,
-                            'pdtobj1': pdtobj1,
-                             'images': images,
-                             'products_in_same_category': products_in_same_category,
-                             'count':count,
-                             'cart_count':cart_count,
-                            'sizes':sizes,
-                            'colors':colors,
+        #         })
+        #     except Productvariant.DoesNotExist:
+        #         error_message["name"]="Out of stock"
+        #         return render(request, 'myapp/user-pdetails.html', {
+        #             "error_message":error_message,
+        #                     'pdtobj1': pdtobj1,
+        #                      'images': images,
+        #                      'products_in_same_category': products_in_same_category,
+        #                      'count':count,
+        #                      'cart_count':cart_count,
+        #                     'sizes':sizes,
+        #                     'colors':colors,
+        #                     'distinct_colors':distinct_colors,
+        #                     "distinct_sizes":distinct_sizes
+       
                            
-                        })
+        #                 })
 
         if "addtocart" in request.POST:
 
@@ -635,6 +661,9 @@ def user_pdetails(request, product_id):
                 'cart_count':cart_count,
                 'sizes':sizes,
                 'colors':colors,
+                'distinct_colors':distinct_colors,
+                "distinct_sizes":distinct_sizes
+       
             
             }) 
             try:  
@@ -651,6 +680,9 @@ def user_pdetails(request, product_id):
                 'cart_count':cart_count,
                 'sizes':sizes,
                 'colors':colors,
+                'distinct_colors':distinct_colors,
+                "distinct_sizes":distinct_sizes
+       
             
             })
                     
@@ -659,17 +691,6 @@ def user_pdetails(request, product_id):
 
             
             total = Decimal(quantity) * pdtvariant.price 
-            # try:
-
-            #     productofferobj=ProductOffer.objects.get(product=pdtobj)
-            #     discount=Decimal(productofferobj.discount)
-            #     print("###############",discount)
-            #     newprice=pdtobj.price-((discount/100)*(pdtobj.price))
-            #     print("HANNAH",newprice)
-            #     total=newprice*Decimal(quantity)
-            # except:
-            #     total = Decimal(quantity) * pdtobj.price 
-            
             
             
             try:
@@ -694,6 +715,8 @@ def user_pdetails(request, product_id):
         'cart_count':cart_count,
         'sizes':sizes,
         'colors':colors,
+      'distinct_colors':distinct_colors,
+      "distinct_sizes":distinct_sizes
        
     })
 
@@ -1024,7 +1047,8 @@ def usercheckout(request):
             address = ShippingAddress.objects.get(id=addressid)
             
 
-            date_ordered = datetime.now().date()
+            date_ordered = datetime.date.today()
+            print("###########",date_ordered)
 
             
             orderobj = Order(customer=user, date_ordered=date_ordered, total=0 ,address = address)

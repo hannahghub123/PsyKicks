@@ -124,6 +124,24 @@ var csrftoken = getToken('csrftoken');
 		height: 38px;
 	  }
  
+	  .product-tag {
+		position: absolute;
+		top: 10px;
+		left: 10px;
+		width: 50px;
+		height: 20px;
+		background-color: pink;
+		color: white;
+		text-align: center;
+		line-height: 20px;
+		border-radius: 50%;
+	}
+	
+	.new-tag {
+		background-color: pink;
+	}
+	
+
 
     {% endblock style %}
 
@@ -869,7 +887,10 @@ var csrftoken = getToken('csrftoken');
 							{% if item.images.all %}
 								{% with item.images.all|first as img %}
 								<a href={% url 'pdetails' item.id %}>
-							<img src="{{ img.image.url }}" alt="IMG-PRODUCT"></a>
+							<img src="{{ img.image.url }}" alt="IMG-PRODUCT">
+							{% if item.condition == "New" %}
+							<div class="product-tag new-tag">New</div>
+						{% endif %}</a>
 								{% endwith %}
 							{% endif %}
 						</div>

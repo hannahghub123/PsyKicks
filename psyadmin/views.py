@@ -312,8 +312,8 @@ def addvariant(request,item_id):
         "variant":variant,
         "item_id":item_id,
         "pobj":pobj,
-        'price':price,
-        'stock':stock, 'description':description,
+        # 'price':price,
+        # 'stock':stock, 'description':description,
     })
  
 
@@ -388,7 +388,7 @@ def editvariant(request,item_id):
             'product':product,
             # 'categoryobjs': categoryobjs,
             'colors': colors,
-       
+            'description':description,
             'sizes': sizes,
             'brands': brands,
             # 'images': images,
@@ -433,8 +433,8 @@ def editproducts(request, someid):
             error_message["name"] = "Product name should contain a minimum of four characters"
         if len(name) > 20:
             error_message["name"]  = "Product name can only have up to 20 characters"
-        if not name.isalpha():
-            error_message["name"]  = "Product name can't contain numbers"
+        elif not name.replace(" ", "").isalpha():
+            error = "Product name can't contain numbers or special characters"
        
             return render(request, "psyadmin/edit-products.html",{ 'content': content,'categoryobjs': categoryobjs,'brands': brands,'condition':condition,'error_message':error_message} )
 

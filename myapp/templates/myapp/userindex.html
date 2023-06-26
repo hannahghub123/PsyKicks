@@ -761,22 +761,11 @@ var csrftoken = getToken('csrftoken');
 							<div class="flex-w p-t-4 m-r-5">
 								<a href="?category=" class="flex-c-m stext-107 cl6 size-301 bor7 p-lr-15 hov-tag1 trans-04 m-r-5 m-b-5">All Types</a>
 								{% for category in category.all %}
-								{% comment %} {% for offer in category_offerobj %}
-								{% if offer.category.name == category.name %} {% endcomment %}
+							
 								<a href="?category={{ category.name }}" class="flex-c-m stext-107 cl6 size-301 bor7 p-lr-15 hov-tag1 trans-04 m-r-5 m-b-5">
 									{{category.name}}
-
-									{% comment %} <button class="flex-c-m trans-04 mt-4">
-										<i class="fa fa-tag" aria-hidden="true">{{ offer.offercode }} - Offer Available</i>
-									</button> {% endcomment %}
 								</a>
-								{% comment %} {%else%}
-								<a href="?category={{ category.name }}" class="flex-c-m stext-107 cl6 size-301 bor7 p-lr-15 hov-tag1 trans-04 m-r-5 m-b-5">
-									{{category.name}}
-								</a> {% endcomment %}
-								
-								
-								{% comment %} {% endif %}{% endfor %} {% endcomment %}
+							
 								{% endfor %}
 							
 							</div>
@@ -830,7 +819,7 @@ var csrftoken = getToken('csrftoken');
 						<div class="block2-txt flex-w flex-t p-t-14">
 							<div class="block2-txt-child1 flex-col-l ">
 								
-									{{ item.name }}
+									{{ item.name }} - {{ item.brand }}
 								
 							
 							</div>
@@ -874,19 +863,21 @@ var csrftoken = getToken('csrftoken');
 	<footer class="bg3 p-t-75 ">
 		<div class="container">
 			<div class="row">
+			
 				<div class="col-sm-6 col-lg-3 p-b-50">
 					<h4 class="stext-301 cl0 p-b-30">
 						Categories
 					</h4>
-
+					
 					<ul>
+						{% for cat in category %}
 						<li class="p-b-10">
 							<a href="#" class="stext-107 cl7 hov-cl1 trans-04">
-								Women
+								{{cat.name}}
 							</a>
 						</li>
-
-						<li class="p-b-10">
+						{% endfor %}
+						{% comment %} <li class="p-b-10">
 							<a href="#" class="stext-107 cl7 hov-cl1 trans-04">
 								Men
 							</a>
@@ -902,7 +893,7 @@ var csrftoken = getToken('csrftoken');
 							<a href="#" class="stext-107 cl7 hov-cl1 trans-04">
 								Watches
 							</a>
-						</li>
+						</li> {% endcomment %}
 					</ul>
 				</div>
 
@@ -913,14 +904,14 @@ var csrftoken = getToken('csrftoken');
 
 					<ul>
 						<li class="p-b-10">
-							<a href="#" class="stext-107 cl7 hov-cl1 trans-04">
-								Track Order
+							<a href="{% url 'user_orders' %}" class="stext-107 cl7 hov-cl1 trans-04">
+								Show Order
 							</a>
 						</li>
 
 						<li class="p-b-10">
-							<a href="#" class="stext-107 cl7 hov-cl1 trans-04">
-								Returns 
+							<a href="{% url 'deliveredproducts' %}" class="stext-107 cl7 hov-cl1 trans-04">
+								Order History 
 							</a>
 						</li>
 
@@ -944,7 +935,7 @@ var csrftoken = getToken('csrftoken');
 					</h4>
 
 					<p class="stext-107 cl7 size-201">
-						Any questions? Let us know in store at 8th floor, 379 Hudson St, New York, NY 10018 or call us on (+1) 96 716 6879
+						Any questions? Let us know in store at 8th floor, TechnoPark, Kazhakootam, 685882 or call us on (+1) 96 716 6879
 					</p>
 
 					<div class="p-t-27">
@@ -967,18 +958,18 @@ var csrftoken = getToken('csrftoken');
 						Newsletter
 					</h4>
 
-					<form>
+					{% comment %} <form> {% endcomment %}
 						<div class="wrap-input1 w-full p-b-4">
-							<input class="input1 bg-none plh1 stext-107 cl7" type="text" name="email" placeholder="email@example.com">
+							<input class="input1 bg-none plh1 stext-107 cl7" type="text" name="email" placeholder="officialpsykicks@gmail.com" readonly>
 							<div class="focus-input1 trans-04"></div>
 						</div>
-
+						<br>
 						<div class="p-t-18">
-							<button class="flex-c-m stext-101 cl0 size-103 bg1 bor1 hov-btn2 p-lr-15 trans-04">
+							<button class="flex-c-m stext-101 cl0 size-103 bg1 bor1 hov-btn2 p-lr-15 trans-04 mt-2">
 								Subscribe
 							</button>
 						</div>
-					</form>
+					{% comment %} </form> {% endcomment %}
 				</div>
 			</div>
 
@@ -1007,7 +998,7 @@ var csrftoken = getToken('csrftoken');
 
 				<p class="stext-107 cl6 txt-center">
 					<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | Made with <i class="fa fa-heart-o" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a> &amp; distributed by <a href="https://themewagon.com" target="_blank">ThemeWagon</a>
+{% comment %} Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | Made with <i class="fa fa-heart-o" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a> &amp; distributed by <a href="https://themewagon.com" target="_blank">ThemeWagon</a> {% endcomment %}
 <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
 
 				</p>

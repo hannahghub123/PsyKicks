@@ -474,8 +474,10 @@ def blog(request):
         wishlist_items = Wishlist.objects.filter(customer=user)
         count = wishlist_items.count()
         cart_count = Cart.objects.filter(user=user).count()
+        category = Category.objects.all()
         context={
             'count':count,
+            'category':category,
             'cart_count':cart_count
         }
     return render(request,"myapp/blog.html",context)
@@ -487,9 +489,11 @@ def contact(request):
         wishlist_items = Wishlist.objects.filter(customer=user)
         count = wishlist_items.count()
         cart_count = Cart.objects.filter(user=user).count()
+        category = Category.objects.all()
         context={
             'count':count,
-            'cart_count':cart_count
+            'cart_count':cart_count,
+            'category':category
         }
     return render(request,"myapp/contact.html",context)
 
@@ -500,9 +504,11 @@ def about(request):
         wishlist_items = Wishlist.objects.filter(customer=user)
         count = wishlist_items.count()
         cart_count = Cart.objects.filter(user=user).count()
+        category = Category.objects.all()
         context={
             'count':count,
-            'cart_count':cart_count
+            'cart_count':cart_count,
+            'category':category
         }
     return render(request,"myapp/about.html",context)
 
@@ -771,26 +777,56 @@ def updatevariant(request):
 
 
     product=Products.objects.get(id=productid)
+    offeramount=None
+  
+    # variant=Productvariant.objects.get(product=product,size=size,color=color)
+    
     
     try:
+        
         variant=Productvariant.objects.get(product=product,size=size,color=color)
-        productofferobj = ProductOffer.objects.get(product=product)
-        discountprice =  variant.price*Decimal(productofferobj.discount/100)
-        offeramount = variant.price-discountprice
-    except: 
+        productofferobj = ProductOffer.objects.filter(product=product)
+        if productofferobj.count()!=0:
+
+            productofferobj=productofferobj[0]
+            discountprice =  variant.price*Decimal(productofferobj.discount/100)
+            offeramount = variant.price-discountprice
+            variantprice=round((offeramount), 2)
+        
+    except:
+        
         varianterror="Out Of Stock"
         return JsonResponse({"varianterror":varianterror})
+    
     
     if offeramount:
         variantprice=round((offeramount), 2)
     else:
         variantprice=round((variant.price), 2)
+    return JsonResponse({"variantprice":variantprice})
+
+    # try:
+    #     productofferobj = ProductOffer.objects.get(product=product)
+    #     discountprice =  variant.price*Decimal(productofferobj.discount/100)
+    #     offeramount = variant.price-discountprice
+    #     variantprice=round((offeramount), 2)
+    #     return JsonResponse({"variantprice":variantprice})
+    # except:
+    #     variantprice=round((variant.price), 2)
+    #     return JsonResponse({"variantprice":variantprice})
+            
+        
+
+        
+
+    
+
 
 
     
 
 
-    return JsonResponse({"variantprice":variantprice})
+   
 
   
 

@@ -1,19 +1,67 @@
 {% extends 'myapp/userindex.html' %}
-{% load static  %}
+{% load static %}
 {% block title %}Contact{% endblock title %}
 {% block content %}
+<style>
+    .container {
+        margin-top: 50px;
+        color: black;
+    }
+
+    h1 {
+        font-size: 32px;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    .contact-details {
+        background-color: #f8f8f8;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    h2 {
+        font-size: 24px;
+        color: black;
+        margin-bottom: 10px;
+    }
+
+    p {
+        font-size: 18px;
+        color: black;
+        margin-bottom: 5px;
+    }
+
+    .contact-image {
+        max-width: 500px;
+        height: auto;
+        margin-top: 20px;
+    }
+</style>
 
 <div class="row mt-5"></div>
 <div class="row mt-5"></div>
-<div class="row mt-5"></div>
-<div class="row mt-5"></div>
-<div class="row mt-5"></div>
-<div class="row mt-5"></div>
 
+<div class="container">
 
-
-
-
-
+    <div class="row" >
+        <div class="col-md-6 nt-5" >
+            <h1>Contact Us</h1>
+            <div class="contact-details">
+                <h2>Psykicks Official</h2>
+                <p>Address: 8th Floor, Technopark,</p>
+                <p>Kazhakootam, Trivandrum - 689522</p>
+                <p>Email: officialpsykicks@gmail.com</p>
+                <p>Phone Number:  (+1) 96 716 6879</p>
+            </div><br><br>
+            <p>Feel free to contact us for any queries..</p>
+        </div>
+        <div class="col-md-6 mb-5">
+            <img src="{% static 'myapp/images/contact-img.jpg' %}" alt="Contact Image" class="contact-image mb-5">
+            
+        </div>
+    </div>
+</div>
 
 {% endblock content %}

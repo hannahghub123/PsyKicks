@@ -982,14 +982,19 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 						// Add any other relevant data
 					},
 					success: function(response) {
-						if (response.varianterror){
-							alert(response.varianterror)
+						
+						if (response.variantprice){
+							
+							var variantprice=response.variantprice;
+							$("#variantprice").html(variantprice);
 							
 
 						}
-						else{
-						var variantprice=response.variantprice;
-						$("#variantprice").html(variantprice);
+						else if(response.varianterror){
+							
+							alert(response.varianterror)
+
+						
 
 							
 						}

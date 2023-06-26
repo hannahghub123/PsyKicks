@@ -381,7 +381,7 @@ def userproduct(request):
         datas = paginator.page(paginator.num_pages)
 
     
-
+    product_offerobj = ProductOffer.objects.all()
 
     context = {
         'datas': datas,
@@ -394,6 +394,7 @@ def userproduct(request):
         'selected_brand':selected_brand,
        'count':count,
         'cart_count':cart_count,
+        'product_offerobj':product_offerobj
      
     }
 
@@ -617,6 +618,24 @@ def user_pdetails(request, product_id):
        
             
             }) 
+            if quantity<1:
+                error="Please select valid credentials before adding a product to the Cart"
+                return render(request, 'myapp/user-pdetails.html', {
+                "error":error,
+                'pdt':pdt,
+                'pdtobj1': pdtobj1,
+                'images': images,
+                'products_in_same_category': products_in_same_category,
+                'count':count,
+                'cart_count':cart_count,
+                'sizes':sizes,
+                'colors':colors,
+                'distinct_colors':distinct_colors,
+                "distinct_sizes":distinct_sizes
+       
+            
+            }) 
+            
             try:  
                 pdtvariant=Productvariant.objects.get(product=pdtobj,size=size,color=color)
             except:
@@ -823,7 +842,7 @@ def usercart(request):
         count = wishlist_items.count()
         cart_count = Cart.objects.filter(user=user).count()
        
-        quantsum=0
+        
         total_price=0
 
         for item in cartobj:
@@ -834,13 +853,13 @@ def usercart(request):
             item.colors = colors
             item.sizes = sizes
 
-            quantsum+=item.quantity
+            # quantsum+=item.quantity
             total_price += item.total
 
         datas = {
             'cartobj': cartobj,
              "total_price":total_price,
-            "quantsum":quantsum,
+            # "quantsum":quantsum,
             'count':count,
             'cart_count':cart_count,
             # 'item.colors':item.colors,
@@ -964,6 +983,7 @@ def usercheckout(request):
             total_price += item.total
 
         coupon_discount=0
+        couponobj = Coupon.objects.all()
         coupon = request.POST.get("coupon")
         coupon_obj = Coupon.objects.filter(coupon_code=coupon).first()
         # coupon_discount = coupon_obj.discount_price
@@ -1002,7 +1022,8 @@ def usercheckout(request):
             "api_key":RAZORPAY_API_KEY ,
             "addressobj":addressobj,
             "item.colors":item.colors,
-            "item.sizes":item.sizes
+            "item.sizes":item.sizes,
+            "couponobj":couponobj
         }
 
     if request.method == "POST":
@@ -1033,8 +1054,8 @@ def usercheckout(request):
                 item.coupon = coupon_obj.first()
                 item.save()
 
-            success_message = "Coupon applied successfully"
-            context["success_message"] = success_message
+                success_message = "Coupon applied successfully"
+                context["success_message"] = success_message
         
         if "placeorder" in request.POST:
             username = request.session.get("username")
@@ -1108,6 +1129,8 @@ def orderdetails(request,item_id):
         username = request.session.get('username')
         orderobj = Order.objects.filter(customer__username=username)
         orderitemobj = OrderItem.objects.filter(order__id=item_id)
+        for item in orderitemobj:
+            total = item.order.total
 
         user = customer.objects.get(username=username)
         listobj = Wishlist.objects.filter(customer=user)
@@ -1122,7 +1145,7 @@ def orderdetails(request,item_id):
             item.sizes = sizes
 
         context = {
-            'orderobj':orderobj, 
+            'total':total, 
             'orderitemobj':orderitemobj,
             "count":count,
             'cart_count':cart_count,
@@ -1394,7 +1417,7 @@ def addtolist(request, product_id):
         print("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<",variant)
 
         if Wishlist.objects.filter(customer=user, product=product).exists():
-            messages.warning(request, "Product already added to wishlist") 
+            messages.warning(request, "Product already added to wishlist, Select some other products out of your interest") 
             
             return redirect('userproduct') 
         

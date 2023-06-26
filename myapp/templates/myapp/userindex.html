@@ -785,7 +785,25 @@ var csrftoken = getToken('csrftoken');
 				</div>
 			</div>
 
-
+			{% if success_message %}
+			<div class="alert alert-warning alert-dismissible fade show" role="alert">
+				{{ success_message }}
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+		{% endif %}
+		
+		{% if messages %}
+			{% for message in messages %}
+				<div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+					{{ message }}
+					<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+			{% endfor %}
+		{% endif %}
 			
 			<div class="row isotope-grid">
 
@@ -819,10 +837,10 @@ var csrftoken = getToken('csrftoken');
 
 
 							<div class="block2-txt-child2 flex-r p-t-3">
-								<a href="{% url 'addtolist' item.id %}" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
-									<img class="icon-heart1 dis-block trans-04" src="{% static 'myapp/images/icons/icon-heart-01.png' %}\" alt="ICON">
-									<img class="icon-heart2 dis-block trans-04 ab-t-l" src="{% static 'myapp/images/icons/icon-heart-02.png' %}\" alt="ICON">
-								</a>
+								<a href="{% url 'addtolist' item.id %}" class="btn-addwish-b2 dis-block pos-relative">
+									<img class="icon-heart1 dis-block trans-04" src="{% static 'myapp/images/icons/icon-heart-01.png'%}" alt="ICON">
+									<img class="icon-heart2 dis-block trans-04 ab-t-l" src="{% static 'myapp/images/icons/icon-heart-02.png'%}" alt="ICON">
+								  </a>
 							</div>
 
 							{% for offer in product_offerobj %}

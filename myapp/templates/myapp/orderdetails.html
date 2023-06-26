@@ -13,6 +13,9 @@
 
 {% comment %} <a class="btn btn-outline-dark" href="{% url 'userproduct' %}">&#x2190; Go back to user-profile</a> {% endcomment %}
 
+<h3>Total Order Amount: ${{total}}</h3><br>
+
+
 <table class="table">
     
     <thead class="thead-dark">
@@ -29,7 +32,7 @@
       </tr>
     </thead>
     <tbody>
-        {% for item in orderitemobj  %}
+      {% for item in orderitemobj  %}
             <tr>
                 <th scope="row">{{item.order.id}}</th>
                 <th>

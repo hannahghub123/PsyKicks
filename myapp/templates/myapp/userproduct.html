@@ -309,14 +309,22 @@
 	  
 				{% comment %} <a href={% url 'pdetails' i.id %}>Quick view</a> {% endcomment %}
 	  
-				<br><br>
+				{% comment %} <br><br>
 				<span class="error-message">{{error_message.product}}</span>
 	  
-	  
+	   {% endcomment %}
 				
-				  <a class="btn btn-outline-primary" href={% url 'user_pdetails' i.id %} style="display:inline-block; ">View Product</a>
+				  {% comment %} <a class="btn btn-outline-primary" href={% url 'user_pdetails' i.id %} style="display:inline-block; ">View Product</a> {% endcomment %}
 				
-	  
+				  {% for offer in product_offerobj %}
+				  {% if offer.product.name == i.name %}
+					  {% if not offer.is_expired %}
+					  <button class="flex-c-m trans-04 mt-4">
+						  <i class="fa fa-tag" aria-hidden="true">{{ offer.offercode }} - {{offer.discount}}% discount</i>
+					  </button>
+					  {% endif %}
+				  {% endif %}
+			  {% endfor %}
 			  </div>
 	  
 			  <div class="block2-txt-child2 flex-r p-t-3">

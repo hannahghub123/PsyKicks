@@ -1,0 +1,34 @@
+{% extends 'myapp/index.html' %}
+{% load static  %}
+{% block title %}PsyKicks/About{% endblock title %}
+{% block content %}
+
+<div class="row mt-5"></div>
+<div class="row mt-5"></div>
+
+<div class="container" style="color: black;">
+    <div class="row mt-5">
+        <div class="col-md-6">
+            <h1><strong>About Us?</strong></h1><br>
+            <p>Welcome to Psykicks! We are thrilled to have you here. Our mission is to provide you with the best selection of branded shoes and deliver an exceptional shopping experience.</p>
+            <p>At Psykicks, we are passionate about footwear. Whether you're a sneaker enthusiast or a fashion-conscious individual, we strive to cater to all your shoe-related needs. Our dedicated team of experts works tirelessly to curate a collection of the latest and most sought-after branded shoes in the industry.</p>
+            <p>Why Choose Us?</p><br>
+            <ul>
+                <li><strong>Authenticity</strong>: We guarantee that all our shoes are 100% authentic. We source our products directly from authorized retailers and trusted suppliers, ensuring the highest quality and genuineness.</li><br>
+                <li><strong>Wide Selection</strong>: We offer a diverse range of branded shoes to suit every style, occasion, and budget. From popular athletic brands to high-end designer labels, you'll find an extensive selection at Psykicks.</li><br>
+                <li><strong>Exceptional Customer Service</strong>: We prioritize your satisfaction and strive to provide exceptional customer service. Our knowledgeable team is here to assist you with any inquiries, sizing questions, or product recommendations.</li><br>
+                <li><strong>Secure and Convenient Shopping</strong>: Our website provides a secure and user-friendly platform for a seamless shopping experience. Enjoy hassle-free browsing, secure payment options, and swift delivery to your doorstep.</li><br>
+                <li><strong>Community</strong>: We believe in building a community of shoe lovers. Join our passionate community, stay updated on the latest trends, and connect with fellow footwear enthusiasts.</li><br>
+            </ul>
+            <p>We are excited to help you find your perfect pair of branded shoes. Thank you for choosing Psykicks as your go-to destination for stylish and authentic footwear!</p>
+        </div>
+        <div class="col-md-6">
+            <img src="{% static 'myapp/images/gallery-08.jpg' %}" alt="About Image" >
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5"></div>
+<div class="row mt-5"></div>
+
+{% endblock content %}

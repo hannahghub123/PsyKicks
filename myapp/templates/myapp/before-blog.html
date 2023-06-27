@@ -1,0 +1,40 @@
+{% extends 'myapp/index.html' %}
+{% load static  %}
+{% block title %}PsyKicks/Blog{% endblock title %}
+{% block content %}
+<div class="row mt-5"></div>
+<div class="row mt-5"></div>
+
+<div class="container" style="color: black;">
+
+    <div class="row mt-5">
+       <div class="col-md-6">
+            <div class="card blog-card h-100">
+                <img src="{% static 'myapp/images/blog1.jpg' %}" alt="Blog Post 1" class="card-img-top" style="height: 330px;">
+                <div class="card-body">
+                    <h2 class="card-title">The Ultimate Guide to Finding the Perfect Pair of Shoes at Psykicks</h2>
+                    <p class="card-text">Are you tired of spending hours searching for the perfect pair of shoes? Look no further than Psykicks! Our online store is a shoe lover's paradise, offering a vast selection of branded footwear that will elevate your style and comfort. In this comprehensive guide, we will walk you through the steps to find your dream shoes at Psykicks.</p><br>
+                    <a href="#" class="btn btn-primary">Read More</a>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-md-6">
+            <div class="card blog-card h-100">
+                <img src="{% static 'myapp/images/blog2.webp' %}" alt="Blog Post 2" class="card-img-top" style="height: 330px;">
+                <div class="card-body">
+                    <h2 class="card-title">Unveiling the Hottest Shoe Trends of the Season at Psykicks</h2>
+                    <p class="card-text">Are you ready to upgrade your shoe collection? Psykicks brings you the hottest shoe trends of the season, ensuring you stay fashionable and on-trend. In this comprehensive guide, we will walk you through the steps to find your dream shoes at Psykicks and suggest the ones you will love.</p><br>
+                    <a href="#" class="btn btn-primary">Read More</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="row mt-5"></div>
+<div class="row mt-5"></div>
+
+{% endblock content %}

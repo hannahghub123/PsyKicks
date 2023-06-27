@@ -19,8 +19,11 @@ urlpatterns = [
     path("user_pdetails/<int:product_id>/",views.user_pdetails,name="user_pdetails"),
 
     path("blog/",views.blog,name="blog"),
+    path("before_blog/",views.before_blog,name="before_blog"),
     path("contact/",views.contact,name="contact"),
+    path("before_contact/",views.before_contact,name="before_contact"),
     path("about/",views.about,name="about"),
+    path("before_about/",views.before_about,name="before_about"),
     
     path("cart/",views.cart,name="cart"),
     path("usercart/",views.usercart,name="usercart"),

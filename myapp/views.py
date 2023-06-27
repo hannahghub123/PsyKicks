@@ -168,10 +168,11 @@ def signout(request):
 
 
 def login(request):
-
+    category = Category.objects.all()
     error_message = {}
     alert_message = request.GET.get('alert')
-    context = {'alert_message': alert_message}
+    context = {'alert_message': alert_message,
+               'category':category}
     
     
     if request.method =='POST':
@@ -206,6 +207,7 @@ def login(request):
 
 
 def signup(request):
+    category = Category.objects.all()
     if request.method == "POST":
         username = request.POST['username']
         name = request.POST['name']
@@ -259,7 +261,7 @@ def signup(request):
 
         return redirect('login')
 
-    return render(request, "myapp/signup.html")
+    return render(request, "myapp/signup.html",{"category":category})
 
 
 def generate_otp():
@@ -277,6 +279,7 @@ def send_otp(phonenumber, otp):
     print(response.text)
 
 def otp_login(request):
+    category = Category.objects.all()
     
     if request.method == 'POST':
         phonenumber = request.POST.get('phonenumber')
@@ -300,11 +303,12 @@ def otp_login(request):
         send_otp(phonenumber, otp)
         
         return redirect('otp_verify')
-    return render(request, 'myapp/otp_login.html')
+    return render(request, 'myapp/otp_login.html',{"category":category})
 
 
 
 def otp_verify(request):
+    category = Category.objects.all()
     
     if 'U_otp' in request.session and 'U_phone' in request.session:
         exact_otp = request.session['U_otp']
@@ -327,7 +331,7 @@ def otp_verify(request):
                     messages.error(request, "This User doesn't Exist")
             else:
                 messages.error(request, "Invalid OTP. Please try again.")
-        return render(request, 'myapp/verify_otp.html', {'phonenumber': phonenumber})
+        return render(request, 'myapp/verify_otp.html', {'phonenumber': phonenumber,"category":category})
     else:
         return redirect('otp_login')
     
@@ -482,6 +486,11 @@ def blog(request):
         }
     return render(request,"myapp/blog.html",context)
 
+def before_blog(request):
+    category = Category.objects.all()
+
+    return render(request,"myapp/before-blog.html",{"category":category})
+
 def contact(request):
     if "username" in request.session:
         username = request.session["username"]
@@ -496,6 +505,10 @@ def contact(request):
             'category':category
         }
     return render(request,"myapp/contact.html",context)
+
+def before_contact(request):
+    category = Category.objects.all()
+    return render(request,"myapp/before-contact.html",{"category":category})
 
 def about(request):
     if "username" in request.session:
@@ -512,8 +525,13 @@ def about(request):
         }
     return render(request,"myapp/about.html",context)
 
+def before_about(request):
+    category = Category.objects.all()
+    return render(request,"myapp/before-about.html",{"category":category})
+
 
 def pdetails(request, product_id):
+    category = Category.objects.all()
     if request.method=="POST":
         # quantity=request.POST.get("quantity")
         # pdtobj=Products.objects.get(id=product_id)
@@ -543,7 +561,7 @@ def pdetails(request, product_id):
     return render(request, 'myapp/product-detail.html', {
         'pdtobj1':pdtobj1,
         'product': product,
-        'images': images,
+        'images': images,'category':category,
         'products_in_same_category': products_in_same_category
     })
 
@@ -718,52 +736,6 @@ def user_pdetails(request, product_id):
 
 
 
-# def addtocart(request, product_id):
-#     if request.method == "POST":
-#         if "username" in request.session:
-            
-#             username = request.session["username"]
-#             user = customer.objects.get(username=username)
-        
-#             product = Products.objects.get(id=product_id)
-#             # quantity = request.POST.get("quantity")
-#             variant = Productvariant.objects.filter(product=product).first()
-#             print(variant,"############")
-#             try:
-#                 pdtoffer=ProductOffer.objects.get(product=product)
-#                 discountprice = variant.price*Decimal(pdtoffer.discount/100)
-#                 offeramount = variant.price - discountprice
-#                 print("TRYYYYYYYYYYYYYY",offeramount)
-#             except:
-#                 print("TRYIL KEREELAAAAAAAAAAAAAAAAAa")
-#                 pass
-#             print("HENNAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa")
-
-          
-
-
-#             cartobjs=Cart.objects.filter(user=user)
-#             # for item in cartobjs:
-#             #     if item.product==product:
-#             #         item.quantity+=int(quantity)
-#             #         item.save()
-#             #         return redirect('usercart') 
-
-            
-#             for item in cartobjs:
-#                 if item.product==product:
-#                     return redirect ('userproduct')
-#             if offeramount:
-#                 reqprice=offeramount
-#             else:
-#                 reqprice=variant.price*variant.stock
-#             cartobj = Cart(user=user, product=product,total=reqprice, quantity=1)
-#             cartobj.save()
-#             return redirect('usercart') 
-#         else:
-#             return redirect('login') 
-
-#     return redirect('userproduct')
 
 def updatevariant(request):
     colorid=request.GET["colorId"]
@@ -817,19 +789,6 @@ def updatevariant(request):
             
         
 
-        
-
-    
-
-
-
-    
-
-
-   
-
-  
-
 
     # if request.method=="POST":
     #     size=request.POST["size"]
@@ -857,9 +816,11 @@ def list_addtocart(request,product_id):
 
 def cart(request):
         cartobj = Cart.objects.all()
+        category = Category.objects.all()
 
         datas = {
-            'cartobj' : cartobj
+            'cartobj' : cartobj,
+            'category':category
         }
 
         return render(request, "myapp/cart.html", datas)
@@ -877,7 +838,7 @@ def usercart(request):
         wishlist_items = Wishlist.objects.filter(customer=user)
         count = wishlist_items.count()
         cart_count = Cart.objects.filter(user=user).count()
-       
+        category = Category.objects.all()
         
         total_price=0
 
@@ -899,7 +860,8 @@ def usercart(request):
             'count':count,
             'cart_count':cart_count,
             # 'item.colors':item.colors,
-            # 'item.sizes':item.sizes
+            # 'item.sizes':item.sizes,
+            "category":category
         }
         return render(request, "myapp/usercart.html", datas)
     else:
@@ -1046,6 +1008,7 @@ def usercheckout(request):
         count = wishlist_items.count()
 
         cart_count = Cart.objects.filter(user=user).count()
+        category = Category.objects.all()
 
         context = {
             "cartobj": cartobj,
@@ -1059,7 +1022,8 @@ def usercheckout(request):
             "addressobj":addressobj,
             "item.colors":item.colors,
             "item.sizes":item.sizes,
-            "couponobj":couponobj
+            "couponobj":couponobj,
+            "category":category
         }
 
     if request.method == "POST":
@@ -1258,7 +1222,8 @@ def wallet(request):
         return render(request,"myapp/wallet.html",context)
 
 def before_userprofile(request):
-    return render(request,"myapp/before-userprofile.html")
+    category = Category.objects.all()
+    return render(request,"myapp/before-userprofile.html",{"category":category})
 
 
 def userprofile(request):
@@ -1405,6 +1370,7 @@ def wishlist(request):
         listobj = Wishlist.objects.filter(customer=user)
         count = listobj.count()
         cart_count = Cart.objects.filter(user=user).count()
+        category = Category.objects.all()
 
     else:
         listobj=[]
@@ -1413,7 +1379,8 @@ def wishlist(request):
     context = {
             'listobj':listobj,
             'count':count ,
-            'cart_count':cart_count
+            'cart_count':cart_count,
+            "category":category
         }
     return render(request,"myapp/wishlist.html",context)
 
@@ -1432,7 +1399,8 @@ def before_wishlist(request):
     #         'listobj':listobj,
     #         'count':count 
     #     }
-    return render(request,"myapp/before-wishlist.html")
+    category = Category.objects.all()
+    return render(request,"myapp/before-wishlist.html",{"category":category})
 
 
 

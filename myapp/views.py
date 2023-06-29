@@ -531,24 +531,28 @@ def before_about(request):
 
 
 def pdetails(request, product_id):
+    error_message = None
     category = Category.objects.all()
+    sizes = Size.objects.all()
+    colors = Color.objects.all()
     if request.method=="POST":
-        # quantity=request.POST.get("quantity")
-        # pdtobj=Products.objects.get(id=product_id)
-        # # print(quantity,"HHHHHHHHHHHHHHH")
-        # username=request.session.get("username")
-        # user=customer.objects.get(username=username)
-        # total=Decimal(quantity)*pdtobj.price
-        
-        # if pdtobj in Cart.user:
-        #     quantity += quantity
-        #     cartobj=Cart.user(quantity=quantity,total=total)
-        #     cartobj.save()
-        # else:
-        #     cartobj=Cart(user=user,product=pdtobj,quantity=quantity,total=total)
-        #     cartobj.save()
-        alert_message = "Please Login to add products to your cart."
-        return redirect(f"/login/?alert={alert_message}")
+        size=request.POST["size"]
+        color=request.POST["color"]
+        if size =="Choose an option" or color =="Choose an option":
+            error_message="Please select valid credentials before adding a product to the Cart"
+            return render(request, 'myapp/product-detail.html', {
+                'pdtobj1':pdtobj1,
+                'product': product,
+                'images': images,
+                'sizes':sizes,
+                'colors':colors,
+                'category':category,
+                'products_in_same_category': products_in_same_category,
+                'error_message':error_message
+            })
+        else:
+            alert_message = "Please Login to add products to your cart."
+            return redirect(f"/login/?alert={alert_message}")
 
     product = Products.objects.prefetch_related('images').filter(id=product_id).first()
     pdtobj=Products.objects.get(id=product_id)
@@ -561,8 +565,11 @@ def pdetails(request, product_id):
     return render(request, 'myapp/product-detail.html', {
         'pdtobj1':pdtobj1,
         'product': product,
-        'images': images,'category':category,
-        'products_in_same_category': products_in_same_category
+        'images': images,
+        'sizes':sizes,
+        'colors':colors,
+        'category':category,
+        'products_in_same_category': products_in_same_category,
     })
 
 def user_pdetails(request, product_id):
@@ -572,7 +579,7 @@ def user_pdetails(request, product_id):
 
     pdt=Products.objects.get(id=product_id)
 
-
+    category = Category.objects.all()
     product = get_object_or_404(Products, id=product_id)
     user=customer.objects.get(username=request.session["username"])
     pdtvariant = Productvariant.objects.filter(product=product)
@@ -624,6 +631,7 @@ def user_pdetails(request, product_id):
             pdtobj = Products.objects.get(id=product_id)
             size=request.POST["size"]
             color=request.POST["color"]
+            category=Category.objects.all()
             print("#############",size,color)
             if size=="Choose an option" and color =="Choose an option":
                 error="Please select valid credentials before adding a product to the Cart"
@@ -638,8 +646,8 @@ def user_pdetails(request, product_id):
                 'sizes':sizes,
                 'colors':colors,
                 'distinct_colors':distinct_colors,
-                "distinct_sizes":distinct_sizes
-       
+                "distinct_sizes":distinct_sizes,
+                "category":category
             
             }) 
             if quantity<1:
@@ -655,8 +663,8 @@ def user_pdetails(request, product_id):
                 'sizes':sizes,
                 'colors':colors,
                 'distinct_colors':distinct_colors,
-                "distinct_sizes":distinct_sizes
-       
+                "distinct_sizes":distinct_sizes,
+                "category":category
             
             }) 
             
@@ -675,8 +683,8 @@ def user_pdetails(request, product_id):
                 'sizes':sizes,
                 'colors':colors,
                 'distinct_colors':distinct_colors,
-                "distinct_sizes":distinct_sizes
-       
+                "distinct_sizes":distinct_sizes,
+                "category":category
             
             })
                     
@@ -730,6 +738,7 @@ def user_pdetails(request, product_id):
         'colors':colors,
       'distinct_colors':distinct_colors,
       "distinct_sizes":distinct_sizes,
+      "category":category
       
        
     })
@@ -1115,12 +1124,14 @@ def ordercomplete(request):
         user = customer.objects.get(username=username)
         wishlist_items = Wishlist.objects.filter(customer=user)
         count = wishlist_items.count()
+        category = Category.objects.all()
 
         cart_count = Cart.objects.filter(user=user).count()
         
         context={
             "count":count,
-            'cart_count':cart_count
+            'cart_count':cart_count,
+            "category":category
         }
     return render(request,"myapp/ordercomplete.html",context) 
 
@@ -1136,6 +1147,7 @@ def orderdetails(request,item_id):
         listobj = Wishlist.objects.filter(customer=user)
         count = listobj.count()
         cart_count = Cart.objects.filter(user=user).count()
+        category = Category.objects.all()
 
         for item in orderitemobj:
             variant = item.variant
@@ -1150,7 +1162,8 @@ def orderdetails(request,item_id):
             "count":count,
             'cart_count':cart_count,
             'item.colors':item.colors,
-            'item.sizes':item.sizes
+            'item.sizes':item.sizes,
+            "category":category
         }
 
     return render(request, "myapp/orderdetails.html",context)
@@ -1212,11 +1225,13 @@ def wallet(request):
         user = customer.objects.get(username=username)
         cart_count = Cart.objects.filter(user=user).count()
         datas = Wallet.objects.all()
+        category = Category.objects.all()
 
         context={
             "datas":datas,
             "count":count,
-            'cart_count':cart_count
+            'cart_count':cart_count,
+            "category":category
         }
 
         return render(request,"myapp/wallet.html",context)
@@ -1229,7 +1244,7 @@ def before_userprofile(request):
 def userprofile(request):
     username = request.session["username"]
     customerobj = customer.objects.get(username=username)
-
+    category = Category.objects.all()
  
     wishlist_items = Wishlist.objects.filter(customer=customerobj)
     count = wishlist_items.count()
@@ -1246,7 +1261,8 @@ def userprofile(request):
         "addressobjs": addressobjs,
         "customerobj": customerobj,
         'count':count,
-        'cart_count':cart_count
+        'cart_count':cart_count,
+        "category":category
     }
 
     return render(request, "myapp/userprofile.html", context)
@@ -1254,7 +1270,7 @@ def userprofile(request):
 def user_orders(request):
     username = request.session["username"]
     customerobj = customer.objects.get(username=username)
-
+    category = Category.objects.all()
  
     wishlist_items = Wishlist.objects.filter(customer=customerobj)
     count = wishlist_items.count()
@@ -1268,7 +1284,8 @@ def user_orders(request):
         "username": username,
         "customerobj": customerobj,
         'count':count,
-        'cart_count':cart_count
+        'cart_count':cart_count,
+        "category":category
     }
 
     return render(request, "myapp/orders.html", context)
@@ -1347,12 +1364,14 @@ def deliveredproducts(request):
         wishlist_items = Wishlist.objects.filter(customer=customerobj)
         count = wishlist_items.count()
         cart_count = Cart.objects.filter(user=customerobj).count()
+        category = Category.objects.all()
 
         context = {
             'orderobj': orderobj,
             'orderitemobj': orderitemobj,
             'count':count,
-            'cart_count':cart_count
+            'cart_count':cart_count,
+            "category":category
         }
 
         return render(request, "myapp/delivered-products.html", context)

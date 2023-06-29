@@ -204,7 +204,8 @@
         </div>
       </div>
     </div>{% endcomment %}
-    <form action="" method="POST">{% csrf_token %}
+    <form action="" method="POST">
+      {% csrf_token %}
     <div style="margin-left:1000px;" class="col-md-3 ">
       <label for="date-input">Start Date:</label>
       <input class="form-control" type="date" id="date-input" name="startdate" value={{startdate}}>
@@ -620,7 +621,7 @@
   </div> {% endcomment %}
 
   {% comment %} <div class="row justify-content-center border mt-2  ">
-      <form action="" method="POST">
+   
         {% csrf_token %}
           <label class="mt-5" for="start_date">Start Date:</label>
           <input class="form-control" type="date" id="start_date" name="start_date" required>

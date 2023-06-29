@@ -38,12 +38,7 @@
             <a href="{% url 'blockcategory' item.id %}" class="btn btn-warning btn-sm block-btn">Block</a>
             {% endif %}
           </td>
-          {% comment %} <td class="py-1">
-            <form method="POST" action="{% url 'deletecategories' item.id %}">
-              {% csrf_token %}
-              <button class="btn delete-btn btn-danger" type="submit">Delete</button>
-            </form>
-          </td> {% endcomment %}
+         
         </tr>
         {% endfor %}
       </tbody>

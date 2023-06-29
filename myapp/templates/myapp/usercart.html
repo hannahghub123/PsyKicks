@@ -57,8 +57,7 @@
                 <div style="flex:1">${{ item.variant.price }}</div>
                 <div style="flex:1">${{ item.discount}}</div>
                 <div style="flex:1; display: flex;">
-                    {% comment %} <form action="" method="POST">
-                        {% csrf_token %} {% endcomment %}
+                  
                         <span class="quantity" style="margin-top: 7px;">{{ item.quantity }}</span>
                         <div class="quantity-control" style="display: flex; flex-direction: column;">
                             <button class="btn-quantity" data-id="{{ item.id }}" name="action">
@@ -68,7 +67,7 @@
                                 <a href="{% url 'quantity_dec' item.id %}"><i class="fa fa-caret-down" aria-hidden="true"></i></a>  
                             </button>
                         </div>
-                    {% comment %} </form> {% endcomment %}
+        
                 </div>
                 <div style="flex:1">${{ item.total }}</div>
                 <div style="flex:1">

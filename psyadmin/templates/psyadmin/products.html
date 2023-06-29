@@ -48,18 +48,7 @@
           <tr>
             <td>{{ item.name }}</td>
             <td>{{ item.brand.name }}</td>
-            {% comment %} <td>
-              {% for color in item.color.all %}
-                {{ color.name }}
-                {% if not forloop.last %}, {% endif %}
-              {% endfor %}
-            </td>
-            <td>
-              {% for size in item.size.all %}
-                {{ size.name }}
-                {% if not forloop.last %}, {% endif %}
-              {% endfor %}
-            </td> {% endcomment %}
+           
             
             <td>{{ item.category.name }}</td>
             <td>{{ item.condition }}</td>

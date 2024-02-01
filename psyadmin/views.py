@@ -20,6 +20,7 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
 import xlsxwriter
 from datetime import date
+from django.shortcuts import get_object_or_404
 
 
 @never_cache
@@ -665,7 +666,6 @@ def orderitems(request,item_id):
 
     return render(request, "psyadmin/orderitems.html",context)
 
-from django.shortcuts import get_object_or_404
 
 def update_orderstatus(request, item_id):
     order = get_object_or_404(Order, id=item_id)
@@ -965,7 +965,6 @@ def sales_report(request):
         total_sales += i.total
         total_orders+=1
 
-    print(total_sales,">>>>>>>>>>>>>>>>>>>>>>?????????????????????????>>>>>>>>>>>>>>>>>>>>>>>>>??????????????")
 
     if request.method=="POST":
         if "show" in request.POST:

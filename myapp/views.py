@@ -15,7 +15,10 @@ from . models import *
 from .forms import *
 from django.http import HttpResponse, JsonResponse
 from django.core.paginator import Paginator,PageNotAnInteger,EmptyPage
-
+from django.template.loader import render_to_string
+from django.http import HttpResponse
+from xhtml2pdf import pisa
+import datetime
 
 
 # Create your views here.
@@ -558,7 +561,6 @@ def pdetails(request, product_id):
     pdtobj=Products.objects.get(id=product_id)
     variant=Productvariant.objects.filter(product=pdtobj)
     pdtobj1 = variant.first()
-    # print(">>>>>>>>>>>>>>>?????????????????>>>>>>>>>>>>>>>>>>?????????????????>>>>>>>>>>>??????????>>>>>>>>",pdtobj1)
     images = product.images.all() if product else []
     products_in_same_category = Products.objects.filter(category=product.category)
     
@@ -600,7 +602,6 @@ def user_pdetails(request, product_id):
         pdtofferobj=ProductOffer.objects.get(product=product)
         discountprice=(pdtobj1.price)*Decimal(pdtofferobj.discount/100)
         offerprice=pdtobj1.price-(discountprice)
-        print("##########",offerprice)
     except:
         pass
 
@@ -632,7 +633,7 @@ def user_pdetails(request, product_id):
             size=request.POST["size"]
             color=request.POST["color"]
             category=Category.objects.all()
-            print("#############",size,color)
+
             if size=="Choose an option" and color =="Choose an option":
                 error="Please select valid credentials before adding a product to the Cart"
                 return render(request, 'myapp/user-pdetails.html', {
@@ -752,10 +753,6 @@ def updatevariant(request):
     productid=request.GET["productId"]
     color=Color.objects.get(id=colorid)
     size=Size.objects.get(id=sizeid)
-    print("###########",size.name,color.name,productid)
-
-
-
 
     product=Products.objects.get(id=productid)
     offeramount=None
@@ -822,7 +819,6 @@ def list_addtocart(request,product_id):
         return redirect(usercart)
         
 
-
 def cart(request):
         cartobj = Cart.objects.all()
         category = Category.objects.all()
@@ -840,9 +836,7 @@ def usercart(request):
     if "username" in request.session:
         username = request.session["username"]
         user = customer.objects.get(username=username)
-        cartobj = Cart.objects.filter(user=user)
-        print(cartobj,"7822222222222222222222222222222222222222222222222222222222222222222222222222222222222222")
-        
+        cartobj = Cart.objects.filter(user=user)        
 
         wishlist_items = Wishlist.objects.filter(customer=user)
         count = wishlist_items.count()
@@ -1518,20 +1512,10 @@ def razorupdateorder(request):
         item.delete()
 
     orderobj.save()
-    
-    
-
-    print("HENNAAAAAAAAAAAAAAAAAAAAAAA",totalamount)
 
 
     return JsonResponse({"message":"done"})
 
-
-
-from django.template.loader import render_to_string
-from django.http import HttpResponse
-from xhtml2pdf import pisa
-import datetime
 
 def generate_invoice(request,order_id):
     if "username" in request.session:
